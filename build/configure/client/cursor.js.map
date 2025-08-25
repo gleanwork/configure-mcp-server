@@ -1,1 +1,0 @@
-{"version":3,"file":"cursor.js","sourceRoot":"","sources":["../../../src/configure/client/cursor.ts"],"names":[],"mappings":"AAAA;;;;GAIG;AAEH,OAAO,EAAE,gBAAgB,EAAE,MAAM,YAAY,CAAC;AAC9C,OAAO,EAAE,MAAM,EAAE,MAAM,8BAA8B,CAAC;AAEtD,MAAM,YAAY,GAAG,gBAAgB,CAAC,MAAM,CAAC,MAAM,EAAE;IACnD,gBAAgB;IAChB,2CAA2C;IAC3C,0DAA0D;CAC3D,CAAC,CAAC;AAEH,eAAe,YAAY,CAAC"}

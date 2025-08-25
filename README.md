@@ -1,11 +1,10 @@
 # @gleanwork/configure-mcp-server
 
-![MCP Server](https://badge.mcpx.dev?type=server 'MCP Server')
-![CI Build](https://github.com/gleanwork/mcp-server/actions/workflows/ci.yml/badge.svg)
+![CI Build](https://github.com/gleanwork/configure-mcp-server/actions/workflows/ci.yml/badge.svg)
 [![npm version](https://badge.fury.io/js/@gleanwork%2Fconfigure-mcp-server.svg)](https://badge.fury.io/js/@gleanwork%2Fconfigure-mcp-server)
-[![License](https://img.shields.io/npm/l/@gleanwork%2Fmcp-server.svg)](https://github.com/gleanwork/mcp-server/blob/main/LICENSE)
+[![License](https://img.shields.io/npm/l/@gleanwork%2Fconfigure-mcp-server.svg)](https://github.com/gleanwork/configure-mcp-server/blob/main/LICENSE)
 
-This package is for configuring popular MCP clients to connect to Glean's API using [@gleanwork/local-mcp-server](https://github.com/gleanwork/mcp-server/tree/main/packages/local-mcp-server).
+This package is for configuring popular MCP clients to connect to Glean's API using [@gleanwork/local-mcp-server](https://github.com/gleanwork/configure-mcp-server/tree/main/packages/local-mcp-server).
 
 ## Configuration
 
@@ -73,7 +72,7 @@ After configuration:
 
 ## Contributing
 
-Please see [CONTRIBUTING.md](https://github.com/gleanwork/mcp-server/blob/main/CONTRIBUTING.md) for development setup and guidelines.
+Please see [CONTRIBUTING.md](https://github.com/gleanwork/configure-mcp-server/blob/main/CONTRIBUTING.md) for development setup and guidelines.
 
 ## License
 
@@ -82,5 +81,5 @@ MIT License - see the [LICENSE](LICENSE) file for details
 ## Support
 
 - Documentation: [docs.glean.com](https://docs.glean.com)
-- Issues: [GitHub Issues](https://github.com/gleanwork/mcp-server/issues)
+- Issues: [GitHub Issues](https://github.com/gleanwork/configure-mcp-server/issues)
 - Email: [support@glean.com](mailto:support@glean.com)
