@@ -1,0 +1,1 @@
+{"version":3,"file":"claude.js","sourceRoot":"","sources":["../../../src/configure/client/claude.ts"],"names":[],"mappings":"AAAA;;;;GAIG;AAEH,OAAO,EAAE,gBAAgB,EAAE,MAAM,YAAY,CAAC;AAC9C,OAAO,EAAE,MAAM,EAAE,MAAM,8BAA8B,CAAC;AAEtD,MAAM,YAAY,GAAG,gBAAgB,CAAC,MAAM,CAAC,cAAc,EAAE;IAC3D,wBAAwB;IACxB,mDAAmD;IACnD,uEAAuE;CACxE,CAAC,CAAC;AAEH,eAAe,YAAY,CAAC"}

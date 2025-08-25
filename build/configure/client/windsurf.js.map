@@ -1,0 +1,1 @@
+{"version":3,"file":"windsurf.js","sourceRoot":"","sources":["../../../src/configure/client/windsurf.ts"],"names":[],"mappings":"AAAA;;;;GAIG;AAEH,OAAO,EAAE,gBAAgB,EAAE,MAAM,YAAY,CAAC;AAC9C,OAAO,EAAE,MAAM,EAAE,MAAM,8BAA8B,CAAC;AAEtD,MAAM,cAAc,GAAG,gBAAgB,CAAC,MAAM,CAAC,QAAQ,EAAE;IACvD,4CAA4C;IAC5C,+BAA+B;IAC/B,8CAA8C;IAC9C,wDAAwD;CACzD,CAAC,CAAC;AAEH,eAAe,cAAc,CAAC"}
