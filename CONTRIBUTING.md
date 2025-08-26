@@ -11,7 +11,7 @@ git clone https://github.com/gleanwork/mcp-server.git
 cd mcp-server
 ```
 
-1. Ensure `node` and `pnpm` are installed. This project has a built-in
+1. Ensure `node` and `npm` are installed. This project has a built-in
    [mise](http://mise.jdx.dev/) config file that you can use if you'd like
    (though it is not required):
 
@@ -23,19 +23,19 @@ mise install
 1. Install dependencies:
 
 ```bash
-pnpm install
+npm install
 ```
 
 1. Build the project:
 
 ```bash
-pnpm run build
+npm run build
 ```
 
 1. Run tests:
 
 ```bash
-pnpm test
+npm test
 ```
 
 ## Repo Organization
@@ -62,10 +62,10 @@ Input and output follow the JSON-RPC 2.0 protocol, with each message on a new li
 
 ```bash
 # Install dependencies
-pnpm install
+npm install
 
 # Start development server
-pnpm docs:dev
+npm docs:dev
 ```
 
 ## Making Changes

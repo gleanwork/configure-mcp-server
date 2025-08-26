@@ -39,9 +39,9 @@
     "lint:eslint": "eslint \"src/**/*.ts\" --fix",
     "lint:package-json": "sort-package-json",
     "lint:ts": "tsc --noEmit",
-    "prepare": "pnpm run build",
+    "prepare": "npm run build",
     "test": "vitest run",
-    "test:all": "pnpm lint && pnpm lint:ts && pnpm test",
+    "test:all": "npm run lint && npm run lint:ts && npm test",
     "test:watch": "vitest",
     "watch": "tsc -w"
   },
