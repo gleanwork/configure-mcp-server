@@ -126,7 +126,12 @@ export async function configure(client: string, options: ConfigureOptions) {
   trace('configuring ', client);
   await ensureClientsLoaded();
 
-  const normalizedClient = client.toLowerCase();
+  let normalizedClient = client.toLowerCase();
+  
+  // Handle backward compatibility alias
+  if (normalizedClient === 'claude') {
+    normalizedClient = 'claude-desktop';
+  }
 
   if (!availableClients[normalizedClient]) {
     console.error(`Unsupported MCP client: ${client}`);
