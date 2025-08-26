@@ -54,7 +54,10 @@ function normalizeBaseDirOutput(output: string, baseDir: string): string {
 }
 
 function normalizeVersionOutput(output: string): string {
-  return output.replace(/Version: v\d+\.\d+\.\d+(-[\w.]+)?(\+[\w.]+)?/g, 'Version: v9.9.9');
+  return output.replace(
+    /Version: v\d+\.\d+\.\d+(-[\w.]+)?(\+[\w.]+)?/g,
+    'Version: v9.9.9',
+  );
 }
 
 function normalizeVSCodeConfigPath(output: string): string {
