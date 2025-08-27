@@ -154,14 +154,14 @@ describe('CLI', () => {
             help        Show this help message
 
           Options for local
-            --client, -c    MCP client to configure for (claude-code, claude, cursor, goose, vscode, windsurf)
+            --client, -c    MCP client to configure for (claude-code, claude-desktop, cursor, goose, vscode, windsurf)
             --token, -t     Glean API token (required)
             --instance, -i  Glean instance name
             --env, -e       Path to .env file containing GLEAN_INSTANCE and GLEAN_API_TOKEN
             --workspace     Create workspace configuration instead of global (VS Code only)
 
           Options for remote
-            --client, -c    MCP client to configure for (claude-code, claude, cursor, goose, vscode, windsurf)
+            --client, -c    MCP client to configure for (claude-code, claude-desktop, cursor, goose, vscode, windsurf)
             --url, -u       Full MCP server URL (required, e.g., https://my-be.glean.com/mcp/default)
             --token, -t     Glean API token (optional, OAuth will be used if not provided)
             --env, -e       Path to .env file containing GLEAN_URL and optionally GLEAN_API_TOKEN
@@ -226,14 +226,14 @@ describe('CLI', () => {
             help        Show this help message
 
           Options for local
-            --client, -c    MCP client to configure for (claude-code, claude, cursor, goose, vscode, windsurf)
+            --client, -c    MCP client to configure for (claude-code, claude-desktop, cursor, goose, vscode, windsurf)
             --token, -t     Glean API token (required)
             --instance, -i  Glean instance name
             --env, -e       Path to .env file containing GLEAN_INSTANCE and GLEAN_API_TOKEN
             --workspace     Create workspace configuration instead of global (VS Code only)
 
           Options for remote
-            --client, -c    MCP client to configure for (claude-code, claude, cursor, goose, vscode, windsurf)
+            --client, -c    MCP client to configure for (claude-code, claude-desktop, cursor, goose, vscode, windsurf)
             --url, -u       Full MCP server URL (required, e.g., https://my-be.glean.com/mcp/default)
             --token, -t     Glean API token (optional, OAuth will be used if not provided)
             --env, -e       Path to .env file containing GLEAN_URL and optionally GLEAN_API_TOKEN
@@ -292,7 +292,7 @@ describe('CLI', () => {
     expect(result.exitCode).toEqual(1);
     expect(result.stderr).toMatchInlineSnapshot(`
       "Unsupported MCP client: invalid-client
-      Supported clients: claude-code, claude, cursor, goose, vscode, windsurf"
+      Supported clients: claude-code, claude-desktop, cursor, goose, vscode, windsurf"
     `);
     expect(result.stdout).toMatchInlineSnapshot(`""`);
   });
