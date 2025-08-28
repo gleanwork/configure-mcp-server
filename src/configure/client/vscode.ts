@@ -7,8 +7,7 @@
 import path from 'path';
 import {
   createBaseClient,
-  VSCodeGlobalConfig,
-  VSCodeWorkspaceConfig,
+  VSCodeConfig,
   MCPConfig,
   ConfigFileContents,
   createMcpServersConfig,
@@ -16,24 +15,36 @@ import {
   createUniversalPathResolver,
 } from './index.js';
 import type { ConfigureOptions } from '../index.js';
-import { CLIENT } from '@gleanwork/mcp-config-schema';
+import { CLIENT, MCPConfigRegistry, buildMcpServerName } from '@gleanwork/mcp-config-schema';
 
 /**
- * Creates VS Code workspace configuration format
+ * Creates configuration using the mcp-config-schema builder
  */
-function createVSCodeWorkspaceConfig(
+function createVSCodeConfig(
   instanceOrUrl?: string,
   apiToken?: string,
   options?: ConfigureOptions,
-): VSCodeWorkspaceConfig {
-  return {
-    servers: createMcpServersConfig(
-      instanceOrUrl,
-      apiToken,
-      options,
-      CLIENT.VSCODE,
-    ),
-  };
+): MCPConfig {
+  const registry = new MCPConfigRegistry();
+  const builder = registry.createBuilder(CLIENT.VSCODE);
+  const isRemote = options?.remote === true;
+
+  const configOutput = builder.buildConfiguration({
+    mode: isRemote ? 'remote' : 'local',
+    serverUrl: isRemote ? instanceOrUrl : undefined,
+    instance: !isRemote ? instanceOrUrl : undefined,
+    apiToken: apiToken,
+    serverName: isRemote
+      ? buildMcpServerName({
+          mode: 'remote',
+          serverUrl: instanceOrUrl,
+          agents: options?.agents,
+        })
+      : undefined,
+  });
+
+  // Parse the JSON output from the builder
+  return JSON.parse(configOutput) as MCPConfig;
 }
 
 const vscodeClient = createBaseClient(CLIENT.VSCODE, [
@@ -53,24 +64,13 @@ vscodeClient.configFilePath = (homedir: string, options?: ConfigureOptions) => {
   return createUniversalPathResolver(CLIENT.VSCODE)(homedir, options);
 };
 
-// Override configTemplate to handle workspace vs global format
+// Override configTemplate to use buildConfiguration directly
 vscodeClient.configTemplate = (
   instanceOrUrl?: string,
   apiToken?: string,
   options?: ConfigureOptions,
 ): MCPConfig => {
-  if (options?.workspace) {
-    return createVSCodeWorkspaceConfig(instanceOrUrl, apiToken, options);
-  }
-
-  return {
-    servers: createMcpServersConfig(
-      instanceOrUrl,
-      apiToken,
-      options,
-      CLIENT.VSCODE,
-    ),
-  };
+  return createVSCodeConfig(instanceOrUrl, apiToken, options);
 };
 
 // Override successMessage to handle workspace vs global
@@ -106,27 +106,14 @@ To use it:
 `;
 };
 
-// Override updateConfig to handle workspace vs global format
+// Override updateConfig to use the schema-generated format
 vscodeClient.updateConfig = (
   existingConfig: ConfigFileContents,
   newConfig: MCPConfig,
   options?: ConfigureOptions,
 ): ConfigFileContents => {
-  if (options?.workspace) {
-    const workspaceNewConfig = newConfig as VSCodeWorkspaceConfig;
-    const result = { ...existingConfig } as ConfigFileContents &
-      VSCodeWorkspaceConfig;
-
-    result.servers = updateMcpServersConfig(
-      result.servers || {},
-      workspaceNewConfig.servers,
-    );
-    return result;
-  }
-
-  const globalNewConfig = newConfig as VSCodeGlobalConfig;
-  const result = { ...existingConfig } as ConfigFileContents &
-    VSCodeGlobalConfig;
+  const configAsVSCode = newConfig as VSCodeConfig;
+  const result = { ...existingConfig } as ConfigFileContents & VSCodeConfig;
   
   // Handle migration from old format (mcp.servers) to new format (servers)
   let existingServers = result.servers || {};
@@ -139,7 +126,7 @@ vscodeClient.updateConfig = (
   
   result.servers = updateMcpServersConfig(
     existingServers,
-    globalNewConfig.servers,
+    configAsVSCode.servers,
   );
   return result;
 };

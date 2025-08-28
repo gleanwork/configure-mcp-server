@@ -34,7 +34,6 @@ gooseClient.configTemplate = (
           agents: options?.agents,
         })
       : undefined,
-    includeWrapper: false,
   });
 
   // Parse the YAML to pin mcp-remote version if needed
