@@ -42,17 +42,9 @@ export interface StandardMCPConfig {
 }
 
 /**
- * VS Code global configuration format
+ * VS Code configuration format
  */
-export interface VSCodeGlobalConfig {
-  servers: MCPServersConfig;
-  [key: string]: unknown;
-}
-
-/**
- * VS Code workspace configuration format
- */
-export interface VSCodeWorkspaceConfig {
+export interface VSCodeConfig {
   servers: MCPServersConfig;
   [key: string]: unknown;
 }
@@ -62,8 +54,7 @@ export interface VSCodeWorkspaceConfig {
  */
 export type MCPConfig =
   | StandardMCPConfig
-  | VSCodeGlobalConfig
-  | VSCodeWorkspaceConfig
+  | VSCodeConfig
   | Record<string, any>; // Goose and other YAML-based configs
 
 /**
@@ -145,7 +136,6 @@ export function createMcpServersConfig(
           agents: options?.agents,
         })
       : undefined,
-    includeWrapper: false,
   });
 
   let parsed: any;

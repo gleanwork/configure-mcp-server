@@ -1434,23 +1434,25 @@ describe('CLI', () => {
         const parsedConfig = yaml.parse(configFileContents);
         expect(parsedConfig).toMatchInlineSnapshot(`
           {
-            "glean_local": {
-              "args": [
-                "-y",
-                "@gleanwork/local-mcp-server",
-              ],
-              "bundled": null,
-              "cmd": "npx",
-              "description": null,
-              "enabled": true,
-              "env_keys": [],
-              "envs": {
-                "GLEAN_API_TOKEN": "glean_api_test",
-                "GLEAN_INSTANCE": "test-domain",
+            "extensions": {
+              "glean_local": {
+                "args": [
+                  "-y",
+                  "@gleanwork/local-mcp-server",
+                ],
+                "bundled": null,
+                "cmd": "npx",
+                "description": null,
+                "enabled": true,
+                "env_keys": [],
+                "envs": {
+                  "GLEAN_API_TOKEN": "glean_api_test",
+                  "GLEAN_INSTANCE": "test-domain",
+                },
+                "name": "glean_local",
+                "timeout": 300,
+                "type": "stdio",
               },
-              "name": "glean_local",
-              "timeout": 300,
-              "type": "stdio",
             },
           }
         `);
@@ -1502,24 +1504,6 @@ describe('CLI', () => {
         const parsedConfig = yaml.parse(configFileContents);
         expect(parsedConfig).toMatchInlineSnapshot(`
           {
-            "glean_local": {
-              "args": [
-                "-y",
-                "@gleanwork/local-mcp-server",
-              ],
-              "bundled": null,
-              "cmd": "npx",
-              "description": null,
-              "enabled": true,
-              "env_keys": [],
-              "envs": {
-                "GLEAN_API_TOKEN": "glean_api_test",
-                "GLEAN_INSTANCE": "test-domain",
-              },
-              "name": "glean_local",
-              "timeout": 300,
-              "type": "stdio",
-            },
             "some-other-config": {
               "options": {
                 "enabled": true,
