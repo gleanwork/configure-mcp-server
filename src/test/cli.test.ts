@@ -1606,20 +1606,18 @@ describe('CLI', () => {
         const parsedContents = JSON.parse(configFileContents);
         expect(parsedContents).toMatchInlineSnapshot(`
           {
-            "mcp": {
-              "servers": {
-                "glean_local": {
-                  "args": [
-                    "-y",
-                    "@gleanwork/local-mcp-server",
-                  ],
-                  "command": "npx",
-                  "env": {
-                    "GLEAN_API_TOKEN": "glean_api_test",
-                    "GLEAN_INSTANCE": "test-domain",
-                  },
-                  "type": "stdio",
+            "servers": {
+              "glean_local": {
+                "args": [
+                  "-y",
+                  "@gleanwork/local-mcp-server",
+                ],
+                "command": "npx",
+                "env": {
+                  "GLEAN_API_TOKEN": "glean_api_test",
+                  "GLEAN_INSTANCE": "test-domain",
                 },
+                "type": "stdio",
               },
             },
           }
@@ -1681,24 +1679,22 @@ describe('CLI', () => {
         expect(parsedConfig).toMatchInlineSnapshot(`
           {
             "editor.fontSize": 14,
-            "mcp": {
-              "servers": {
-                "github-remote": {
-                  "authorization_token": "Bearer $MY_TOKEN",
-                  "url": "https://api.githubcopilot.com/mcp",
+            "servers": {
+              "github-remote": {
+                "authorization_token": "Bearer $MY_TOKEN",
+                "url": "https://api.githubcopilot.com/mcp",
+              },
+              "glean_local": {
+                "args": [
+                  "-y",
+                  "@gleanwork/local-mcp-server",
+                ],
+                "command": "npx",
+                "env": {
+                  "GLEAN_API_TOKEN": "glean_api_test",
+                  "GLEAN_INSTANCE": "test-domain",
                 },
-                "glean_local": {
-                  "args": [
-                    "-y",
-                    "@gleanwork/local-mcp-server",
-                  ],
-                  "command": "npx",
-                  "env": {
-                    "GLEAN_API_TOKEN": "glean_api_test",
-                    "GLEAN_INSTANCE": "test-domain",
-                  },
-                  "type": "stdio",
-                },
+                "type": "stdio",
               },
             },
             "workbench.colorTheme": "Default Dark+",

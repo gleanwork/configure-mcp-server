@@ -74,20 +74,18 @@ describe('VS Code MCP Client', () => {
 
     expect(config).toMatchInlineSnapshot(`
       {
-        "mcp": {
-          "servers": {
-            "glean_local": {
-              "args": [
-                "-y",
-                "@gleanwork/local-mcp-server",
-              ],
-              "command": "npx",
-              "env": {
-                "GLEAN_API_TOKEN": "test-token",
-                "GLEAN_INSTANCE": "example-instance",
-              },
-              "type": "stdio",
+        "servers": {
+          "glean_local": {
+            "args": [
+              "-y",
+              "@gleanwork/local-mcp-server",
+            ],
+            "command": "npx",
+            "env": {
+              "GLEAN_API_TOKEN": "test-token",
+              "GLEAN_INSTANCE": "example-instance",
             },
+            "type": "stdio",
           },
         },
       }
@@ -174,20 +172,18 @@ describe('VS Code MCP Client', () => {
 
     expect(config).toMatchInlineSnapshot(`
       {
-        "mcp": {
-          "servers": {
-            "glean_local": {
-              "args": [
-                "-y",
-                "@gleanwork/local-mcp-server",
-              ],
-              "command": "npx",
-              "env": {
-                "GLEAN_API_TOKEN": "test-token",
-                "GLEAN_URL": "https://example.com/rest/api/v1",
-              },
-              "type": "stdio",
+        "servers": {
+          "glean_local": {
+            "args": [
+              "-y",
+              "@gleanwork/local-mcp-server",
+            ],
+            "command": "npx",
+            "env": {
+              "GLEAN_API_TOKEN": "test-token",
+              "GLEAN_URL": "https://example.com/rest/api/v1",
             },
+            "type": "stdio",
           },
         },
       }
@@ -220,13 +216,11 @@ describe('VS Code MCP Client', () => {
   it('should update global config correctly', () => {
     const existingConfig = { someOtherConfig: true };
     const newConfig: MCPConfig = {
-      mcp: {
-        servers: {
-          glean: {
-            command: 'npx',
-            args: ['-y', '@gleanwork/local-mcp-server'],
-            env: {},
-          },
+      servers: {
+        glean: {
+          command: 'npx',
+          args: ['-y', '@gleanwork/local-mcp-server'],
+          env: {},
         },
       },
     };
@@ -235,7 +229,7 @@ describe('VS Code MCP Client', () => {
 
     expect(updated).toMatchObject({
       someOtherConfig: true,
-      mcp: newConfig.mcp,
+      servers: newConfig.servers,
     });
   });
 
@@ -273,23 +267,23 @@ describe('VS Code MCP Client', () => {
     );
 
     expect(config).toMatchInlineSnapshot(`
-      {
-        "servers": {
-          "glean_local": {
-            "args": [
-              "-y",
-              "@gleanwork/local-mcp-server",
-            ],
-            "command": "npx",
-            "env": {
-              "GLEAN_API_TOKEN": "test-token",
-              "GLEAN_URL": "https://example.com/rest/api/v1",
+          {
+            "servers": {
+              "glean_local": {
+                "args": [
+                  "-y",
+                  "@gleanwork/local-mcp-server",
+                ],
+                "command": "npx",
+                "env": {
+                  "GLEAN_API_TOKEN": "test-token",
+                  "GLEAN_URL": "https://example.com/rest/api/v1",
+                },
+                "type": "stdio",
+              },
             },
-            "type": "stdio",
-          },
-        },
-      }
-    `);
+          }
+        `);
   });
 
   it('should generate global config when workspace option is false', () => {
@@ -302,20 +296,18 @@ describe('VS Code MCP Client', () => {
 
     expect(config).toMatchInlineSnapshot(`
       {
-        "mcp": {
-          "servers": {
-            "glean_local": {
-              "args": [
-                "-y",
-                "@gleanwork/local-mcp-server",
-              ],
-              "command": "npx",
-              "env": {
-                "GLEAN_API_TOKEN": "test-token",
-                "GLEAN_INSTANCE": "example-instance",
-              },
-              "type": "stdio",
+        "servers": {
+          "glean_local": {
+            "args": [
+              "-y",
+              "@gleanwork/local-mcp-server",
+            ],
+            "command": "npx",
+            "env": {
+              "GLEAN_API_TOKEN": "test-token",
+              "GLEAN_INSTANCE": "example-instance",
             },
+            "type": "stdio",
           },
         },
       }
