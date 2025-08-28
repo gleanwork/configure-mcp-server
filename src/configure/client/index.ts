@@ -45,9 +45,7 @@ export interface StandardMCPConfig {
  * VS Code global configuration format
  */
 export interface VSCodeGlobalConfig {
-  mcp: {
-    servers: MCPServersConfig;
-  };
+  servers: MCPServersConfig;
   [key: string]: unknown;
 }
 

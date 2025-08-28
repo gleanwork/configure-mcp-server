@@ -64,14 +64,12 @@ vscodeClient.configTemplate = (
   }
 
   return {
-    mcp: {
-      servers: createMcpServersConfig(
-        instanceOrUrl,
-        apiToken,
-        options,
-        CLIENT.VSCODE,
-      ),
-    },
+    servers: createMcpServersConfig(
+      instanceOrUrl,
+      apiToken,
+      options,
+      CLIENT.VSCODE,
+    ),
   };
 };
 
@@ -129,10 +127,19 @@ vscodeClient.updateConfig = (
   const globalNewConfig = newConfig as VSCodeGlobalConfig;
   const result = { ...existingConfig } as ConfigFileContents &
     VSCodeGlobalConfig;
-  result.mcp = result.mcp || { servers: {} };
-  result.mcp.servers = updateMcpServersConfig(
-    result.mcp.servers || {},
-    globalNewConfig.mcp.servers,
+  
+  // Handle migration from old format (mcp.servers) to new format (servers)
+  let existingServers = result.servers || {};
+  if (result.mcp?.servers) {
+    // Migrate old format servers to new format
+    existingServers = { ...existingServers, ...result.mcp.servers };
+    // Remove the old mcp property
+    delete result.mcp;
+  }
+  
+  result.servers = updateMcpServersConfig(
+    existingServers,
+    globalNewConfig.servers,
   );
   return result;
 };
