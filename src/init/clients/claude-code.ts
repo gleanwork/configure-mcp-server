@@ -9,7 +9,7 @@ import { loadTemplate, TemplateName } from '../templates/index.js';
 /**
  * Generate Claude Code-specific project files
  */
-export async function generateClaudeCodeFiles(): Promise<Array<InitFile>> {
+export async function generateClaudeCodeFiles(): Promise<InitFile[]> {
   // Load all templates in parallel for better performance
   const templateResults = await Promise.allSettled([
     loadTemplate(TemplateName.CLAUDE_SEARCH_COMMAND),

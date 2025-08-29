@@ -20,7 +20,7 @@ export interface InitOptions {
 /**
  * Get client-specific files for the given client
  */
-async function getClientFiles(client: string): Promise<Array<InitFile>> {
+async function getClientFiles(client: string): Promise<InitFile[]> {
   const clientLower = client.toLowerCase();
   if (clientLower === 'cursor') {
     return await generateCursorFiles();
@@ -35,7 +35,7 @@ async function getClientFiles(client: string): Promise<Array<InitFile>> {
  * Initialize Glean MCP project files
  */
 export async function initializeProject(options: InitOptions): Promise<void> {
-  const filesToCreate: Array<InitFile> = [];
+  const filesToCreate: InitFile[] = [];
 
   // Add client-specific files
   if (options.client) {
