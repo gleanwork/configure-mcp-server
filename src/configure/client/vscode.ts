@@ -7,13 +7,15 @@
 import path from 'path';
 import {
   createBaseClient,
-  VSCodeConfig,
-  MCPConfig,
-  ConfigFileContents,
   updateMcpServersConfig,
   createUniversalPathResolver,
 } from './index.js';
-import type { ConfigureOptions } from '../index.js';
+import type {
+  ConfigureOptions,
+  VSCodeConfig,
+  MCPConfig,
+  ConfigFileContents,
+} from '../types.js';
 import {
   CLIENT,
   type GleanServerConfig,

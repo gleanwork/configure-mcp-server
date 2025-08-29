@@ -23,19 +23,8 @@ import { validateInstance } from '@gleanwork/mcp-server-utils/util';
 import { VERSION } from '../common/version.js';
 
 export type { MCPConfig, ConfigFileContents } from './client/index.js';
-
-/**
- * Configure options interface
- */
-export interface ConfigureOptions {
-  token?: string;
-  instance?: string;
-  remote?: boolean;
-  agents?: boolean;
-  url?: string;
-  envPath?: string;
-  workspace?: boolean;
-}
+export type { ConfigureOptions } from './types.js';
+import type { ConfigureOptions } from './types.js';
 
 /**
  * Load environment variables from .env file or existing environment
