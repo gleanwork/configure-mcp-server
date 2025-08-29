@@ -14,7 +14,6 @@ import dotenv from 'dotenv';
 import yaml from 'yaml';
 import {
   availableClients,
-  ensureClientsLoaded,
   MCPClientConfig,
   MCPConfig,
   ConfigFileContents,
@@ -124,7 +123,6 @@ function loadCredentials(options: ConfigureOptions): {
  */
 export async function configure(client: string, options: ConfigureOptions) {
   trace('configuring ', client);
-  await ensureClientsLoaded();
 
   let normalizedClient = client.toLowerCase();
   
@@ -326,8 +324,6 @@ function writeConfigFile(
  * Lists all supported MCP clients
  */
 export async function listSupportedClients() {
-  await ensureClientsLoaded();
-
   console.log('\nSupported MCP clients:');
   console.log('=====================');
 

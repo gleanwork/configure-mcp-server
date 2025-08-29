@@ -1431,30 +1431,23 @@ describe('CLI', () => {
           `);
 
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
-        const parsedConfig = yaml.parse(configFileContents);
-        expect(parsedConfig).toMatchInlineSnapshot(`
-          {
-            "extensions": {
-              "glean_local": {
-                "args": [
-                  "-y",
-                  "@gleanwork/local-mcp-server",
-                ],
-                "bundled": null,
-                "cmd": "npx",
-                "description": null,
-                "enabled": true,
-                "env_keys": [],
-                "envs": {
-                  "GLEAN_API_TOKEN": "glean_api_test",
-                  "GLEAN_INSTANCE": "test-domain",
-                },
-                "name": "glean_local",
-                "timeout": 300,
-                "type": "stdio",
-              },
-            },
-          }
+        
+        // Verify it's valid YAML
+        expect(() => yaml.parse(configFileContents)).not.toThrow();
+        
+        // Snapshot the actual YAML content
+        expect(configFileContents).toMatchInlineSnapshot(`
+          "extensions:
+            glean_local:
+              type: stdio
+              command: npx
+              args:
+                - -y
+                - "@gleanwork/local-mcp-server"
+              env:
+                GLEAN_INSTANCE: test-domain
+                GLEAN_API_TOKEN: glean_api_test
+          "
         `);
       });
 
@@ -1501,15 +1494,117 @@ describe('CLI', () => {
           `);
 
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
-        const parsedConfig = yaml.parse(configFileContents);
-        expect(parsedConfig).toMatchInlineSnapshot(`
+        
+        // Verify it's valid YAML
+        expect(() => yaml.parse(configFileContents)).not.toThrow();
+        
+        // Snapshot the actual YAML content
+        expect(configFileContents).toMatchInlineSnapshot(`
+          "some-other-config:
+            options:
+              enabled: true
+          extensions:
+            glean_local:
+              type: stdio
+              command: npx
+              args:
+                - -y
+                - "@gleanwork/local-mcp-server"
+              env:
+                GLEAN_INSTANCE: test-domain
+                GLEAN_API_TOKEN: glean_api_test
+          "
+        `);
+      });
+
+      it('configures remote server with HTTP transport', async () => {
+        const result = await runBin(
+          'remote',
+          '--url',
+          'https://my-be.glean.com/mcp/analytics',
+          '--client',
+          'goose',
+          '--token',
+          'test-token',
           {
-            "some-other-config": {
-              "options": {
-                "enabled": true,
-              },
+            env: {
+              GLEAN_MCP_CONFIG_DIR: project.baseDir,
+              HOME: project.baseDir,
+              USERPROFILE: project.baseDir,
+              APPDATA: project.baseDir,
+              GLEAN_BETA_ENABLED: 'true',
             },
-          }
+          },
+        );
+
+        expect(result.exitCode).toEqual(0);
+        expect(normalizeOutput(result.stdout, project.baseDir))
+          .toMatchInlineSnapshot(`
+            "Configuring Glean MCP for Goose...
+            Created new configuration file at: <TMP_DIR>/.config/goose/config.yaml
+
+            Goose MCP configuration has been configured to: <TMP_DIR>/.config/goose/config.yaml
+
+            To use it:
+            1. Restart Goose
+            "
+          `);
+
+        const configFileContents = fs.readFileSync(configFilePath, 'utf8');
+        
+        // Verify it's valid YAML
+        expect(() => yaml.parse(configFileContents)).not.toThrow();
+        
+        // Snapshot the actual YAML content
+        expect(configFileContents).toMatchInlineSnapshot(`
+          "extensions:
+            glean_analytics:
+              type: http
+              env: {}
+              url: https://my-be.glean.com/mcp/analytics
+              headers:
+                Authorization: Bearer test-token
+          "
+        `);
+      });
+
+      it('uses "glean_default" as server name when URL contains /mcp/default for remote', async () => {
+        const result = await runBin(
+          'remote',
+          '--url',
+          'https://my-be.glean.com/mcp/default',
+          '--client',
+          'goose',
+          '--token',
+          'test-token',
+          {
+            env: {
+              GLEAN_MCP_CONFIG_DIR: project.baseDir,
+              HOME: project.baseDir,
+              USERPROFILE: project.baseDir,
+              APPDATA: project.baseDir,
+              GLEAN_BETA_ENABLED: 'true',
+            },
+          },
+        );
+
+        expect(result.exitCode).toEqual(0);
+
+        const configFileContents = fs.readFileSync(configFilePath, 'utf8');
+        
+        // Verify it's valid YAML
+        expect(() => yaml.parse(configFileContents)).not.toThrow();
+        
+        // Snapshot the actual YAML content to show glean_default naming
+        expect(configFileContents).toMatchInlineSnapshot(`
+          "extensions:
+            glean_default:
+              type: http
+              env: {}
+              url: https://my-be.glean.com/mcp/default
+              headers:
+                Authorization: Bearer test-token
+          "
         `);
       });
     });
@@ -1571,17 +1666,17 @@ describe('CLI', () => {
         const normalized = normalizeOutput(result.stdout, project.baseDir);
 
         expect(normalized).toMatchInlineSnapshot(`
-          "Configuring Glean MCP for Visual Studio Code...
-          Created new configuration file at: <VS_CODE_CONFIG_DIR>/mcp.json
+                "Configuring Glean MCP for Visual Studio Code...
+                Created new configuration file at: <VS_CODE_CONFIG_DIR>/mcp.json
 
-          To use it:
-          1. Enable MCP support in VS Code by adding "chat.mcp.enabled": true to your user settings
-          2. Restart VS Code
-          3. Open the Chat view (Ctrl+Alt+I or ⌃⌘I) and select "Agent" mode from the dropdown
-          4. Click the "Tools" button to see and use Glean tools in Agent mode
-          5. You'll be asked for approval when Agent uses these tools
-          "
-        `);
+                To use it:
+                1. Enable MCP support in VS Code by adding "chat.mcp.enabled": true to your user settings
+                2. Restart VS Code
+                3. Open the Chat view (Ctrl+Alt+I or ⌃⌘I) and select "Agent" mode from the dropdown
+                4. Click the "Tools" button to see and use Glean tools in Agent mode
+                5. You'll be asked for approval when Agent uses these tools
+                "
+              `);
 
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
 
@@ -1752,18 +1847,21 @@ describe('CLI', () => {
       );
       const config = JSON.parse(configFileContents);
       expect(config).toMatchInlineSnapshot(`
-        {
-          "mcpServers": {
-            "glean_analytics": {
-              "type": "http",
-              "url": "https://my-be.glean.com/mcp/analytics",
+          {
+            "mcpServers": {
+              "glean_analytics": {
+                "headers": {
+                  "Authorization": "Bearer test-token",
+                },
+                "type": "http",
+                "url": "https://my-be.glean.com/mcp/analytics",
+              },
             },
-          },
-        }
-      `);
+          }
+        `);
     });
 
-    it('uses "glean" as server name when URL contains /mcp/default', async () => {
+    it('uses "glean_default" as server name when URL contains /mcp/default', async () => {
       const result = await runBin(
         'remote',
         '--url',
@@ -1790,6 +1888,9 @@ describe('CLI', () => {
       expect(Object.keys(config.mcpServers)[0]).toBe('glean_default');
       expect(config.mcpServers.glean_default).toMatchInlineSnapshot(`
         {
+          "headers": {
+            "Authorization": "Bearer test-token",
+          },
           "type": "http",
           "url": "https://my-be.glean.com/mcp/default",
         }
