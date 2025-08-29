@@ -3,43 +3,79 @@
  */
 
 import path from 'path';
-import {
-  CLAUDE_SEARCH_COMMAND_TEMPLATE,
-  CLAUDE_CHAT_COMMAND_TEMPLATE,
-  CLAUDE_READ_DOCUMENT_COMMAND_TEMPLATE,
-  CLAUDE_CODE_SEARCH_COMMAND_TEMPLATE,
-  CLAUDE_AGENT_TEMPLATE,
-} from '../templates/index.js';
-
-export interface InitFile {
-  path: string;
-  content: string;
-}
+import type { InitFile } from '../../types/index.js';
+import { loadTemplate, TemplateName } from '../templates/index.js';
 
 /**
  * Generate Claude Code-specific project files
  */
-export function generateClaudeCodeFiles(): Array<InitFile> {
+export async function generateClaudeCodeFiles(): Promise<Array<InitFile>> {
+  // Load all templates in parallel for better performance
+  const templateResults = await Promise.allSettled([
+    loadTemplate(TemplateName.CLAUDE_SEARCH_COMMAND),
+    loadTemplate(TemplateName.CLAUDE_CHAT_COMMAND),
+    loadTemplate(TemplateName.CLAUDE_READ_DOCUMENT_COMMAND),
+    loadTemplate(TemplateName.CLAUDE_CODE_SEARCH_COMMAND),
+    loadTemplate(TemplateName.CLAUDE_AGENT),
+  ]);
+
+  // Process all results in a single iteration
+  const templateNames = [
+    'CLAUDE_SEARCH_COMMAND',
+    'CLAUDE_CHAT_COMMAND',
+    'CLAUDE_READ_DOCUMENT_COMMAND',
+    'CLAUDE_CODE_SEARCH_COMMAND',
+    'CLAUDE_AGENT',
+  ];
+
+  const successfulTemplates: string[] = [];
+  const failedTemplates: string[] = [];
+  const errors: string[] = [];
+
+  templateResults.forEach((result, index) => {
+    if (result.status === 'fulfilled') {
+      successfulTemplates.push(result.value);
+    } else {
+      failedTemplates.push(templateNames[index]);
+      errors.push(result.reason);
+    }
+  });
+
+  if (failedTemplates.length > 0) {
+    throw new Error(
+      `Failed to load templates: ${failedTemplates.join(', ')}. Errors: ${errors.join('; ')}`,
+    );
+  }
+
+  // Extract successful results (guaranteed to have all 5 if we reach here)
+  const [
+    searchTemplate,
+    chatTemplate,
+    readTemplate,
+    codeSearchTemplate,
+    agentTemplate,
+  ] = successfulTemplates;
+
   return [
     {
       path: path.join('.claude', 'commands', 'glean_search.md'),
-      content: CLAUDE_SEARCH_COMMAND_TEMPLATE,
+      content: searchTemplate,
     },
     {
       path: path.join('.claude', 'commands', 'glean_chat.md'),
-      content: CLAUDE_CHAT_COMMAND_TEMPLATE,
+      content: chatTemplate,
     },
     {
       path: path.join('.claude', 'commands', 'glean_read_document.md'),
-      content: CLAUDE_READ_DOCUMENT_COMMAND_TEMPLATE,
+      content: readTemplate,
     },
     {
       path: path.join('.claude', 'commands', 'glean_code_search.md'),
-      content: CLAUDE_CODE_SEARCH_COMMAND_TEMPLATE,
+      content: codeSearchTemplate,
     },
     {
       path: path.join('.claude', 'agents', 'glean-expert.md'),
-      content: CLAUDE_AGENT_TEMPLATE,
+      content: agentTemplate,
     },
   ];
 }
