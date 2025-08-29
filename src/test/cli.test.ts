@@ -193,7 +193,7 @@ describe('CLI', () => {
             npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client goose
             npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client windsurf
             npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client vscode --workspace
-          
+
             # With explicit token (bypasses DCR):
             npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client cursor --token glean_api_xyz
 
@@ -279,7 +279,7 @@ describe('CLI', () => {
             npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client goose
             npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client windsurf
             npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client vscode --workspace
-          
+
             # With explicit token (bypasses DCR):
             npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client cursor --token glean_api_xyz
 
