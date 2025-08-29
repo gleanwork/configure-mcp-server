@@ -9,7 +9,7 @@ import { loadTemplate, TemplateName } from '../templates/index.js';
 /**
  * Generate Cursor-specific project files
  */
-export async function generateCursorFiles(): Promise<Array<InitFile>> {
+export async function generateCursorFiles(): Promise<InitFile[]> {
   return [
     {
       path: path.join('.cursor', 'rules', 'glean-mcp.mdc'),
