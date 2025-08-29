@@ -5,3 +5,11 @@
  * be compiled -- if you need to deliver your types to consumers
  * of a published npm module use the '.ts' extension instead.
  */
+
+/**
+ * Represents a file to be created during project initialization
+ */
+export interface InitFile {
+  path: string;
+  content: string;
+}
