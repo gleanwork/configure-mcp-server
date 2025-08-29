@@ -5,18 +5,23 @@
  */
 
 import path from 'path';
-import type { ConfigureOptions } from '../index.js';
 import {
   MCPConfigRegistry,
   ClientId,
   CLIENT,
-  type ServerConfig,
-  type McpServersConfig,
   type GleanServerConfig,
   buildMcpServerName,
   buildConfiguration,
 } from '@gleanwork/mcp-config-schema';
 import mcpRemotePackageJson from 'mcp-remote/package.json' with { type: 'json' };
+import type {
+  ConfigureOptions,
+  MCPServersConfig,
+  StandardMCPConfig,
+  MCPConfig,
+  ConfigFileContents,
+  MCPClientConfig,
+} from '../types.js';
 
 import claudeCodeClient from './claude-code.js';
 import claudeDesktopClient from './claude-desktop.js';
@@ -27,84 +32,16 @@ import windsurfClient from './windsurf.js';
 
 const mcpRemoteVersion = mcpRemotePackageJson.version;
 
-/**
- * Re-export types from the schema package for backward compatibility
- */
-export type MCPServerConfig = ServerConfig;
-
-/**
- * Extract the servers collection type from the wrapped config
- * The package's McpServersConfig is { mcpServers: ... }, but we need just the inner part
- */
-export type MCPServersConfig = McpServersConfig extends { mcpServers: infer S }
-  ? S
-  : Record<string, ServerConfig>;
-
-/**
- * Standard MCP configuration format (Claude, Cursor, Windsurf)
- */
-export interface StandardMCPConfig {
-  mcpServers: MCPServersConfig;
-}
-
-/**
- * VS Code configuration format
- */
-export interface VSCodeConfig {
-  servers: MCPServersConfig;
-  [key: string]: unknown;
-}
-
-/**
- * Union of all possible MCP configuration formats
- */
-export type MCPConfig =
-  | StandardMCPConfig
-  | VSCodeConfig
-  | Record<string, any>; // Goose and other YAML-based configs
-
-/**
- * Generic config file contents that might contain MCP configuration
- * Represents the parsed contents of client config files like VS Code settings.json
- */
-export type ConfigFileContents = Record<string, unknown> & Partial<MCPConfig>;
-
-/**
- * Interface for MCP client configuration details
- */
-export interface MCPClientConfig {
-  /** Display name for the client */
-  displayName: string;
-
-  /**
-   * Path to the config file, supports OS-specific paths and client-specific options.
-   * If GLEAN_MCP_CONFIG_DIR environment variable is set, it will override the default path.
-   */
-  configFilePath: (homedir: string, options?: ConfigureOptions) => string;
-
-  /** Function to generate the config JSON for this client */
-  configTemplate: (
-    subdomainOrUrl?: string,
-    apiToken?: string,
-    options?: ConfigureOptions,
-  ) => MCPConfig;
-
-  /** Instructions displayed after successful configuration */
-  successMessage: (configPath: string, options?: ConfigureOptions) => string;
-
-  /**
-   * Update existing configuration with new config
-   * @param existingConfig Existing configuration object to update
-   * @param newConfig New configuration to merge with existing
-   * @param options Additional options that may affect merging logic
-   * @returns Updated configuration object
-   */
-  updateConfig: (
-    existingConfig: ConfigFileContents,
-    newConfig: MCPConfig,
-    options: ConfigureOptions,
-  ) => ConfigFileContents;
-}
+// Re-export types from the central types file for backward compatibility
+export type {
+  MCPServerConfig,
+  MCPServersConfig,
+  StandardMCPConfig,
+  VSCodeConfig,
+  MCPConfig,
+  ConfigFileContents,
+  MCPClientConfig,
+} from '../types.js';
 
 /**
  * Creates a standard MCP server configuration template
