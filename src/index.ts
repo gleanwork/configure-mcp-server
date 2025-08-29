@@ -66,9 +66,10 @@ async function main() {
       --workspace     Create workspace configuration instead of global (VS Code only)
 
     Options for init
-      --client, -c    MCP client to create project files for (cursor, claude-code)
-      --agents        Create AGENTS.md file with Glean MCP instructions
-      --dryRun        Show what files would be created without creating them
+      --client, -c      MCP client to create project files for (cursor, claude-code)
+      --agents          Create AGENTS.md file with Glean MCP instructions
+      --server-name     Server name to use in templates (default: glean_default)
+      --dryRun          Show what files would be created without creating them
 
 
     Examples
@@ -100,6 +101,7 @@ async function main() {
       npx @gleanwork/configure-mcp-server init --client claude-code
       npx @gleanwork/configure-mcp-server init --agents
       npx @gleanwork/configure-mcp-server init --client cursor --agents
+      npx @gleanwork/configure-mcp-server init --client cursor --server-name my_glean
       npx @gleanwork/configure-mcp-server init --client claude-code --dryRun
 
     Run 'npx @gleanwork/configure-mcp-server help' for more details on supported clients
@@ -215,7 +217,7 @@ async function main() {
     }
 
     case 'init': {
-      const { client, agents, dryRun, help } = cli.flags;
+      const { client, agents, dryRun, help, serverName } = cli.flags;
 
       // Show init-specific help if requested
       if (help) {
@@ -228,6 +230,8 @@ async function main() {
           client,
           agentsMd: Boolean(agents),
           dryRun: Boolean(dryRun),
+          serverName:
+            typeof serverName === 'string' ? serverName : 'glean_default',
         });
       } catch (error: any) {
         console.error(`Initialization failed: ${error.message}`);

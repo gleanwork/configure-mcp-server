@@ -8,12 +8,12 @@ This project uses Glean MCP for enterprise search and context.
 
 ### Available Tools
 
-When working on this project, you have access to Glean MCP tools via the `glean_default` server:
+When working on this project, you have access to Glean MCP tools via the `{{SERVER_NAME}}` server:
 
-- **Enterprise Search**: Use `mcp__glean_default__search` for finding documents, Slack messages, Jira tickets, etc.
-- **AI Chat**: Use `mcp__glean_default__chat` for synthesized answers with citations
-- **Document Reading**: Use `mcp__glean_default__read_document` for extracting specific quotes
-- **Code Search**: Use `mcp__glean_default__code_search` for company-wide code discovery
+- **Enterprise Search**: Use `search` for finding documents, Slack messages, Jira tickets, etc.
+- **AI Chat**: Use `chat` for synthesized answers with citations
+- **Document Reading**: Use `read_document` for extracting specific quotes
+- **Code Search**: Use `code_search` for company-wide code discovery
 
 ### Usage Patterns
 

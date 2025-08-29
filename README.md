@@ -84,6 +84,9 @@ npx @gleanwork/configure-mcp-server init --client claude-code
 # Create AGENTS.md file
 npx @gleanwork/configure-mcp-server init --agents
 
+# Use custom server name (default: glean_default)
+npx @gleanwork/configure-mcp-server init --client cursor --server-name my_glean
+
 # Preview files without creating them
 npx @gleanwork/configure-mcp-server init --client cursor --dryRun
 ```
@@ -92,6 +95,17 @@ This creates client-specific files:
 - **Cursor**: `.cursor/rules/glean-mcp.mdc` - Usage rules and examples
 - **Claude Code**: `.claude/commands/*.md` and `.claude/agents/*.md` - Commands and agents
 - **AGENTS.md**: Project-level documentation following the agents.md standard
+
+### Server Name Configuration
+
+By default, the CLI uses `glean_default` as the server name in generated templates. If your Glean MCP server is configured with a different name, you can specify it using the `--server-name` flag:
+
+```bash
+# Example: If your server is configured as "my_company_glean"
+npx @gleanwork/configure-mcp-server init --client cursor --server-name my_company_glean
+```
+
+This ensures that all generated prompts and configurations reference the correct server name for your MCP setup.
 
 ## Contributing
 

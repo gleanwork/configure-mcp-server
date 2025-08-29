@@ -13,4 +13,4 @@ Query: "$ARGUMENTS"
 
 ### TOOL CALL
 
-mcp**glean_default**code_search query:"$ARGUMENTS" limit:20
+mcp**{{SERVER_NAME}}**code_search query:"$ARGUMENTS" limit:20

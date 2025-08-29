@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { loadTemplate, TemplateName } from '../../init/templates/index.js';
+import {
+  loadTemplate,
+  TemplateName,
+  type TemplateVariables,
+} from '../../init/templates/index.js';
 import {
   generateCursorFiles,
   generateClaudeCodeFiles,
@@ -23,6 +27,20 @@ describe('Client File Generation', () => {
         expect(file.path).not.toMatch(/^[/\\]/); // Should not start with absolute path
         expect(file.path).not.toContain('..'); // Should not contain parent directory references
       }
+    });
+
+    it('uses default server name when not specified', async () => {
+      const files = await generateCursorFiles();
+
+      expect(files[0].content).toContain('server key: glean_default');
+    });
+
+    it('uses custom server name when specified', async () => {
+      const files = await generateCursorFiles('my_custom_server');
+
+      expect(files[0].content).toContain('server key: my_custom_server');
+      expect(files[0].content).not.toContain('glean_default');
+      expect(files[0].content).not.toContain('{{SERVER_NAME}}');
     });
   });
 
@@ -65,6 +83,50 @@ describe('Client File Generation', () => {
       for (const file of commandFiles) {
         expect(file.content).toContain('$ARGUMENTS');
       }
+    });
+
+    it('uses default server name when not specified', async () => {
+      const files = await generateClaudeCodeFiles();
+
+      // Check command files have correct tool calls
+      const commandFiles = files.filter((f) => f.path.includes('/commands/'));
+      for (const file of commandFiles) {
+        expect(file.content).toMatch(/mcp\*\*glean_default\*\*/);
+      }
+
+      // Check agent file has correct tools list
+      const agentFile = files.find((f) => f.path.includes('/agents/'));
+      expect(agentFile?.content).toContain('mcp__glean_default__search');
+      expect(agentFile?.content).toContain('mcp__glean_default__chat');
+    });
+
+    it('uses custom server name when specified', async () => {
+      const customServerName = 'my_custom_server';
+      const files = await generateClaudeCodeFiles(customServerName);
+
+      // Check command files have correct tool calls
+      const commandFiles = files.filter((f) => f.path.includes('/commands/'));
+      for (const file of commandFiles) {
+        expect(file.content).toMatch(
+          new RegExp(`mcp\\*\\*${customServerName}\\*\\*`),
+        );
+        expect(file.content).not.toContain('glean_default');
+        expect(file.content).not.toContain('{{SERVER_NAME}}');
+      }
+
+      // Check agent file has correct tools list
+      const agentFile = files.find((f) => f.path.includes('/agents/'));
+      expect(agentFile?.content).toContain(`mcp__${customServerName}__search`);
+      expect(agentFile?.content).toContain(`mcp__${customServerName}__chat`);
+      expect(agentFile?.content).not.toContain('glean_default');
+    });
+
+    it('handles special characters in server names', async () => {
+      const specialServerName = 'test-server_123';
+      const files = await generateClaudeCodeFiles(specialServerName);
+
+      const agentFile = files.find((f) => f.path.includes('/agents/'));
+      expect(agentFile?.content).toContain(`mcp__${specialServerName}__search`);
     });
   });
 });
@@ -135,7 +197,7 @@ describe('Template Validation', () => {
       }
     });
 
-    it('all templates reference correct server key', async () => {
+    it('all templates reference correct server key when using default', async () => {
       const templateNames = [
         TemplateName.CURSOR_RULE,
         TemplateName.CLAUDE_SEARCH_COMMAND,
@@ -147,8 +209,30 @@ describe('Template Validation', () => {
       ];
 
       for (const templateName of templateNames) {
-        const template = await loadTemplate(templateName);
+        // Test with default server name substitution
+        const template = await loadTemplate(templateName, {
+          serverName: 'glean_default',
+        });
         expect(template).toMatch(/glean_default/);
+        expect(template).not.toContain('{{SERVER_NAME}}');
+      }
+    });
+
+    it('all templates have placeholder for server name', async () => {
+      const templateNames = [
+        TemplateName.CURSOR_RULE,
+        TemplateName.CLAUDE_SEARCH_COMMAND,
+        TemplateName.CLAUDE_CHAT_COMMAND,
+        TemplateName.CLAUDE_READ_DOCUMENT_COMMAND,
+        TemplateName.CLAUDE_CODE_SEARCH_COMMAND,
+        TemplateName.CLAUDE_AGENT,
+        TemplateName.AGENTS_MD,
+      ];
+
+      for (const templateName of templateNames) {
+        // Test raw template has placeholder
+        const template = await loadTemplate(templateName);
+        expect(template).toContain('{{SERVER_NAME}}');
       }
     });
 
@@ -178,6 +262,36 @@ describe('Template Loader', () => {
       expect(template).toBeTruthy();
       expect(template.length).toBeGreaterThan(0);
       expect(template).toContain('---'); // Should have frontmatter
+    });
+
+    it('substitutes variables in template content', async () => {
+      const variables: TemplateVariables = { serverName: 'test_server' };
+      const template = await loadTemplate(TemplateName.CURSOR_RULE, variables);
+
+      expect(template).toContain('server key: test_server');
+      expect(template).not.toContain('{{SERVER_NAME}}');
+    });
+
+    it('handles templates without variables', async () => {
+      const templateWithVars = await loadTemplate(TemplateName.CURSOR_RULE);
+      const templateWithoutVars = await loadTemplate(
+        TemplateName.CURSOR_RULE,
+        undefined,
+      );
+
+      expect(templateWithVars).toBe(templateWithoutVars);
+    });
+
+    it('substitutes multiple variables correctly', async () => {
+      const variables: TemplateVariables = { serverName: 'custom_server' };
+      const template = await loadTemplate(TemplateName.CLAUDE_AGENT, variables);
+
+      // Should have multiple substitutions in the tools list
+      expect(template).toContain('mcp__custom_server__search');
+      expect(template).toContain('mcp__custom_server__chat');
+      expect(template).toContain('mcp__custom_server__read_document');
+      expect(template).toContain('mcp__custom_server__code_search');
+      expect(template).not.toContain('{{SERVER_NAME}}');
     });
 
     it('caches templates after first load', async () => {

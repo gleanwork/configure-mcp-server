@@ -62,14 +62,14 @@ describe('initializeProject', () => {
 
         ## WHEN TO INVOKE
 
-        - **Lookup / discovery** ("find/show/where is …"): call \`mcp__glean_default__search\`.
+        - **Lookup / discovery** ("find/show/where is …"): call \`search\`.
         - **Synthesis / policy / summary** ("explain/summarize/compare …"): call
-          \`mcp__glean_default__chat\`; if verbatim text is required, follow with
-          \`mcp__glean_default__read_document\`.
+          \`chat\`; if verbatim text is required, follow with
+          \`read_document\`.
         - **Precise quoting / inspection** (specific doc/section/table): call
-          \`mcp__glean_default__read_document\`.
+          \`read_document\`.
         - **Code questions** ("who calls/where defined/where configured"): call
-          \`mcp__glean_default__code_search\` with a specific symbol/pattern; refine
+          \`code_search\` with a specific symbol/pattern; refine
           with repo/path/language filters.
 
         ## CHAINS
@@ -134,7 +134,7 @@ describe('initializeProject', () => {
 
         1. Call Glean search with the natural query.
         2. If results are broad, refine with team/product/source/timeframe filters (e.g., "team:billing after:2025-06", "source:Confluence").
-        3. For the top 1–3 results, chain **/glean_read_document** to extract quotes before answering.
+        3. For the top 1–3 results, chain **/read_document** to extract quotes before answering.
 
         ### TOOL CALL
 
@@ -143,7 +143,7 @@ describe('initializeProject', () => {
         ### Notes
 
         - Prefer qualifiers (PRD, RFC, runbook, Jira key, Slack channel, repository).
-        - If the user asks for verbatim quotes → **/glean_read_document**.
+        - If the user asks for verbatim quotes → **/read_document**.
         "
       `);
     });
@@ -188,10 +188,10 @@ describe('initializeProject', () => {
 
         When working on this project, you have access to Glean MCP tools via the \`glean_default\` server:
 
-        - **Enterprise Search**: Use \`mcp__glean_default__search\` for finding documents, Slack messages, Jira tickets, etc.
-        - **AI Chat**: Use \`mcp__glean_default__chat\` for synthesized answers with citations
-        - **Document Reading**: Use \`mcp__glean_default__read_document\` for extracting specific quotes
-        - **Code Search**: Use \`mcp__glean_default__code_search\` for company-wide code discovery
+        - **Enterprise Search**: Use \`search\` for finding documents, Slack messages, Jira tickets, etc.
+        - **AI Chat**: Use \`chat\` for synthesized answers with citations
+        - **Document Reading**: Use \`read_document\` for extracting specific quotes
+        - **Code Search**: Use \`code_search\` for company-wide code discovery
 
         ### Usage Patterns
 
@@ -386,6 +386,102 @@ describe('initializeProject', () => {
     });
   });
 
+  describe('server name configuration', () => {
+    it('uses default server name when not specified', async () => {
+      await initializeProject({ client: 'cursor' });
+
+      const cursorRulePath = path.join(
+        tempDir,
+        '.cursor',
+        'rules',
+        'glean-mcp.mdc',
+      );
+      const content = fs.readFileSync(cursorRulePath, 'utf-8');
+
+      expect(content).toContain('server key: glean_default');
+    });
+
+    it('uses custom server name when specified', async () => {
+      const customServerName = 'my_custom_server';
+      await initializeProject({
+        client: 'cursor',
+        serverName: customServerName,
+      });
+
+      const cursorRulePath = path.join(
+        tempDir,
+        '.cursor',
+        'rules',
+        'glean-mcp.mdc',
+      );
+      const content = fs.readFileSync(cursorRulePath, 'utf-8');
+
+      expect(content).toContain(`server key: ${customServerName}`);
+      expect(content).not.toContain('glean_default');
+      expect(content).not.toContain('{{SERVER_NAME}}');
+    });
+
+    it('applies custom server name to claude-code files', async () => {
+      const customServerName = 'acme_glean';
+      await initializeProject({
+        client: 'claude-code',
+        serverName: customServerName,
+      });
+
+      // Check command files
+      const searchPath = path.join(
+        tempDir,
+        '.claude',
+        'commands',
+        'glean_search.md',
+      );
+      const searchContent = fs.readFileSync(searchPath, 'utf-8');
+      expect(searchContent).toMatch(
+        new RegExp(`mcp\\*\\*${customServerName}\\*\\*search`),
+      );
+
+      // Check agent file
+      const agentPath = path.join(
+        tempDir,
+        '.claude',
+        'agents',
+        'glean-expert.md',
+      );
+      const agentContent = fs.readFileSync(agentPath, 'utf-8');
+      expect(agentContent).toContain(`mcp__${customServerName}__search`);
+      expect(agentContent).toContain(`mcp__${customServerName}__chat`);
+    });
+
+    it('applies custom server name to AGENTS.md', async () => {
+      const customServerName = 'enterprise_glean';
+      await initializeProject({ agentsMd: true, serverName: customServerName });
+
+      const agentsPath = path.join(tempDir, 'AGENTS.md');
+      const content = fs.readFileSync(agentsPath, 'utf-8');
+
+      expect(content).toContain(`\`${customServerName}\` server`);
+      expect(content).not.toContain('glean_default');
+    });
+
+    it('handles special characters in server names', async () => {
+      const specialServerName = 'test-server_123';
+      await initializeProject({
+        client: 'claude-code',
+        serverName: specialServerName,
+      });
+
+      const agentPath = path.join(
+        tempDir,
+        '.claude',
+        'agents',
+        'glean-expert.md',
+      );
+      const content = fs.readFileSync(agentPath, 'utf-8');
+
+      expect(content).toContain(`mcp__${specialServerName}__search`);
+    });
+  });
+
   describe('file content validation', () => {
     it('creates cursor file with correct content structure', async () => {
       await initializeProject({ client: 'cursor' });
@@ -421,14 +517,14 @@ describe('initializeProject', () => {
 
         ## WHEN TO INVOKE
 
-        - **Lookup / discovery** ("find/show/where is …"): call \`mcp__glean_default__search\`.
+        - **Lookup / discovery** ("find/show/where is …"): call \`search\`.
         - **Synthesis / policy / summary** ("explain/summarize/compare …"): call
-          \`mcp__glean_default__chat\`; if verbatim text is required, follow with
-          \`mcp__glean_default__read_document\`.
+          \`chat\`; if verbatim text is required, follow with
+          \`read_document\`.
         - **Precise quoting / inspection** (specific doc/section/table): call
-          \`mcp__glean_default__read_document\`.
+          \`read_document\`.
         - **Code questions** ("who calls/where defined/where configured"): call
-          \`mcp__glean_default__code_search\` with a specific symbol/pattern; refine
+          \`code_search\` with a specific symbol/pattern; refine
           with repo/path/language filters.
 
         ## CHAINS
@@ -478,7 +574,7 @@ describe('initializeProject', () => {
 
         1. Call Glean search with the natural query.
         2. If results are broad, refine with team/product/source/timeframe filters (e.g., "team:billing after:2025-06", "source:Confluence").
-        3. For the top 1–3 results, chain **/glean_read_document** to extract quotes before answering.
+        3. For the top 1–3 results, chain **/read_document** to extract quotes before answering.
 
         ### TOOL CALL
 
@@ -487,7 +583,7 @@ describe('initializeProject', () => {
         ### Notes
 
         - Prefer qualifiers (PRD, RFC, runbook, Jira key, Slack channel, repository).
-        - If the user asks for verbatim quotes → **/glean_read_document**.
+        - If the user asks for verbatim quotes → **/read_document**.
         "
       `);
 
@@ -509,6 +605,7 @@ describe('initializeProject', () => {
           - mcp__glean_default__read_document
           - mcp__glean_default__code_search
         model: sonnet
+
         color: blue
         ---
 
@@ -567,10 +664,10 @@ describe('initializeProject', () => {
 
         When working on this project, you have access to Glean MCP tools via the \`glean_default\` server:
 
-        - **Enterprise Search**: Use \`mcp__glean_default__search\` for finding documents, Slack messages, Jira tickets, etc.
-        - **AI Chat**: Use \`mcp__glean_default__chat\` for synthesized answers with citations
-        - **Document Reading**: Use \`mcp__glean_default__read_document\` for extracting specific quotes
-        - **Code Search**: Use \`mcp__glean_default__code_search\` for company-wide code discovery
+        - **Enterprise Search**: Use \`search\` for finding documents, Slack messages, Jira tickets, etc.
+        - **AI Chat**: Use \`chat\` for synthesized answers with citations
+        - **Document Reading**: Use \`read_document\` for extracting specific quotes
+        - **Code Search**: Use \`code_search\` for company-wide code discovery
 
         ### Usage Patterns
 
