@@ -10,12 +10,16 @@ import {
   VSCodeConfig,
   MCPConfig,
   ConfigFileContents,
-  createMcpServersConfig,
   updateMcpServersConfig,
   createUniversalPathResolver,
 } from './index.js';
 import type { ConfigureOptions } from '../index.js';
-import { CLIENT, MCPConfigRegistry, buildMcpServerName } from '@gleanwork/mcp-config-schema';
+import {
+  CLIENT,
+  type GleanServerConfig,
+  buildConfiguration,
+  buildMcpServerName,
+} from '@gleanwork/mcp-config-schema';
 
 /**
  * Creates configuration using the mcp-config-schema builder
@@ -25,26 +29,23 @@ function createVSCodeConfig(
   apiToken?: string,
   options?: ConfigureOptions,
 ): MCPConfig {
-  const registry = new MCPConfigRegistry();
-  const builder = registry.createBuilder(CLIENT.VSCODE);
   const isRemote = options?.remote === true;
 
-  const configOutput = builder.buildConfiguration({
-    mode: isRemote ? 'remote' : 'local',
+  const serverData: GleanServerConfig = {
+    transport: isRemote ? 'http' : 'stdio',
     serverUrl: isRemote ? instanceOrUrl : undefined,
     instance: !isRemote ? instanceOrUrl : undefined,
     apiToken: apiToken,
     serverName: isRemote
       ? buildMcpServerName({
-          mode: 'remote',
+          transport: 'http',
           serverUrl: instanceOrUrl,
           agents: options?.agents,
         })
       : undefined,
-  });
+  };
 
-  // Parse the JSON output from the builder
-  return JSON.parse(configOutput) as MCPConfig;
+  return buildConfiguration(CLIENT.VSCODE, serverData) as MCPConfig;
 }
 
 const vscodeClient = createBaseClient(CLIENT.VSCODE, [
@@ -64,7 +65,6 @@ vscodeClient.configFilePath = (homedir: string, options?: ConfigureOptions) => {
   return createUniversalPathResolver(CLIENT.VSCODE)(homedir, options);
 };
 
-// Override configTemplate to use buildConfiguration directly
 vscodeClient.configTemplate = (
   instanceOrUrl?: string,
   apiToken?: string,

@@ -132,6 +132,9 @@ describe('VS Code MCP Client', () => {
       {
         "servers": {
           "glean_default": {
+            "headers": {
+              "Authorization": "Bearer test-token",
+            },
             "type": "http",
             "url": "https://example-instance-be.glean.com/mcp/default",
           },
@@ -156,6 +159,9 @@ describe('VS Code MCP Client', () => {
       {
         "servers": {
           "glean_agents": {
+            "headers": {
+              "Authorization": "Bearer test-token",
+            },
             "type": "http",
             "url": "https://example-instance-be.glean.com/mcp/agents",
           },

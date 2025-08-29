@@ -4,10 +4,7 @@
  * Common interfaces and types for MCP client implementations
  */
 
-import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import yaml from 'yaml';
 import type { ConfigureOptions } from '../index.js';
 import {
   MCPConfigRegistry,
@@ -15,7 +12,9 @@ import {
   CLIENT,
   type ServerConfig,
   type McpServersConfig,
+  type GleanServerConfig,
   buildMcpServerName,
+  buildConfiguration,
 } from '@gleanwork/mcp-config-schema';
 import mcpRemotePackageJson from 'mcp-remote/package.json' with { type: 'json' };
 
@@ -119,70 +118,27 @@ export function createMcpServersConfig(
   options?: ConfigureOptions,
   clientId: ClientId = CLIENT.CURSOR,
 ): MCPServersConfig {
-  const registry = new MCPConfigRegistry();
-  const builder = registry.createBuilder(clientId);
-
   const isRemote = options?.remote === true;
 
-  const configOutput = builder.buildConfiguration({
-    mode: isRemote ? 'remote' : 'local',
+  const serverData: GleanServerConfig = {
+    transport: isRemote ? 'http' : 'stdio',
     serverUrl: isRemote ? instanceOrUrl : undefined,
     instance: !isRemote ? instanceOrUrl : undefined,
     apiToken: apiToken,
     serverName: isRemote
       ? buildMcpServerName({
-          mode: 'remote',
+          transport: 'http',
           serverUrl: instanceOrUrl,
           agents: options?.agents,
         })
       : undefined,
-  });
+  };
 
-  let parsed: any;
-  try {
-    parsed = JSON.parse(configOutput);
-  } catch {
-    try {
-      parsed = yaml.parse(configOutput);
-    } catch (yamlError) {
-      throw new Error(`Failed to parse configuration output: ${yamlError}`);
-    }
-  }
-
-  let servers: MCPServersConfig;
-
-  if (parsed.mcpServers) {
-    servers = parsed.mcpServers;
-  } else if (parsed.mcp?.servers) {
-    servers = parsed.mcp.servers;
-  } else if (parsed.servers) {
-    servers = parsed.servers;
-  } else if (parsed.extensions) {
-    servers = {};
-    for (const [name, ext] of Object.entries(parsed.extensions) as [
-      string,
-      any,
-    ][]) {
-      servers[name] = {
-        type: ext.type,
-        command: ext.cmd,
-        args: ext.args,
-        env: ext.envs,
-      };
-    }
-  } else if (clientId === CLIENT.GOOSE) {
-    servers = {};
-    for (const [name, ext] of Object.entries(parsed) as [string, any][]) {
-      servers[name] = {
-        type: ext.type || 'stdio',
-        command: ext.cmd,
-        args: ext.args,
-        env: ext.envs,
-      };
-    }
-  } else {
-    servers = parsed;
-  }
+  const configObj = buildConfiguration(clientId, serverData);
+  
+  const registry = new MCPConfigRegistry();
+  const builder = registry.createBuilder(clientId);
+  const servers = builder.getNormalizedServersConfig(configObj) as MCPServersConfig;
 
   if (isRemote) {
     for (const [, serverConfig] of Object.entries(servers)) {
@@ -273,10 +229,10 @@ export function createBaseClient(
     homedir: string,
     options?: ConfigureOptions,
   ) => string,
-  mcpServersHook: (
+  mcpServersHook?: (
     servers: MCPServersConfig,
     options?: ConfigureOptions,
-  ) => MCPConfig = (servers) => ({ mcpServers: servers }),
+  ) => MCPConfig,
 ): MCPClientConfig {
   const registry = new MCPConfigRegistry();
   const clientInfo = registry.getConfig(clientId);
@@ -284,6 +240,10 @@ export function createBaseClient(
     throw new Error(`Unknown client: ${clientId}`);
   }
   const displayName = clientInfo.displayName;
+  const serverKey = clientInfo.configStructure.serverKey || 'mcpServers';
+
+  // If no custom hook is provided, create default one using the correct serverKey
+  const effectiveMcpServersHook = mcpServersHook || ((servers) => ({ [serverKey]: servers }));
 
   return {
     displayName,
@@ -302,7 +262,7 @@ export function createBaseClient(
         options,
         clientId,
       );
-      return mcpServersHook(servers, options);
+      return effectiveMcpServersHook(servers, options);
     },
 
     successMessage: (configPath) =>
@@ -312,13 +272,15 @@ export function createBaseClient(
       existingConfig: ConfigFileContents,
       newConfig: MCPConfig,
     ) => {
-      const standardNewConfig = newConfig as StandardMCPConfig;
-      const result = { ...existingConfig } as ConfigFileContents &
-        StandardMCPConfig;
+      const result = { ...existingConfig } as ConfigFileContents;
 
-      result.mcpServers = updateMcpServersConfig(
-        result.mcpServers || {},
-        standardNewConfig.mcpServers,
+      // Get the servers from the new config using the correct key
+      const newServers = (newConfig as any)[serverKey] as MCPServersConfig;
+      const existingServers = ((result as any)[serverKey] as MCPServersConfig) || {};
+
+      (result as any)[serverKey] = updateMcpServersConfig(
+        existingServers,
+        newServers,
       );
       return result;
     },
@@ -347,39 +309,33 @@ export function updateMcpServersConfig(
 export const availableClients: Record<string, MCPClientConfig> = {};
 
 /**
- * Dynamically load all client modules in the client directory
+ * Dynamically load all client modules
  */
 async function loadClientModules() {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  const clientDir = __dirname;
+  // Import all client modules explicitly to avoid Vite dynamic import warnings
+  const clientModules = await Promise.all([
+    import('./claude-code.js'),
+    import('./claude-desktop.js'),
+    import('./cursor.js'),
+    import('./goose.js'),
+    import('./vscode.js'),
+    import('./windsurf.js'),
+  ]);
 
-  try {
-    const files = fs.readdirSync(clientDir);
+  const clientNames = [
+    'claude-code',
+    'claude-desktop',
+    'cursor',
+    'goose',
+    'vscode',
+    'windsurf',
+  ];
 
-    const isJsOrTs = (file: string) =>
-      file.endsWith('.js') || file.endsWith('.ts');
-    const clientFiles = files.filter(
-      (file) =>
-        isJsOrTs(file) && file !== 'index.js' && !file.endsWith('.d.ts'),
-    );
-
-    for (const file of clientFiles) {
-      const clientName = path.basename(path.basename(file, '.js'), '.ts');
-
-      try {
-        const clientModule = await import(`./${clientName}.js`);
-
-        if (clientModule.default) {
-          availableClients[clientName] = clientModule.default;
-        }
-      } catch (error) {
-        console.error(`Error loading client module ${clientName}: ${error}`);
-      }
+  clientModules.forEach((module, index) => {
+    if (module.default) {
+      availableClients[clientNames[index]] = module.default;
     }
-  } catch (error) {
-    console.error(`Error loading client modules: ${error}`);
-  }
+  });
 }
 
 /**

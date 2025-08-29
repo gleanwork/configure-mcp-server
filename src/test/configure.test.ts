@@ -204,6 +204,9 @@ describe('configure', () => {
       {
         "mcpServers": {
           "glean_default": {
+            "headers": {
+              "Authorization": "Bearer test-token",
+            },
             "type": "http",
             "url": "https://test-instance-be.glean.com/mcp/default",
           },
