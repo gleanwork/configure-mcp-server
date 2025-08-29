@@ -18,6 +18,14 @@ import {
 } from '@gleanwork/mcp-config-schema';
 import mcpRemotePackageJson from 'mcp-remote/package.json' with { type: 'json' };
 
+// Import all client configurations
+import claudeCodeClient from './claude-code.js';
+import claudeDesktopClient from './claude-desktop.js';
+import cursorClient from './cursor.js';
+import gooseClient from './goose.js';
+import vscodeClient from './vscode.js';
+import windsurfClient from './windsurf.js';
+
 const mcpRemoteVersion = mcpRemotePackageJson.version;
 
 /**
@@ -304,61 +312,21 @@ export function updateMcpServersConfig(
 
 /**
  * Map of all available MCP clients
- * Will be populated dynamically by scanning the client directory
  */
-export const availableClients: Record<string, MCPClientConfig> = {};
-
-/**
- * Dynamically load all client modules
- */
-async function loadClientModules() {
-  // Import all client modules explicitly to avoid Vite dynamic import warnings
-  const clientModules = await Promise.all([
-    import('./claude-code.js'),
-    import('./claude-desktop.js'),
-    import('./cursor.js'),
-    import('./goose.js'),
-    import('./vscode.js'),
-    import('./windsurf.js'),
-  ]);
-
-  const clientNames = [
-    'claude-code',
-    'claude-desktop',
-    'cursor',
-    'goose',
-    'vscode',
-    'windsurf',
-  ];
-
-  clientModules.forEach((module, index) => {
-    if (module.default) {
-      availableClients[clientNames[index]] = module.default;
-    }
-  });
-}
+export const availableClients: Record<string, MCPClientConfig> = {
+  'claude-code': claudeCodeClient,
+  'claude-desktop': claudeDesktopClient,
+  'cursor': cursorClient,
+  'goose': gooseClient,
+  'vscode': vscodeClient,
+  'windsurf': windsurfClient,
+};
 
 /**
  * Ensures all client modules are loaded before using them
- * Returns a promise that resolves when loading is complete
+ * Since we're now using static imports, this is just a compatibility function
+ * that immediately resolves
  */
-let clientsLoaded = false;
-let loadPromise: Promise<void> | null = null;
-
 export async function ensureClientsLoaded(): Promise<void> {
-  if (clientsLoaded) {
-    return Promise.resolve();
-  }
-
-  if (!loadPromise) {
-    loadPromise = loadClientModules().then(() => {
-      clientsLoaded = true;
-    });
-  }
-
-  return loadPromise;
+  return Promise.resolve();
 }
-
-void ensureClientsLoaded().catch((error) => {
-  console.error('Failed to load client modules:', error);
-});

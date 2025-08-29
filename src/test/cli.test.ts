@@ -1516,6 +1516,97 @@ describe('CLI', () => {
           "
         `);
       });
+
+      it('configures remote server with HTTP transport', async () => {
+        const result = await runBin(
+          'remote',
+          '--url',
+          'https://my-be.glean.com/mcp/analytics',
+          '--client',
+          'goose',
+          '--token',
+          'test-token',
+          {
+            env: {
+              GLEAN_MCP_CONFIG_DIR: project.baseDir,
+              HOME: project.baseDir,
+              USERPROFILE: project.baseDir,
+              APPDATA: project.baseDir,
+              GLEAN_BETA_ENABLED: 'true',
+            },
+          },
+        );
+
+        expect(result.exitCode).toEqual(0);
+        expect(normalizeOutput(result.stdout, project.baseDir))
+          .toMatchInlineSnapshot(`
+            "Configuring Glean MCP for Goose...
+            Created new configuration file at: <TMP_DIR>/.config/goose/config.yaml
+
+            Goose MCP configuration has been configured to: <TMP_DIR>/.config/goose/config.yaml
+
+            To use it:
+            1. Restart Goose
+            "
+          `);
+
+        const configFileContents = fs.readFileSync(configFilePath, 'utf8');
+        
+        // Verify it's valid YAML
+        expect(() => yaml.parse(configFileContents)).not.toThrow();
+        
+        // Snapshot the actual YAML content
+        expect(configFileContents).toMatchInlineSnapshot(`
+          "extensions:
+            glean_analytics:
+              type: http
+              env: {}
+              url: https://my-be.glean.com/mcp/analytics
+              headers:
+                Authorization: Bearer test-token
+          "
+        `);
+      });
+
+      it('uses "glean_default" as server name when URL contains /mcp/default for remote', async () => {
+        const result = await runBin(
+          'remote',
+          '--url',
+          'https://my-be.glean.com/mcp/default',
+          '--client',
+          'goose',
+          '--token',
+          'test-token',
+          {
+            env: {
+              GLEAN_MCP_CONFIG_DIR: project.baseDir,
+              HOME: project.baseDir,
+              USERPROFILE: project.baseDir,
+              APPDATA: project.baseDir,
+              GLEAN_BETA_ENABLED: 'true',
+            },
+          },
+        );
+
+        expect(result.exitCode).toEqual(0);
+
+        const configFileContents = fs.readFileSync(configFilePath, 'utf8');
+        
+        // Verify it's valid YAML
+        expect(() => yaml.parse(configFileContents)).not.toThrow();
+        
+        // Snapshot the actual YAML content to show glean_default naming
+        expect(configFileContents).toMatchInlineSnapshot(`
+          "extensions:
+            glean_default:
+              type: http
+              env: {}
+              url: https://my-be.glean.com/mcp/default
+              headers:
+                Authorization: Bearer test-token
+          "
+        `);
+      });
     });
 
     describe('VS Code client', () => {
@@ -1770,7 +1861,7 @@ describe('CLI', () => {
         `);
     });
 
-    it('uses "glean" as server name when URL contains /mcp/default', async () => {
+    it('uses "glean_default" as server name when URL contains /mcp/default', async () => {
       const result = await runBin(
         'remote',
         '--url',
