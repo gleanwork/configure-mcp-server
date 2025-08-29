@@ -70,6 +70,29 @@ After configuration:
 - For Windsurf: Open Settings > Advanced Settings, scroll to Cascade section, and press refresh
 - For Goose: Restart Goose to load the new configuration
 
+## Project Initialization
+
+You can initialize project-level tools and prompts for enhanced development experience:
+
+```bash
+# Initialize Cursor rules
+npx @gleanwork/configure-mcp-server init --client cursor
+
+# Initialize Claude Code commands and agents
+npx @gleanwork/configure-mcp-server init --client claude-code
+
+# Create AGENTS.md file
+npx @gleanwork/configure-mcp-server init --agents
+
+# Preview files without creating them
+npx @gleanwork/configure-mcp-server init --client cursor --dryRun
+```
+
+This creates client-specific files:
+- **Cursor**: `.cursor/rules/glean-mcp.mdc` - Usage rules and examples
+- **Claude Code**: `.claude/commands/*.md` and `.claude/agents/*.md` - Commands and agents
+- **AGENTS.md**: Project-level documentation following the agents.md standard
+
 ## Contributing
 
 Please see [CONTRIBUTING.md](https://github.com/gleanwork/configure-mcp-server/blob/main/CONTRIBUTING.md) for development setup and guidelines.
