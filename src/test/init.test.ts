@@ -61,6 +61,7 @@ describe('initializeProject', () => {
         # Glean MCP Usage Rule
 
         ## WHEN TO INVOKE
+
         - **Lookup / discovery** ("find/show/where is …"): call \`mcp__glean_default__search\`.
         - **Synthesis / policy / summary** ("explain/summarize/compare …"): call
           \`mcp__glean_default__chat\`; if verbatim text is required, follow with
@@ -72,6 +73,7 @@ describe('initializeProject', () => {
           with repo/path/language filters.
 
         ## CHAINS
+
         - **lookup→quote**: search → read_document → answer with citations/quotes.
         - **explain→sources**: chat → (optional) read_document for verbatim passages.
         - **debug→context**: search (error/service) → read_document (tickets/PRs) →
@@ -79,15 +81,18 @@ describe('initializeProject', () => {
         - **code→context**: code_search → open/summarize → (optional) search for design docs/runbooks/SEVs.
 
         ## QUERY REFINEMENT
+
         - Add **team/product/source/timeframe** to \`search\` queries (e.g., "billing", "Confluence only", "after:2025-06").
         - Add **repo/path/language** to \`code_search\` (e.g., \`repo:platform\`, \`path:services/auth\`, \`lang:go\`).
 
         ## OUTPUT EXPECTATIONS
+
         - Provide **links/titles** and a one-line **why this source**.
         - Start with a concise summary, then **exact quotes** (with headings/anchors).
         - If results are broad or thin, refine and retry automatically.
 
         ## EXAMPLES
+
         - "Find PTO policy changes this year" → \`search\` → \`read_document\` → quote changes.
         - "Who uses ValidateSession?" → \`code_search\` → summarize call sites.
         - "Recent errors in payments service?" → \`search\` → open Jira/Slack → \`code_search\` suspected modules.
@@ -124,16 +129,19 @@ describe('initializeProject', () => {
         ---
 
         ## Plan
+
         User query: "$ARGUMENTS"
 
-        1) Call Glean search with the natural query.
-        2) If results are broad, refine with team/product/source/timeframe filters (e.g., "team:billing after:2025-06", "source:Confluence").
-        3) For the top 1–3 results, chain **/glean_read_document** to extract quotes before answering.
+        1. Call Glean search with the natural query.
+        2. If results are broad, refine with team/product/source/timeframe filters (e.g., "team:billing after:2025-06", "source:Confluence").
+        3. For the top 1–3 results, chain **/glean_read_document** to extract quotes before answering.
 
         ### TOOL CALL
-        mcp__glean_default__search "$ARGUMENTS"
+
+        mcp**glean_default**search "$ARGUMENTS"
 
         ### Notes
+
         - Prefer qualifiers (PRD, RFC, runbook, Jira key, Slack channel, repository).
         - If the user asks for verbatim quotes → **/glean_read_document**.
         "
@@ -171,11 +179,13 @@ describe('initializeProject', () => {
         "# AGENTS.md
 
         ## Project Overview
+
         This project uses Glean MCP for enterprise search and context.
 
         ## Glean MCP Usage
 
         ### Available Tools
+
         When working on this project, you have access to Glean MCP tools via the \`glean_default\` server:
 
         - **Enterprise Search**: Use \`mcp__glean_default__search\` for finding documents, Slack messages, Jira tickets, etc.
@@ -184,18 +194,21 @@ describe('initializeProject', () => {
         - **Code Search**: Use \`mcp__glean_default__code_search\` for company-wide code discovery
 
         ### Usage Patterns
+
         - **Lookup then Quote**: search → read_document for specific details
         - **Explain then Sources**: chat → read_document for comprehensive answers
         - **Debug Context**: search issues → read_document → code_search for troubleshooting
         - **Code Discovery**: code_search for understanding usage patterns
 
         ### Best Practices
+
         - Always cite sources with links and titles
         - Refine queries with team/product/timeframe filters for search
         - Use repo/path/language filters for code_search
         - Provide concise summaries followed by relevant quotes
 
         ## Development Environment
+
         [Additional project-specific instructions can be added here]
         "
       `);
@@ -407,6 +420,7 @@ describe('initializeProject', () => {
         # Glean MCP Usage Rule
 
         ## WHEN TO INVOKE
+
         - **Lookup / discovery** ("find/show/where is …"): call \`mcp__glean_default__search\`.
         - **Synthesis / policy / summary** ("explain/summarize/compare …"): call
           \`mcp__glean_default__chat\`; if verbatim text is required, follow with
@@ -418,6 +432,7 @@ describe('initializeProject', () => {
           with repo/path/language filters.
 
         ## CHAINS
+
         - **lookup→quote**: search → read_document → answer with citations/quotes.
         - **explain→sources**: chat → (optional) read_document for verbatim passages.
         - **debug→context**: search (error/service) → read_document (tickets/PRs) →
@@ -425,15 +440,18 @@ describe('initializeProject', () => {
         - **code→context**: code_search → open/summarize → (optional) search for design docs/runbooks/SEVs.
 
         ## QUERY REFINEMENT
+
         - Add **team/product/source/timeframe** to \`search\` queries (e.g., "billing", "Confluence only", "after:2025-06").
         - Add **repo/path/language** to \`code_search\` (e.g., \`repo:platform\`, \`path:services/auth\`, \`lang:go\`).
 
         ## OUTPUT EXPECTATIONS
+
         - Provide **links/titles** and a one-line **why this source**.
         - Start with a concise summary, then **exact quotes** (with headings/anchors).
         - If results are broad or thin, refine and retry automatically.
 
         ## EXAMPLES
+
         - "Find PTO policy changes this year" → \`search\` → \`read_document\` → quote changes.
         - "Who uses ValidateSession?" → \`code_search\` → summarize call sites.
         - "Recent errors in payments service?" → \`search\` → open Jira/Slack → \`code_search\` suspected modules.
@@ -455,16 +473,19 @@ describe('initializeProject', () => {
         ---
 
         ## Plan
+
         User query: "$ARGUMENTS"
 
-        1) Call Glean search with the natural query.
-        2) If results are broad, refine with team/product/source/timeframe filters (e.g., "team:billing after:2025-06", "source:Confluence").
-        3) For the top 1–3 results, chain **/glean_read_document** to extract quotes before answering.
+        1. Call Glean search with the natural query.
+        2. If results are broad, refine with team/product/source/timeframe filters (e.g., "team:billing after:2025-06", "source:Confluence").
+        3. For the top 1–3 results, chain **/glean_read_document** to extract quotes before answering.
 
         ### TOOL CALL
-        mcp__glean_default__search "$ARGUMENTS"
+
+        mcp**glean_default**search "$ARGUMENTS"
 
         ### Notes
+
         - Prefer qualifiers (PRD, RFC, runbook, Jira key, Slack channel, repository).
         - If the user asks for verbatim quotes → **/glean_read_document**.
         "
@@ -492,6 +513,7 @@ describe('initializeProject', () => {
         ---
 
         ## TRIGGERS → IMMEDIATE TOOL USE
+
         - "Find / where is / show docs …" → **search**
         - "Explain / summarize / what's our policy …" → **chat** (then **read_document** for quotes)
         - "Open/quote this doc …" → **read_document**
@@ -499,6 +521,7 @@ describe('initializeProject', () => {
         - Errors, test failures, stack traces, or regressions → **search** for related Jira/Slack/GitHub issues → **read_document** to extract key details → **code_search** for likely fix sites.
 
         ## WORKFLOWS
+
         <workflow name="lookup→quote">
         1. search "[topic]" (add team/source/timeframe)
         2. Pick best match → read_document id_or_url:"…"
@@ -518,6 +541,7 @@ describe('initializeProject', () => {
         2. Open files; summarize responsibilities, call sites, and edge cases.
 
         ## PRINCIPLES
+
         - Prefer **search + read_document** when traceability/quotes matter.
         - Prefer **chat** when synthesis across multiple sources is needed.
         - Always return links/titles and why each source is relevant.
@@ -534,11 +558,13 @@ describe('initializeProject', () => {
         "# AGENTS.md
 
         ## Project Overview
+
         This project uses Glean MCP for enterprise search and context.
 
         ## Glean MCP Usage
 
         ### Available Tools
+
         When working on this project, you have access to Glean MCP tools via the \`glean_default\` server:
 
         - **Enterprise Search**: Use \`mcp__glean_default__search\` for finding documents, Slack messages, Jira tickets, etc.
@@ -547,18 +573,21 @@ describe('initializeProject', () => {
         - **Code Search**: Use \`mcp__glean_default__code_search\` for company-wide code discovery
 
         ### Usage Patterns
+
         - **Lookup then Quote**: search → read_document for specific details
         - **Explain then Sources**: chat → read_document for comprehensive answers
         - **Debug Context**: search issues → read_document → code_search for troubleshooting
         - **Code Discovery**: code_search for understanding usage patterns
 
         ### Best Practices
+
         - Always cite sources with links and titles
         - Refine queries with team/product/timeframe filters for search
         - Use repo/path/language filters for code_search
         - Provide concise summaries followed by relevant quotes
 
         ## Development Environment
+
         [Additional project-specific instructions can be added here]
         "
       `);

@@ -27,13 +27,15 @@
     "build/**/*.d.ts",
     "build/**/*.js.map",
     "build/**/*.d.ts.map",
+    "build/**/*.md",
     "!build/**/test/**",
     "!build/test/**",
     "!build/src/**",
     "!build/vitest.config.*"
   ],
   "scripts": {
-    "build": "rimraf build && tsc",
+    "build": "rimraf build && tsc && npm run copy-templates",
+    "copy-templates": "mkdir -p build/init/templates/markdown && cp -r src/init/templates/markdown/* build/init/templates/markdown/",
     "format": "prettier --write --ignore-unknown .",
     "go": "node --loader ts-node/esm src/index.ts",
     "lint": "npm-run-all --sequential lint:*",

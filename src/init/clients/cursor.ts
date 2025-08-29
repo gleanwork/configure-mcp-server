@@ -3,21 +3,17 @@
  */
 
 import path from 'path';
-import { CURSOR_RULE_TEMPLATE } from '../templates/index.js';
-
-export interface InitFile {
-  path: string;
-  content: string;
-}
+import type { InitFile } from '../../types/index.js';
+import { loadTemplate, TemplateName } from '../templates/index.js';
 
 /**
  * Generate Cursor-specific project files
  */
-export function generateCursorFiles(): Array<InitFile> {
+export async function generateCursorFiles(): Promise<Array<InitFile>> {
   return [
     {
       path: path.join('.cursor', 'rules', 'glean-mcp.mdc'),
-      content: CURSOR_RULE_TEMPLATE,
+      content: await loadTemplate(TemplateName.CURSOR_RULE),
     },
   ];
 }

@@ -2,19 +2,33 @@
  * Core installer logic for Glean MCP project initialization
  */
 
-import fs from 'fs';
+import fs from 'fs/promises';
 import path from 'path';
 import {
   generateCursorFiles,
   generateClaudeCodeFiles,
   type InitFile,
 } from './clients/index.js';
-import { AGENTS_MD_TEMPLATE } from './templates/index.js';
+import { loadTemplate, TemplateName } from './templates/index.js';
 
 export interface InitOptions {
   client?: string;
   agentsMd?: boolean;
   dryRun?: boolean;
+}
+
+/**
+ * Get client-specific files for the given client
+ */
+async function getClientFiles(client: string): Promise<Array<InitFile>> {
+  const clientLower = client.toLowerCase();
+  if (clientLower === 'cursor') {
+    return await generateCursorFiles();
+  }
+  if (clientLower === 'claude-code') {
+    return await generateClaudeCodeFiles();
+  }
+  throw new Error(`Unsupported client: ${client}`);
 }
 
 /**
@@ -25,31 +39,20 @@ export async function initializeProject(options: InitOptions): Promise<void> {
 
   // Add client-specific files
   if (options.client) {
-    switch (options.client.toLowerCase()) {
-      case 'cursor':
-        filesToCreate.push(...generateCursorFiles());
-        break;
-      case 'claude-code':
-        filesToCreate.push(...generateClaudeCodeFiles());
-        break;
-      default:
-        throw new Error(`Unsupported client: ${options.client}`);
-    }
+    filesToCreate.push(...(await getClientFiles(options.client)));
   }
 
   // Add AGENTS.md if requested
   if (options.agentsMd) {
     filesToCreate.push({
       path: 'AGENTS.md',
-      content: AGENTS_MD_TEMPLATE,
+      content: await loadTemplate(TemplateName.AGENTS_MD),
     });
   }
 
   // Validate we have something to do
   if (filesToCreate.length === 0) {
-    throw new Error(
-      'Must specify --client <name> or --agents-md (or both)',
-    );
+    throw new Error('Must specify --client <name> or --agents-md (or both)');
   }
 
   if (options.dryRun) {
@@ -65,25 +68,37 @@ export async function initializeProject(options: InitOptions): Promise<void> {
   let skippedCount = 0;
 
   for (const file of filesToCreate) {
-    const fullPath = path.resolve(file.path);
-    const dir = path.dirname(fullPath);
+    try {
+      const fullPath = path.resolve(file.path);
+      const dir = path.dirname(fullPath);
 
-    // Check if file already exists
-    if (fs.existsSync(fullPath)) {
-      console.log(`Skipping ${file.path} (already exists)`);
-      skippedCount++;
-      continue;
+      // Check if file already exists
+      let fileExists = false;
+      try {
+        await fs.access(fullPath);
+        fileExists = true;
+      } catch {
+        // File doesn't exist, we can proceed to create it
+        fileExists = false;
+      }
+
+      if (fileExists) {
+        console.log(`Skipping ${file.path} (already exists)`);
+        skippedCount++;
+        continue;
+      }
+
+      // Create directory if needed
+      await fs.mkdir(dir, { recursive: true });
+
+      // Write the file
+      await fs.writeFile(fullPath, file.content, 'utf-8');
+      console.log(`Created ${file.path}`);
+      createdCount++;
+    } catch (error) {
+      console.error(`Error creating ${file.path}:`, error);
+      throw error;
     }
-
-    // Create directory if needed
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-
-    // Write the file
-    fs.writeFileSync(fullPath, file.content, 'utf-8');
-    console.log(`Created ${file.path}`);
-    createdCount++;
   }
 
   // Summary

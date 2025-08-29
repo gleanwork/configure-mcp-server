@@ -4,4 +4,4 @@
 
 export { generateCursorFiles } from './cursor.js';
 export { generateClaudeCodeFiles } from './claude-code.js';
-export type { InitFile } from './cursor.js';
+export type { InitFile } from '../../types/index.js';
