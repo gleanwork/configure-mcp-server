@@ -18,7 +18,6 @@ import {
 } from '@gleanwork/mcp-config-schema';
 import mcpRemotePackageJson from 'mcp-remote/package.json' with { type: 'json' };
 
-// Import all client configurations
 import claudeCodeClient from './claude-code.js';
 import claudeDesktopClient from './claude-desktop.js';
 import cursorClient from './cursor.js';
@@ -321,12 +320,3 @@ export const availableClients: Record<string, MCPClientConfig> = {
   'vscode': vscodeClient,
   'windsurf': windsurfClient,
 };
-
-/**
- * Ensures all client modules are loaded before using them
- * Since we're now using static imports, this is just a compatibility function
- * that immediately resolves
- */
-export async function ensureClientsLoaded(): Promise<void> {
-  return Promise.resolve();
-}

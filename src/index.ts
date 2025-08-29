@@ -19,10 +19,7 @@ import {
   listSupportedClients,
   validateFlags,
 } from './configure/index.js';
-import {
-  availableClients,
-  ensureClientsLoaded,
-} from './configure/client/index.js';
+import { availableClients } from './configure/client/index.js';
 import { Logger, trace, LogLevel } from '@gleanwork/mcp-server-utils/logger';
 import { VERSION } from './common/version.js';
 import { checkAndOpenLaunchWarning } from '@gleanwork/mcp-server-utils/util';
@@ -32,14 +29,6 @@ import { checkAndOpenLaunchWarning } from '@gleanwork/mcp-server-utils/util';
  */
 async function main() {
   await checkAndOpenLaunchWarning(VERSION);
-
-  try {
-    await ensureClientsLoaded();
-  } catch {
-    console.error(
-      'Warning: Failed to load client modules. Help text may be incomplete.',
-    );
-  }
 
   const clientList = Object.keys(availableClients).join(', ');
 
