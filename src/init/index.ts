@@ -1,6 +1,6 @@
 /**
  * Glean MCP Project Initialization Module
- * 
+ *
  * Handles creation of project-level files for enhanced AI coding experience
  */
 
@@ -23,10 +23,11 @@ export function showInitHelp(): void {
       init        Initialize Glean MCP project tools
 
     Options for init
-      --client, -c    MCP client to create project files for (cursor, claude-code)
-      --agents        Create AGENTS.md file with Glean MCP instructions
-      --dryRun        Show what files would be created without creating them
-      --help, -h      Show this help message
+      --client, -c      MCP client to create project files for (cursor, claude-code)
+      --agents          Create AGENTS.md file with Glean MCP instructions
+      --server-name     Server name to use in templates (default: glean_default)
+      --dryRun          Show what files would be created without creating them
+      --help, -h        Show this help message
 
     Examples
 
@@ -41,6 +42,9 @@ export function showInitHelp(): void {
 
       Create both Cursor files and AGENTS.md:
       npx @gleanwork/configure-mcp-server init --client cursor --agents
+
+      Use custom server name:
+      npx @gleanwork/configure-mcp-server init --client cursor --server-name my_glean
 
       Preview what would be created for Claude Code:
       npx @gleanwork/configure-mcp-server init --client claude-code --dryRun

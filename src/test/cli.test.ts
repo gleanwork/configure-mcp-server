@@ -169,9 +169,10 @@ describe('CLI', () => {
             --workspace     Create workspace configuration instead of global (VS Code only)
 
           Options for init
-            --client, -c    MCP client to create project files for (cursor, claude-code)
-            --agents        Create AGENTS.md file with Glean MCP instructions
-            --dryRun        Show what files would be created without creating them
+            --client, -c      MCP client to create project files for (cursor, claude-code)
+            --agents          Create AGENTS.md file with Glean MCP instructions
+            --server-name     Server name to use in templates (default: glean_default)
+            --dryRun          Show what files would be created without creating them
 
 
           Examples
@@ -203,6 +204,7 @@ describe('CLI', () => {
             npx @gleanwork/configure-mcp-server init --client claude-code
             npx @gleanwork/configure-mcp-server init --agents
             npx @gleanwork/configure-mcp-server init --client cursor --agents
+            npx @gleanwork/configure-mcp-server init --client cursor --server-name my_glean
             npx @gleanwork/configure-mcp-server init --client claude-code --dryRun
 
           Run 'npx @gleanwork/configure-mcp-server help' for more details on supported clients
@@ -255,9 +257,10 @@ describe('CLI', () => {
             --workspace     Create workspace configuration instead of global (VS Code only)
 
           Options for init
-            --client, -c    MCP client to create project files for (cursor, claude-code)
-            --agents        Create AGENTS.md file with Glean MCP instructions
-            --dryRun        Show what files would be created without creating them
+            --client, -c      MCP client to create project files for (cursor, claude-code)
+            --agents          Create AGENTS.md file with Glean MCP instructions
+            --server-name     Server name to use in templates (default: glean_default)
+            --dryRun          Show what files would be created without creating them
 
 
           Examples
@@ -289,6 +292,7 @@ describe('CLI', () => {
             npx @gleanwork/configure-mcp-server init --client claude-code
             npx @gleanwork/configure-mcp-server init --agents
             npx @gleanwork/configure-mcp-server init --client cursor --agents
+            npx @gleanwork/configure-mcp-server init --client cursor --server-name my_glean
             npx @gleanwork/configure-mcp-server init --client claude-code --dryRun
 
           Run 'npx @gleanwork/configure-mcp-server help' for more details on supported clients
@@ -986,21 +990,21 @@ describe('CLI', () => {
               command: 'github-copilot-cli',
               args: ['--mcp'],
               env: {
-                GITHUB_TOKEN: 'gho_xxxxx'
-              }
+                GITHUB_TOKEN: 'gho_xxxxx',
+              },
             },
-            'glean_analytics': {
+            glean_analytics: {
               command: 'npx',
               args: ['@gleanwork/local-mcp-server'],
               env: {
-                GLEAN_INSTANCE: 'old-instance'
-              }
-            }
+                GLEAN_INSTANCE: 'old-instance',
+              },
+            },
           },
           'other-settings': {
             theme: 'dark',
-            fontSize: 14
-          }
+            fontSize: 14,
+          },
         };
 
         createConfigFile(configFilePath, existingConfig);
@@ -1027,7 +1031,6 @@ describe('CLI', () => {
         expect(result.exitCode).toEqual(0);
 
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
-        
 
         expect(configFileContents).toMatchInlineSnapshot(`
           "{
@@ -1229,16 +1232,16 @@ describe('CLI', () => {
           mcpServers: {
             'anthropic-tools': {
               command: 'anthropic-mcp',
-              args: ['--mode', 'tools']
+              args: ['--mode', 'tools'],
             },
-            'glean_old': {
+            glean_old: {
               command: 'old-command',
-              args: ['old']
-            }
+              args: ['old'],
+            },
           },
           'claude-settings': {
-            model: 'claude-3-opus'
-          }
+            model: 'claude-3-opus',
+          },
         };
 
         createConfigFile(configFilePath, existingConfig);
@@ -1263,7 +1266,7 @@ describe('CLI', () => {
         expect(result.exitCode).toEqual(0);
 
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
-        
+
         expect(configFileContents).toMatchInlineSnapshot(`
           "{
             "mcpServers": {
@@ -1435,19 +1438,19 @@ describe('CLI', () => {
           tools: [
             {
               name: 'existing-tool',
-              description: 'An existing tool'
-            }
+              description: 'An existing tool',
+            },
           ],
           mcpServers: {
             'my-custom-server': {
               command: 'custom-server',
-              args: ['--start']
+              args: ['--start'],
             },
-            'glean_previous': {
+            glean_previous: {
               command: 'npx',
-              args: ['old-glean']
-            }
-          }
+              args: ['old-glean'],
+            },
+          },
         };
 
         createConfigFile(configFilePath, existingConfig);
@@ -1474,7 +1477,7 @@ describe('CLI', () => {
         expect(result.exitCode).toEqual(0);
 
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
-        
+
         expect(configFileContents).toMatchInlineSnapshot(`
           "{
             "tools": [
@@ -1667,16 +1670,16 @@ describe('CLI', () => {
           mcpServers: {
             'windsurf-tools': {
               command: 'windsurf-mcp',
-              args: ['--enable']
+              args: ['--enable'],
             },
-            'glean_analytics': {
+            glean_analytics: {
               type: 'http',
-              url: 'https://old.glean.com/mcp'
-            }
+              url: 'https://old.glean.com/mcp',
+            },
           },
           'windsurf-config': {
-            theme: 'ocean'
-          }
+            theme: 'ocean',
+          },
         };
 
         createConfigFile(configFilePath, existingConfig);
@@ -1703,7 +1706,7 @@ describe('CLI', () => {
         expect(result.exitCode).toEqual(0);
 
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
-        
+
         expect(configFileContents).toMatchInlineSnapshot(`
           "{
             "mcpServers": {
@@ -1780,11 +1783,11 @@ describe('CLI', () => {
           `);
 
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
-        
 
+        // Verify it's valid YAML
         expect(() => yaml.parse(configFileContents)).not.toThrow();
-        
 
+        // Snapshot the actual YAML content
         expect(configFileContents).toMatchInlineSnapshot(`
           "extensions:
             glean_local:
@@ -1843,11 +1846,11 @@ describe('CLI', () => {
           `);
 
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
-        
 
+        // Verify it's valid YAML
         expect(() => yaml.parse(configFileContents)).not.toThrow();
-        
 
+        // Snapshot the actual YAML content
         expect(configFileContents).toMatchInlineSnapshot(`
           "some-other-config:
             options:
@@ -1900,11 +1903,11 @@ describe('CLI', () => {
           `);
 
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
-        
 
+        // Verify it's valid YAML
         expect(() => yaml.parse(configFileContents)).not.toThrow();
-        
 
+        // Snapshot the actual YAML content
         expect(configFileContents).toMatchInlineSnapshot(`
           "extensions:
             glean_analytics:
@@ -1940,10 +1943,11 @@ describe('CLI', () => {
         expect(result.exitCode).toEqual(0);
 
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
-        
 
+        // Verify it's valid YAML
         expect(() => yaml.parse(configFileContents)).not.toThrow();
-        
+
+        // Snapshot the actual YAML content to show glean_default naming
         expect(configFileContents).toMatchInlineSnapshot(`
           "extensions:
             glean_default:
@@ -1974,19 +1978,19 @@ describe('CLI', () => {
               description: 'Custom MCP server',
               timeout: 300,
               bundled: null,
-              available_tools: []
+              available_tools: [],
             },
-            'glean_existing': {
+            glean_existing: {
               type: 'stdio',
               command: 'old-command',
-              args: ['old-arg']
-            }
+              args: ['old-arg'],
+            },
           },
           ollama: {
             host: 'http://localhost:11434',
-            model: 'llama3.1:8b'
+            model: 'llama3.1:8b',
           },
-          OLLAMA_HOST: 'localhost'
+          OLLAMA_HOST: 'localhost',
         };
 
         createConfigFile(configFilePath, existingConfig);
@@ -2011,7 +2015,6 @@ describe('CLI', () => {
         expect(result.exitCode).toEqual(0);
 
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
-        
 
         expect(configFileContents).toMatchInlineSnapshot(`
           "GOOSE_PROVIDER: ollama
@@ -2229,14 +2232,14 @@ describe('CLI', () => {
           servers: {
             'vscode-extension-mcp': {
               command: 'vscode-ext',
-              args: ['--mcp-mode']
+              args: ['--mcp-mode'],
             },
-            'glean_previous': {
+            glean_previous: {
               type: 'http',
-              url: 'https://old.glean.com/mcp'
-            }
+              url: 'https://old.glean.com/mcp',
+            },
           },
-          'terminal.integrated.shell.windows': 'C:\\Windows\\System32\\cmd.exe'
+          'terminal.integrated.shell.windows': 'C:\\Windows\\System32\\cmd.exe',
         };
 
         createConfigFile(configFilePath, existingConfig);
@@ -2263,7 +2266,7 @@ describe('CLI', () => {
         expect(result.exitCode).toEqual(0);
 
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
-        
+
         expect(configFileContents).toMatchInlineSnapshot(`
           "{
             "editor.fontSize": 14,
@@ -2284,7 +2287,7 @@ describe('CLI', () => {
                 "args": [
                   "-y",
                   "@gleanwork/local-mcp-server"
-                ],
+                  ],
                 "type": "stdio",
                 "env": {
                   "GLEAN_INSTANCE": "new-instance",
@@ -2473,7 +2476,6 @@ describe('CLI', () => {
         'Warning: Both --instance and --url were provided. The --instance flag will be ignored when --url is specified.',
       );
 
-
       const configPath = path.join(project.baseDir, '.cursor', 'mcp.json');
       const configFileContents = fs.readFileSync(configPath, 'utf-8');
       const config = JSON.parse(configFileContents);
@@ -2491,7 +2493,9 @@ describe('CLI', () => {
       const result = await runBin('init', '--help');
 
       expect(result.exitCode).toEqual(0);
-      expect(result.stdout).toContain('Configure Glean MCP project-level tools');
+      expect(result.stdout).toContain(
+        'Configure Glean MCP project-level tools',
+      );
       expect(result.stdout).toContain('Options for init');
       expect(result.stdout).toContain('--client, -c');
       expect(result.stdout).toContain('--agents');
@@ -2503,7 +2507,9 @@ describe('CLI', () => {
       const result = await runBin('init', '-h');
 
       expect(result.exitCode).toEqual(0);
-      expect(result.stdout).toContain('Configure Glean MCP project-level tools');
+      expect(result.stdout).toContain(
+        'Configure Glean MCP project-level tools',
+      );
     });
 
     it('creates cursor files with --client cursor', async () => {
@@ -2517,7 +2523,12 @@ describe('CLI', () => {
       expect(result.stdout).toContain('Created: 1 files');
 
       // Verify file was actually created
-      const filePath = path.join(project.baseDir, '.cursor', 'rules', 'glean-mcp.mdc');
+      const filePath = path.join(
+        project.baseDir,
+        '.cursor',
+        'rules',
+        'glean-mcp.mdc',
+      );
       expect(fs.existsSync(filePath)).toBe(true);
 
       const content = fs.readFileSync(filePath, 'utf-8');
@@ -2531,7 +2542,9 @@ describe('CLI', () => {
       });
 
       expect(result.exitCode).toEqual(0);
-      expect(result.stdout).toContain('Created .claude/commands/glean_search.md');
+      expect(result.stdout).toContain(
+        'Created .claude/commands/glean_search.md',
+      );
       expect(result.stdout).toContain('Created .claude/agents/glean-expert.md');
       expect(result.stdout).toContain('Created: 5 files');
 
@@ -2579,7 +2592,11 @@ describe('CLI', () => {
       expect(result.stdout).toContain('Created: 2 files');
 
       // Verify both files exist
-      expect(fs.existsSync(path.join(project.baseDir, '.cursor', 'rules', 'glean-mcp.mdc'))).toBe(true);
+      expect(
+        fs.existsSync(
+          path.join(project.baseDir, '.cursor', 'rules', 'glean-mcp.mdc'),
+        ),
+      ).toBe(true);
       expect(fs.existsSync(path.join(project.baseDir, 'AGENTS.md'))).toBe(true);
     });
 
@@ -2597,9 +2614,16 @@ describe('CLI', () => {
     });
 
     it('handles multiple files in dry run mode', async () => {
-      const result = await runBin('init', '--client', 'claude-code', '--agents', '--dryRun', {
-        cwd: project.baseDir,
-      });
+      const result = await runBin(
+        'init',
+        '--client',
+        'claude-code',
+        '--agents',
+        '--dryRun',
+        {
+          cwd: project.baseDir,
+        },
+      );
 
       expect(result.exitCode).toEqual(0);
       expect(result.stdout).toContain('Files that would be created:');
@@ -2608,7 +2632,9 @@ describe('CLI', () => {
 
       // Verify no files were created
       expect(fs.existsSync(path.join(project.baseDir, '.claude'))).toBe(false);
-      expect(fs.existsSync(path.join(project.baseDir, 'AGENTS.md'))).toBe(false);
+      expect(fs.existsSync(path.join(project.baseDir, 'AGENTS.md'))).toBe(
+        false,
+      );
     });
 
     it('skips existing files and reports correctly', async () => {
@@ -2624,7 +2650,9 @@ describe('CLI', () => {
       });
 
       expect(secondResult.exitCode).toEqual(0);
-      expect(secondResult.stdout).toContain('Skipping .cursor/rules/glean-mcp.mdc (already exists)');
+      expect(secondResult.stdout).toContain(
+        'Skipping .cursor/rules/glean-mcp.mdc (already exists)',
+      );
       expect(secondResult.stdout).toContain('Created: 0 files');
       expect(secondResult.stdout).toContain('Skipped: 1 files (already exist)');
     });
@@ -2635,7 +2663,9 @@ describe('CLI', () => {
       });
 
       expect(result.exitCode).toEqual(1);
-      expect(result.stderr).toContain('Initialization failed: Unsupported client: invalid-client');
+      expect(result.stderr).toContain(
+        'Initialization failed: Unsupported client: invalid-client',
+      );
     });
 
     it('fails when no flags provided', async () => {
@@ -2644,7 +2674,9 @@ describe('CLI', () => {
       });
 
       expect(result.exitCode).toEqual(1);
-      expect(result.stderr).toContain('Must specify --client <name> or --agents-md (or both)');
+      expect(result.stderr).toContain(
+        'Must specify --client <name> or --agents-md (or both)',
+      );
     });
 
     it('handles case-insensitive client names', async () => {
@@ -2654,6 +2686,102 @@ describe('CLI', () => {
 
       expect(result.exitCode).toEqual(0);
       expect(result.stdout).toContain('Created .cursor/rules/glean-mcp.mdc');
+    });
+
+    it('uses custom server name when --server-name flag is provided', async () => {
+      const result = await runBin(
+        'init',
+        '--client',
+        'cursor',
+        '--server-name',
+        'my_custom_server',
+        {
+          cwd: project.baseDir,
+        },
+      );
+
+      expect(result.exitCode).toEqual(0);
+      expect(result.stdout).toContain('Created .cursor/rules/glean-mcp.mdc');
+
+      // Verify the custom server name was used in the generated file
+      const content = fs.readFileSync(
+        path.join(project.baseDir, '.cursor', 'rules', 'glean-mcp.mdc'),
+        'utf-8',
+      );
+      expect(content).toContain('server key: my_custom_server');
+      expect(content).not.toContain('glean_default');
+    });
+
+    it('uses default server name when --server-name flag is not provided', async () => {
+      const result = await runBin('init', '--client', 'cursor', {
+        cwd: project.baseDir,
+      });
+
+      expect(result.exitCode).toEqual(0);
+
+      // Verify the default server name was used
+      const content = fs.readFileSync(
+        path.join(project.baseDir, '.cursor', 'rules', 'glean-mcp.mdc'),
+        'utf-8',
+      );
+      expect(content).toContain('server key: glean_default');
+    });
+
+    it('applies custom server name to claude-code files', async () => {
+      const customServerName = 'acme_glean';
+      const result = await runBin(
+        'init',
+        '--client',
+        'claude-code',
+        '--server-name',
+        customServerName,
+        {
+          cwd: project.baseDir,
+        },
+      );
+
+      expect(result.exitCode).toEqual(0);
+      expect(result.stdout).toContain(
+        'Created .claude/commands/glean_search.md',
+      );
+      expect(result.stdout).toContain('Created .claude/agents/glean-expert.md');
+
+      // Check command file has correct tool call
+      const searchContent = fs.readFileSync(
+        path.join(project.baseDir, '.claude', 'commands', 'glean_search.md'),
+        'utf-8',
+      );
+      expect(searchContent).toMatch(
+        new RegExp(`mcp\\*\\*${customServerName}\\*\\*search`),
+      );
+
+      // Check agent file has correct tools list
+      const agentContent = fs.readFileSync(
+        path.join(project.baseDir, '.claude', 'agents', 'glean-expert.md'),
+        'utf-8',
+      );
+      expect(agentContent).toContain(`mcp__${customServerName}__search`);
+    });
+
+    it('shows custom server name in dry run output', async () => {
+      const result = await runBin(
+        'init',
+        '--client',
+        'cursor',
+        '--server-name',
+        'test_server',
+        '--dryRun',
+        {
+          cwd: project.baseDir,
+        },
+      );
+
+      expect(result.exitCode).toEqual(0);
+      expect(result.stdout).toContain('Files that would be created:');
+      expect(result.stdout).toContain('.cursor/rules/glean-mcp.mdc');
+
+      // Should not actually create files in dry run
+      expect(fs.existsSync(path.join(project.baseDir, '.cursor'))).toBe(false);
     });
   });
 });

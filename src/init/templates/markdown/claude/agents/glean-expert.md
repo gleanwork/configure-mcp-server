@@ -6,11 +6,12 @@ description: >
   agent searches Slack/Jira/GitHub/Confluence/Drive via Glean, then chains
   read/quote or code lookup for precise, sourced answers.
 tools:
-  - mcp__glean_default__search
-  - mcp__glean_default__chat
-  - mcp__glean_default__read_document
-  - mcp__glean_default__code_search
+  - mcp__{{SERVER_NAME}}__search
+  - mcp__{{SERVER_NAME}}__chat
+  - mcp__{{SERVER_NAME}}__read_document
+  - mcp__{{SERVER_NAME}}__code_search
 model: sonnet
+
 color: blue
 ---
 

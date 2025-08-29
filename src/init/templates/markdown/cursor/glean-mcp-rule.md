@@ -1,7 +1,7 @@
 ---
 description: >
   Apply this rule whenever the user's request could benefit from enterprise
-  context accessible via the Glean MCP server (server key: glean_default).
+  context accessible via the Glean MCP server (server key: {{SERVER_NAME}}).
   This includes:
   • Looking up or retrieving documents, policies, runbooks, prior discussions, or design docs
     from Slack, Jira, GitHub, Confluence, Google Drive, or other indexed sources.
@@ -23,14 +23,14 @@ alwaysApply: false
 
 ## WHEN TO INVOKE
 
-- **Lookup / discovery** ("find/show/where is …"): call `mcp__glean_default__search`.
+- **Lookup / discovery** ("find/show/where is …"): call `search`.
 - **Synthesis / policy / summary** ("explain/summarize/compare …"): call
-  `mcp__glean_default__chat`; if verbatim text is required, follow with
-  `mcp__glean_default__read_document`.
+  `chat`; if verbatim text is required, follow with
+  `read_document`.
 - **Precise quoting / inspection** (specific doc/section/table): call
-  `mcp__glean_default__read_document`.
+  `read_document`.
 - **Code questions** ("who calls/where defined/where configured"): call
-  `mcp__glean_default__code_search` with a specific symbol/pattern; refine
+  `code_search` with a specific symbol/pattern; refine
   with repo/path/language filters.
 
 ## CHAINS

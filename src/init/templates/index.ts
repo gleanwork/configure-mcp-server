@@ -23,14 +23,22 @@ export enum TemplateName {
 }
 
 /**
- * Cache for loaded templates to avoid repeated file reads
+ * Template variables for substitution
+ */
+export interface TemplateVariables {
+  serverName: string;
+  // Future: agentName, orgHint, year, etc.
+}
+
+/**
+ * Cache for loaded raw templates to avoid repeated file reads
  */
 const templateCache = new Map<TemplateName, string>();
 
 /**
- * Load a template from markdown file
+ * Load a raw template from markdown file without variable substitution
  */
-export async function loadTemplate(name: TemplateName): Promise<string> {
+async function loadRawTemplate(name: TemplateName): Promise<string> {
   // Check cache first
   if (templateCache.has(name)) {
     return templateCache.get(name)!;
@@ -49,4 +57,37 @@ export async function loadTemplate(name: TemplateName): Promise<string> {
       `Failed to load template '${name}': ${error instanceof Error ? error.message : 'Unknown error'}`,
     );
   }
+}
+
+/**
+ * Substitute variables in template content
+ */
+function substituteVariables(
+  content: string,
+  variables?: TemplateVariables,
+): string {
+  if (!variables) return content;
+
+  return content.replace(/\{\{SERVER_NAME\}\}/g, variables.serverName);
+  // Add more substitutions as needed
+}
+
+/**
+ * Load a template from markdown file with optional variable substitution
+ */
+export async function loadTemplate(
+  name: TemplateName,
+  variables?: TemplateVariables,
+): Promise<string> {
+  const rawContent = await loadRawTemplate(name);
+  return substituteVariables(rawContent, variables);
+}
+
+/**
+ * Legacy function for backward compatibility - uses default server name
+ */
+export async function loadTemplateWithDefaults(
+  name: TemplateName,
+): Promise<string> {
+  return loadTemplate(name, { serverName: 'glean_default' });
 }

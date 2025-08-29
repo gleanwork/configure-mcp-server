@@ -15,18 +15,22 @@ export interface InitOptions {
   client?: string;
   agentsMd?: boolean;
   dryRun?: boolean;
+  serverName?: string;
 }
 
 /**
  * Get client-specific files for the given client
  */
-async function getClientFiles(client: string): Promise<InitFile[]> {
+async function getClientFiles(
+  client: string,
+  serverName: string,
+): Promise<InitFile[]> {
   const clientLower = client.toLowerCase();
   if (clientLower === 'cursor') {
-    return await generateCursorFiles();
+    return await generateCursorFiles(serverName);
   }
   if (clientLower === 'claude-code') {
-    return await generateClaudeCodeFiles();
+    return await generateClaudeCodeFiles(serverName);
   }
   throw new Error(`Unsupported client: ${client}`);
 }
@@ -36,17 +40,18 @@ async function getClientFiles(client: string): Promise<InitFile[]> {
  */
 export async function initializeProject(options: InitOptions): Promise<void> {
   const filesToCreate: InitFile[] = [];
+  const serverName = options.serverName || 'glean_default';
 
   // Add client-specific files
   if (options.client) {
-    filesToCreate.push(...(await getClientFiles(options.client)));
+    filesToCreate.push(...(await getClientFiles(options.client, serverName)));
   }
 
   // Add AGENTS.md if requested
   if (options.agentsMd) {
     filesToCreate.push({
       path: 'AGENTS.md',
-      content: await loadTemplate(TemplateName.AGENTS_MD),
+      content: await loadTemplate(TemplateName.AGENTS_MD, { serverName }),
     });
   }
 

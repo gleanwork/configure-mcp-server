@@ -13,4 +13,4 @@ Target: "$ARGUMENTS"
 
 ### TOOL CALL
 
-mcp**glean_default**read_document id_or_url:"$ARGUMENTS"
+mcp**{{SERVER_NAME}}**read_document id_or_url:"$ARGUMENTS"

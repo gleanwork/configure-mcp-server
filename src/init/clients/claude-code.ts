@@ -9,14 +9,18 @@ import { loadTemplate, TemplateName } from '../templates/index.js';
 /**
  * Generate Claude Code-specific project files
  */
-export async function generateClaudeCodeFiles(): Promise<InitFile[]> {
+export async function generateClaudeCodeFiles(
+  serverName: string = 'glean_default',
+): Promise<InitFile[]> {
+  const variables = { serverName };
+
   // Load all templates in parallel for better performance
   const templateResults = await Promise.allSettled([
-    loadTemplate(TemplateName.CLAUDE_SEARCH_COMMAND),
-    loadTemplate(TemplateName.CLAUDE_CHAT_COMMAND),
-    loadTemplate(TemplateName.CLAUDE_READ_DOCUMENT_COMMAND),
-    loadTemplate(TemplateName.CLAUDE_CODE_SEARCH_COMMAND),
-    loadTemplate(TemplateName.CLAUDE_AGENT),
+    loadTemplate(TemplateName.CLAUDE_SEARCH_COMMAND, variables),
+    loadTemplate(TemplateName.CLAUDE_CHAT_COMMAND, variables),
+    loadTemplate(TemplateName.CLAUDE_READ_DOCUMENT_COMMAND, variables),
+    loadTemplate(TemplateName.CLAUDE_CODE_SEARCH_COMMAND, variables),
+    loadTemplate(TemplateName.CLAUDE_AGENT, variables),
   ]);
 
   // Process all results in a single iteration
