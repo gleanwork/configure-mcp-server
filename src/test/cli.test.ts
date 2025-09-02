@@ -1916,7 +1916,6 @@ describe('CLI', () => {
 
         expect(() => yaml.parse(configFileContents)).not.toThrow();
         
- to show glean_default naming
         expect(configFileContents).toMatchInlineSnapshot(`
           "extensions:
             glean_default:
