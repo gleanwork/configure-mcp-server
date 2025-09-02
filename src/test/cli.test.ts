@@ -950,6 +950,98 @@ describe('CLI', () => {
           }"
         `);
       });
+
+      it('preserves existing custom-named MCP servers when adding Glean config', async () => {
+        const existingConfig = {
+          mcpServers: {
+            'github-copilot': {
+              command: 'github-copilot-cli',
+              args: ['--mcp'],
+              env: {
+                GITHUB_TOKEN: 'gho_xxxxx'
+              }
+            },
+            'glean_analytics': {
+              command: 'npx',
+              args: ['@gleanwork/local-mcp-server'],
+              env: {
+                GLEAN_INSTANCE: 'old-instance'
+              }
+            }
+          },
+          'other-settings': {
+            theme: 'dark',
+            fontSize: 14
+          }
+        };
+
+        createConfigFile(configFilePath, existingConfig);
+
+        const result = await runBin(
+          'local',
+          '--client',
+          'cursor',
+          '--token',
+          'new-token',
+          '--instance',
+          'new-instance',
+          {
+            env: {
+              GLEAN_MCP_CONFIG_DIR: project.baseDir,
+              HOME: project.baseDir,
+              USERPROFILE: project.baseDir,
+              APPDATA: project.baseDir,
+              _SKIP_INSTANCE_PREFLIGHT: 'true',
+            },
+          },
+        );
+
+        expect(result.exitCode).toEqual(0);
+
+        const configFileContents = fs.readFileSync(configFilePath, 'utf8');
+        
+
+        expect(configFileContents).toMatchInlineSnapshot(`
+          "{
+            "mcpServers": {
+              "github-copilot": {
+                "command": "github-copilot-cli",
+                "args": [
+                  "--mcp"
+                ],
+                "env": {
+                  "GITHUB_TOKEN": "gho_xxxxx"
+                }
+              },
+              "glean_analytics": {
+                "command": "npx",
+                "args": [
+                  "@gleanwork/local-mcp-server"
+                ],
+                "env": {
+                  "GLEAN_INSTANCE": "old-instance"
+                }
+              },
+              "glean_local": {
+                "command": "npx",
+                "args": [
+                  "-y",
+                  "@gleanwork/local-mcp-server"
+                ],
+                "type": "stdio",
+                "env": {
+                  "GLEAN_INSTANCE": "new-instance",
+                  "GLEAN_API_TOKEN": "new-token"
+                }
+              }
+            },
+            "other-settings": {
+              "theme": "dark",
+              "fontSize": 14
+            }
+          }"
+        `);
+      });
     });
 
     describe('Claude client', () => {
@@ -961,7 +1053,7 @@ describe('CLI', () => {
       beforeEach(() => {
         configPath = path.join(project.baseDir, configDir);
         configFilePath = path.join(configPath, configFileName);
-        // Ensure parent directories exist for Claude config
+
         if (configDir) {
           fs.mkdirSync(configPath, { recursive: true });
         }
@@ -1103,6 +1195,79 @@ describe('CLI', () => {
           }"
         `);
       });
+
+      it('preserves existing custom-named MCP servers when adding Glean config', async () => {
+        const existingConfig = {
+          mcpServers: {
+            'anthropic-tools': {
+              command: 'anthropic-mcp',
+              args: ['--mode', 'tools']
+            },
+            'glean_old': {
+              command: 'old-command',
+              args: ['old']
+            }
+          },
+          'claude-settings': {
+            model: 'claude-3-opus'
+          }
+        };
+
+        createConfigFile(configFilePath, existingConfig);
+
+        const result = await runBin(
+          'remote',
+          '--url',
+          'https://my-be.glean.com/mcp/default',
+          '--client',
+          'claude',
+          {
+            env: {
+              GLEAN_MCP_CONFIG_DIR: project.baseDir,
+              HOME: project.baseDir,
+              USERPROFILE: project.baseDir,
+              APPDATA: project.baseDir,
+              GLEAN_BETA_ENABLED: 'true',
+            },
+          },
+        );
+
+        expect(result.exitCode).toEqual(0);
+
+        const configFileContents = fs.readFileSync(configFilePath, 'utf8');
+        
+        expect(configFileContents).toMatchInlineSnapshot(`
+          "{
+            "mcpServers": {
+              "anthropic-tools": {
+                "command": "anthropic-mcp",
+                "args": [
+                  "--mode",
+                  "tools"
+                ]
+              },
+              "glean_old": {
+                "command": "old-command",
+                "args": [
+                  "old"
+                ]
+              },
+              "glean_default": {
+                "type": "stdio",
+                "command": "npx",
+                "args": [
+                  "-y",
+                  "mcp-remote@0.1.18",
+                  "https://my-be.glean.com/mcp/default"
+                ]
+              }
+            },
+            "claude-settings": {
+              "model": "claude-3-opus"
+            }
+          }"
+        `);
+      });
     });
 
     describe('Claude Code client', () => {
@@ -1230,6 +1395,89 @@ describe('CLI', () => {
                 "env": {
                   "GLEAN_INSTANCE": "test-domain",
                   "GLEAN_API_TOKEN": "glean_api_test"
+                }
+              }
+            }
+          }"
+        `);
+      });
+
+      it('preserves existing custom-named MCP servers when adding Glean config', async () => {
+        const existingConfig = {
+          tools: [
+            {
+              name: 'existing-tool',
+              description: 'An existing tool'
+            }
+          ],
+          mcpServers: {
+            'my-custom-server': {
+              command: 'custom-server',
+              args: ['--start']
+            },
+            'glean_previous': {
+              command: 'npx',
+              args: ['old-glean']
+            }
+          }
+        };
+
+        createConfigFile(configFilePath, existingConfig);
+
+        const result = await runBin(
+          'local',
+          '--client',
+          'claude-code',
+          '--token',
+          'test-token',
+          '--instance',
+          'test-instance',
+          {
+            env: {
+              GLEAN_MCP_CONFIG_DIR: project.baseDir,
+              HOME: project.baseDir,
+              USERPROFILE: project.baseDir,
+              APPDATA: project.baseDir,
+              _SKIP_INSTANCE_PREFLIGHT: 'true',
+            },
+          },
+        );
+
+        expect(result.exitCode).toEqual(0);
+
+        const configFileContents = fs.readFileSync(configFilePath, 'utf8');
+        
+        expect(configFileContents).toMatchInlineSnapshot(`
+          "{
+            "tools": [
+              {
+                "name": "existing-tool",
+                "description": "An existing tool"
+              }
+            ],
+            "mcpServers": {
+              "my-custom-server": {
+                "command": "custom-server",
+                "args": [
+                  "--start"
+                ]
+              },
+              "glean_previous": {
+                "command": "npx",
+                "args": [
+                  "old-glean"
+                ]
+              },
+              "glean_local": {
+                "command": "npx",
+                "args": [
+                  "-y",
+                  "@gleanwork/local-mcp-server"
+                ],
+                "type": "stdio",
+                "env": {
+                  "GLEAN_INSTANCE": "test-instance",
+                  "GLEAN_API_TOKEN": "test-token"
                 }
               }
             }
@@ -1385,6 +1633,79 @@ describe('CLI', () => {
           }"
         `);
       });
+
+      it('preserves existing custom-named MCP servers when adding Glean config', async () => {
+        const existingConfig = {
+          mcpServers: {
+            'windsurf-tools': {
+              command: 'windsurf-mcp',
+              args: ['--enable']
+            },
+            'glean_analytics': {
+              type: 'http',
+              url: 'https://old.glean.com/mcp'
+            }
+          },
+          'windsurf-config': {
+            theme: 'ocean'
+          }
+        };
+
+        createConfigFile(configFilePath, existingConfig);
+
+        const result = await runBin(
+          'remote',
+          '--url',
+          'https://new-be.glean.com/mcp/default',
+          '--client',
+          'windsurf',
+          '--token',
+          'auth-token',
+          {
+            env: {
+              GLEAN_MCP_CONFIG_DIR: project.baseDir,
+              HOME: project.baseDir,
+              USERPROFILE: project.baseDir,
+              APPDATA: project.baseDir,
+              GLEAN_BETA_ENABLED: 'true',
+            },
+          },
+        );
+
+        expect(result.exitCode).toEqual(0);
+
+        const configFileContents = fs.readFileSync(configFilePath, 'utf8');
+        
+        expect(configFileContents).toMatchInlineSnapshot(`
+          "{
+            "mcpServers": {
+              "windsurf-tools": {
+                "command": "windsurf-mcp",
+                "args": [
+                  "--enable"
+                ]
+              },
+              "glean_analytics": {
+                "type": "http",
+                "url": "https://old.glean.com/mcp"
+              },
+              "glean_default": {
+                "command": "npx",
+                "args": [
+                  "-y",
+                  "mcp-remote@0.1.18",
+                  "https://new-be.glean.com/mcp/default",
+                  "--header",
+                  "Authorization: Bearer auth-token"
+                ]
+              }
+            },
+            "windsurf-config": {
+              "theme": "ocean"
+            }
+          }"
+        `);
+      });
     });
 
     describe('Goose client', () => {
@@ -1432,10 +1753,10 @@ describe('CLI', () => {
 
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
         
-        // Verify it's valid YAML
+
         expect(() => yaml.parse(configFileContents)).not.toThrow();
         
-        // Snapshot the actual YAML content
+
         expect(configFileContents).toMatchInlineSnapshot(`
           "extensions:
             glean_local:
@@ -1495,10 +1816,10 @@ describe('CLI', () => {
 
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
         
-        // Verify it's valid YAML
+
         expect(() => yaml.parse(configFileContents)).not.toThrow();
         
-        // Snapshot the actual YAML content
+
         expect(configFileContents).toMatchInlineSnapshot(`
           "some-other-config:
             options:
@@ -1552,10 +1873,10 @@ describe('CLI', () => {
 
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
         
-        // Verify it's valid YAML
+
         expect(() => yaml.parse(configFileContents)).not.toThrow();
         
-        // Snapshot the actual YAML content
+
         expect(configFileContents).toMatchInlineSnapshot(`
           "extensions:
             glean_analytics:
@@ -1592,10 +1913,9 @@ describe('CLI', () => {
 
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
         
-        // Verify it's valid YAML
+
         expect(() => yaml.parse(configFileContents)).not.toThrow();
         
-        // Snapshot the actual YAML content to show glean_default naming
         expect(configFileContents).toMatchInlineSnapshot(`
           "extensions:
             glean_default:
@@ -1604,6 +1924,99 @@ describe('CLI', () => {
               url: https://my-be.glean.com/mcp/default
               headers:
                 Authorization: Bearer test-token
+          "
+        `);
+      });
+
+      it('preserves existing custom-named MCP servers when adding Glean config', async () => {
+        const existingConfig = {
+          GOOSE_PROVIDER: 'ollama',
+          provider: 'ollama',
+          GOOSE_MODE: 'approve',
+          GOOSE_MODEL: 'gpt-o5s:20b',
+          extensions: {
+            'custom-mcp': {
+              enabled: true,
+              type: 'streamable_http',
+              name: 'custom-mcp',
+              uri: 'https://example.com/mcp',
+              envs: {},
+              env_keys: [],
+              headers: {},
+              description: 'Custom MCP server',
+              timeout: 300,
+              bundled: null,
+              available_tools: []
+            },
+            'glean_existing': {
+              type: 'stdio',
+              command: 'old-command',
+              args: ['old-arg']
+            }
+          },
+          ollama: {
+            host: 'http://localhost:11434',
+            model: 'llama3.1:8b'
+          },
+          OLLAMA_HOST: 'localhost'
+        };
+
+        createConfigFile(configFilePath, existingConfig);
+
+        const result = await runBin(
+          'remote',
+          '--url',
+          'https://my-be.glean.com/mcp/default',
+          '--client',
+          'goose',
+          {
+            env: {
+              GLEAN_MCP_CONFIG_DIR: project.baseDir,
+              HOME: project.baseDir,
+              USERPROFILE: project.baseDir,
+              APPDATA: project.baseDir,
+              GLEAN_BETA_ENABLED: 'true',
+            },
+          },
+        );
+
+        expect(result.exitCode).toEqual(0);
+
+        const configFileContents = fs.readFileSync(configFilePath, 'utf8');
+        
+
+        expect(configFileContents).toMatchInlineSnapshot(`
+          "GOOSE_PROVIDER: ollama
+          provider: ollama
+          GOOSE_MODE: approve
+          GOOSE_MODEL: gpt-o5s:20b
+          extensions:
+            custom-mcp:
+              enabled: true
+              type: streamable_http
+              name: custom-mcp
+              uri: https://example.com/mcp
+              envs: {}
+              env_keys: []
+              headers: {}
+              description: Custom MCP server
+              timeout: 300
+              bundled: null
+              available_tools: []
+            glean_existing:
+              type: stdio
+              command: old-command
+              args:
+                - old-arg
+            glean_default:
+              type: http
+              env: {}
+              url: https://my-be.glean.com/mcp/default
+              headers: {}
+          ollama:
+            host: http://localhost:11434
+            model: llama3.1:8b
+          OLLAMA_HOST: localhost
           "
         `);
       });
@@ -1681,7 +2094,7 @@ describe('CLI', () => {
         const configFileContents = fs.readFileSync(configFilePath, 'utf8');
 
         expect(fs.existsSync(configFilePath)).toBe(true);
-        // Normalize JSON to avoid platform-specific escaping issues
+
         const parsedContents = JSON.parse(configFileContents);
         expect(parsedContents).toMatchInlineSnapshot(`
           {
@@ -1778,6 +2191,81 @@ describe('CLI', () => {
             },
             "workbench.colorTheme": "Default Dark+",
           }
+        `);
+      });
+
+      it('preserves existing custom-named MCP servers when adding Glean config', async () => {
+        const existingConfig = {
+          'editor.fontSize': 14,
+          'workbench.colorTheme': 'Default Dark+',
+          servers: {
+            'vscode-extension-mcp': {
+              command: 'vscode-ext',
+              args: ['--mcp-mode']
+            },
+            'glean_previous': {
+              type: 'http',
+              url: 'https://old.glean.com/mcp'
+            }
+          },
+          'terminal.integrated.shell.windows': 'C:\\Windows\\System32\\cmd.exe'
+        };
+
+        createConfigFile(configFilePath, existingConfig);
+
+        const result = await runBin(
+          'local',
+          '--client',
+          'vscode',
+          '--token',
+          'new-token',
+          '--instance',
+          'new-instance',
+          {
+            env: {
+              GLEAN_MCP_CONFIG_DIR: project.baseDir,
+              HOME: project.baseDir,
+              USERPROFILE: project.baseDir,
+              APPDATA: project.baseDir,
+              _SKIP_INSTANCE_PREFLIGHT: 'true',
+            },
+          },
+        );
+
+        expect(result.exitCode).toEqual(0);
+
+        const configFileContents = fs.readFileSync(configFilePath, 'utf8');
+        
+        expect(configFileContents).toMatchInlineSnapshot(`
+          "{
+            "editor.fontSize": 14,
+            "workbench.colorTheme": "Default Dark+",
+            "servers": {
+              "vscode-extension-mcp": {
+                "command": "vscode-ext",
+                "args": [
+                  "--mcp-mode"
+                ]
+              },
+              "glean_previous": {
+                "type": "http",
+                "url": "https://old.glean.com/mcp"
+              },
+              "glean_local": {
+                "command": "npx",
+                "args": [
+                  "-y",
+                  "@gleanwork/local-mcp-server"
+                ],
+                "type": "stdio",
+                "env": {
+                  "GLEAN_INSTANCE": "new-instance",
+                  "GLEAN_API_TOKEN": "new-token"
+                }
+              }
+            },
+            "terminal.integrated.shell.windows": "C:\\\\Windows\\\\System32\\\\cmd.exe"
+          }"
         `);
       });
     });
@@ -1884,7 +2372,7 @@ describe('CLI', () => {
         'utf8',
       );
       const config = JSON.parse(configFileContents);
-      // With the new centralized logic, /mcp/default produces "glean_default"
+
       expect(Object.keys(config.mcpServers)[0]).toBe('glean_default');
       expect(config.mcpServers.glean_default).toMatchInlineSnapshot(`
         {
@@ -1915,7 +2403,7 @@ describe('CLI', () => {
       );
 
       expect(result.exitCode).toEqual(0);
-      // Warning goes to stderr
+
       expect(normalizeOutput(result.stderr, project.baseDir)).toContain(
         'Note: --agents flag is ignored when using --url',
       );
@@ -1925,7 +2413,7 @@ describe('CLI', () => {
         'utf8',
       );
       const config = JSON.parse(configFileContents);
-      // With the new centralized logic, --agents flag takes precedence
+
       expect(Object.keys(config.mcpServers)[0]).toBe('glean_agents');
     });
 
@@ -1948,7 +2436,7 @@ describe('CLI', () => {
       );
 
       expect(result.exitCode).toEqual(0);
-      // Check both stdout and stderr for the warning message
+
       const output = normalizeOutput(
         result.stdout + result.stderr,
         project.baseDir,
@@ -1957,12 +2445,12 @@ describe('CLI', () => {
         'Warning: Both --instance and --url were provided. The --instance flag will be ignored when --url is specified.',
       );
 
-      // Verify that the URL was used, not the instance
+
       const configPath = path.join(project.baseDir, '.cursor', 'mcp.json');
       const configFileContents = fs.readFileSync(configPath, 'utf-8');
       const config = JSON.parse(configFileContents);
       expect(Object.keys(config.mcpServers)[0]).toBe('glean_analytics');
-      // Cursor supports native HTTP for remote configurations
+
       expect(config.mcpServers.glean_analytics.type).toBe('http');
       expect(config.mcpServers.glean_analytics.url).toBe(
         'https://my-be.glean.com/mcp/analytics',
