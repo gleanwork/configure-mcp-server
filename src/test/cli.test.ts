@@ -2493,23 +2493,134 @@ describe('CLI', () => {
       const result = await runBin('init', '--help');
 
       expect(result.exitCode).toEqual(0);
-      expect(result.stdout).toContain(
-        'Configure Glean MCP project-level tools',
-      );
-      expect(result.stdout).toContain('Options for init');
-      expect(result.stdout).toContain('--client, -c');
-      expect(result.stdout).toContain('--agents');
-      expect(result.stdout).toContain('--dryRun');
-      expect(result.stdout).toContain('Project Files Created');
+      expect(result.stderr).toMatchInlineSnapshot(`""`);
+      expect(result.stdout).toMatchInlineSnapshot(`
+        "
+            Usage
+              Configure Glean MCP project-level tools for enhanced development experience.
+
+              $ npx @gleanwork/configure-mcp-server init [--client <client-name>] [--agents] [options]
+
+            Commands
+              init        Initialize Glean MCP project tools
+
+            Options for init
+              --client, -c      MCP client to create project files for (cursor, claude-code)
+              --agents          Create AGENTS.md file with Glean MCP instructions
+              --server-name     Server name to use in templates (default: glean_default)
+              --dryRun          Show what files would be created without creating them
+              --help, -h        Show this help message
+
+            Examples
+
+              Initialize Cursor rules:
+              npx @gleanwork/configure-mcp-server init --client cursor
+
+              Initialize Claude Code commands and agents:
+              npx @gleanwork/configure-mcp-server init --client claude-code
+
+              Create only AGENTS.md:
+              npx @gleanwork/configure-mcp-server init --agents
+
+              Create both Cursor files and AGENTS.md:
+              npx @gleanwork/configure-mcp-server init --client cursor --agents
+
+              Use custom server name:
+              npx @gleanwork/configure-mcp-server init --client cursor --server-name my_glean
+
+              Preview what would be created for Claude Code:
+              npx @gleanwork/configure-mcp-server init --client claude-code --dryRun
+
+            Project Files Created
+
+              For Cursor:
+                .cursor/rules/glean-mcp.mdc              Glean MCP usage rule
+
+              For Claude Code:
+                .claude/commands/glean_search.md         Enterprise search command
+                .claude/commands/glean_chat.md           Glean chat synthesis command
+                .claude/commands/glean_read_document.md  Document reader command
+                .claude/commands/glean_code_search.md    Code search command
+                .claude/agents/glean-expert.md           Glean research agent
+
+              For --agents:
+                AGENTS.md                                Standard agent instructions file
+
+            Note: This command creates project-level files in the current directory.
+                  Make sure to run 'configure-mcp-server remote' first to set up
+                  your MCP server connection at the host level.
+
+            Version: v1.0.0-beta.2
+
+        "
+      `);
     });
 
     it('shows help output when -h is provided', async () => {
       const result = await runBin('init', '-h');
 
       expect(result.exitCode).toEqual(0);
-      expect(result.stdout).toContain(
-        'Configure Glean MCP project-level tools',
-      );
+      expect(result.stderr).toMatchInlineSnapshot(`""`);
+      expect(result.stdout).toMatchInlineSnapshot(`
+        "
+            Usage
+              Configure Glean MCP project-level tools for enhanced development experience.
+
+              $ npx @gleanwork/configure-mcp-server init [--client <client-name>] [--agents] [options]
+
+            Commands
+              init        Initialize Glean MCP project tools
+
+            Options for init
+              --client, -c      MCP client to create project files for (cursor, claude-code)
+              --agents          Create AGENTS.md file with Glean MCP instructions
+              --server-name     Server name to use in templates (default: glean_default)
+              --dryRun          Show what files would be created without creating them
+              --help, -h        Show this help message
+
+            Examples
+
+              Initialize Cursor rules:
+              npx @gleanwork/configure-mcp-server init --client cursor
+
+              Initialize Claude Code commands and agents:
+              npx @gleanwork/configure-mcp-server init --client claude-code
+
+              Create only AGENTS.md:
+              npx @gleanwork/configure-mcp-server init --agents
+
+              Create both Cursor files and AGENTS.md:
+              npx @gleanwork/configure-mcp-server init --client cursor --agents
+
+              Use custom server name:
+              npx @gleanwork/configure-mcp-server init --client cursor --server-name my_glean
+
+              Preview what would be created for Claude Code:
+              npx @gleanwork/configure-mcp-server init --client claude-code --dryRun
+
+            Project Files Created
+
+              For Cursor:
+                .cursor/rules/glean-mcp.mdc              Glean MCP usage rule
+
+              For Claude Code:
+                .claude/commands/glean_search.md         Enterprise search command
+                .claude/commands/glean_chat.md           Glean chat synthesis command
+                .claude/commands/glean_read_document.md  Document reader command
+                .claude/commands/glean_code_search.md    Code search command
+                .claude/agents/glean-expert.md           Glean research agent
+
+              For --agents:
+                AGENTS.md                                Standard agent instructions file
+
+            Note: This command creates project-level files in the current directory.
+                  Make sure to run 'configure-mcp-server remote' first to set up
+                  your MCP server connection at the host level.
+
+            Version: v1.0.0-beta.2
+
+        "
+      `);
     });
 
     it('creates cursor files with --client cursor', async () => {
@@ -2518,9 +2629,13 @@ describe('CLI', () => {
       });
 
       expect(result.exitCode).toEqual(0);
-      expect(result.stdout).toContain('Created .cursor/rules/glean-mcp.mdc');
-      expect(result.stdout).toContain('Initialization complete:');
-      expect(result.stdout).toContain('Created: 1 files');
+      expect(result.stderr).toMatchInlineSnapshot(`""`);
+      expect(result.stdout).toMatchInlineSnapshot(`
+        "Created .cursor/rules/glean-mcp.mdc
+
+        Initialization complete:
+          Created: 1 files"
+      `);
 
       // Verify file was actually created
       const filePath = path.join(
@@ -2532,8 +2647,68 @@ describe('CLI', () => {
       expect(fs.existsSync(filePath)).toBe(true);
 
       const content = fs.readFileSync(filePath, 'utf-8');
-      expect(content).toContain('Glean MCP Usage Rule');
-      expect(content).toContain('server key: glean_default');
+      expect(content).toMatchInlineSnapshot(`
+        "---
+        description: >
+          Apply this rule whenever the user's request could benefit from enterprise
+          context accessible via the Glean MCP server (server key: glean_default).
+          This includes:
+          • Looking up or retrieving documents, policies, runbooks, prior discussions, or design docs
+            from Slack, Jira, GitHub, Confluence, Google Drive, or other indexed sources.
+          • Summarizing or explaining policies, processes, or past incidents where the
+            answer requires synthesis across multiple knowledge sources.
+          • Debugging or testing scenarios where related Jira tickets, Slack messages,
+            GitHub issues/PRs, or runbooks provide context.
+          • Code understanding or investigation where a symbol is defined, used, or configured.
+
+          When these situations occur, prefer invoking Glean MCP tools to ground the
+          answer in authoritative internal context. Chain tool calls when needed:
+          search → read_document for quoting, chat → read_document for citations, or
+          search/chat → code_search to connect knowledge to code.
+
+        alwaysApply: false
+        ---
+
+        # Glean MCP Usage Rule
+
+        ## WHEN TO INVOKE
+
+        - **Lookup / discovery** ("find/show/where is …"): call \`search\`.
+        - **Synthesis / policy / summary** ("explain/summarize/compare …"): call
+          \`chat\`; if verbatim text is required, follow with
+          \`read_document\`.
+        - **Precise quoting / inspection** (specific doc/section/table): call
+          \`read_document\`.
+        - **Code questions** ("who calls/where defined/where configured"): call
+          \`code_search\` with a specific symbol/pattern; refine
+          with repo/path/language filters.
+
+        ## CHAINS
+
+        - **lookup→quote**: search → read_document → answer with citations/quotes.
+        - **explain→sources**: chat → (optional) read_document for verbatim passages.
+        - **debug→context**: search (error/service) → read_document (tickets/PRs) →
+          code_search (symbols/paths) → propose likely fix.
+        - **code→context**: code_search → open/summarize → (optional) search for design docs/runbooks/SEVs.
+
+        ## QUERY REFINEMENT
+
+        - Add **team/product/source/timeframe** to \`search\` queries (e.g., "billing", "Confluence only", "after:2025-06").
+        - Add **repo/path/language** to \`code_search\` (e.g., \`repo:platform\`, \`path:services/auth\`, \`lang:go\`).
+
+        ## OUTPUT EXPECTATIONS
+
+        - Provide **links/titles** and a one-line **why this source**.
+        - Start with a concise summary, then **exact quotes** (with headings/anchors).
+        - If results are broad or thin, refine and retry automatically.
+
+        ## EXAMPLES
+
+        - "Find PTO policy changes this year" → \`search\` → \`read_document\` → quote changes.
+        - "Who uses ValidateSession?" → \`code_search\` → summarize call sites.
+        - "Recent errors in payments service?" → \`search\` → open Jira/Slack → \`code_search\` suspected modules.
+        "
+      `);
     });
 
     it('creates claude-code files with --client claude-code', async () => {
@@ -2542,11 +2717,17 @@ describe('CLI', () => {
       });
 
       expect(result.exitCode).toEqual(0);
-      expect(result.stdout).toContain(
-        'Created .claude/commands/glean_search.md',
-      );
-      expect(result.stdout).toContain('Created .claude/agents/glean-expert.md');
-      expect(result.stdout).toContain('Created: 5 files');
+      expect(result.stderr).toMatchInlineSnapshot(`""`);
+      expect(result.stdout).toMatchInlineSnapshot(`
+        "Created .claude/commands/glean_search.md
+        Created .claude/commands/glean_chat.md
+        Created .claude/commands/glean_read_document.md
+        Created .claude/commands/glean_code_search.md
+        Created .claude/agents/glean-expert.md
+
+        Initialization complete:
+          Created: 5 files"
+      `);
 
       // Verify files were created
       const expectedFiles = [
@@ -2569,16 +2750,56 @@ describe('CLI', () => {
       });
 
       expect(result.exitCode).toEqual(0);
-      expect(result.stdout).toContain('Created AGENTS.md');
-      expect(result.stdout).toContain('Created: 1 files');
+      expect(result.stderr).toMatchInlineSnapshot(`""`);
+      expect(result.stdout).toMatchInlineSnapshot(`
+        "Created AGENTS.md
+
+        Initialization complete:
+          Created: 1 files"
+      `);
 
       // Verify file was created
       const filePath = path.join(project.baseDir, 'AGENTS.md');
       expect(fs.existsSync(filePath)).toBe(true);
 
       const content = fs.readFileSync(filePath, 'utf-8');
-      expect(content).toContain('# AGENTS.md');
-      expect(content).toContain('Glean MCP Usage');
+      expect(content).toMatchInlineSnapshot(`
+        "# AGENTS.md
+
+        ## Project Overview
+
+        This project uses Glean MCP for enterprise search and context.
+
+        ## Glean MCP Usage
+
+        ### Available Tools
+
+        When working on this project, you have access to Glean MCP tools via the \`glean_default\` server:
+
+        - **Enterprise Search**: Use \`search\` for finding documents, Slack messages, Jira tickets, etc.
+        - **AI Chat**: Use \`chat\` for synthesized answers with citations
+        - **Document Reading**: Use \`read_document\` for extracting specific quotes
+        - **Code Search**: Use \`code_search\` for company-wide code discovery
+
+        ### Usage Patterns
+
+        - **Lookup then Quote**: search → read_document for specific details
+        - **Explain then Sources**: chat → read_document for comprehensive answers
+        - **Debug Context**: search issues → read_document → code_search for troubleshooting
+        - **Code Discovery**: code_search for understanding usage patterns
+
+        ### Best Practices
+
+        - Always cite sources with links and titles
+        - Refine queries with team/product/timeframe filters for search
+        - Use repo/path/language filters for code_search
+        - Provide concise summaries followed by relevant quotes
+
+        ## Development Environment
+
+        [Additional project-specific instructions can be added here]
+        "
+      `);
     });
 
     it('creates both client files and AGENTS.md when both flags provided', async () => {
@@ -2587,9 +2808,14 @@ describe('CLI', () => {
       });
 
       expect(result.exitCode).toEqual(0);
-      expect(result.stdout).toContain('Created .cursor/rules/glean-mcp.mdc');
-      expect(result.stdout).toContain('Created AGENTS.md');
-      expect(result.stdout).toContain('Created: 2 files');
+      expect(result.stderr).toMatchInlineSnapshot(`""`);
+      expect(result.stdout).toMatchInlineSnapshot(`
+        "Created .cursor/rules/glean-mcp.mdc
+        Created AGENTS.md
+
+        Initialization complete:
+          Created: 2 files"
+      `);
 
       // Verify both files exist
       expect(
@@ -2606,8 +2832,11 @@ describe('CLI', () => {
       });
 
       expect(result.exitCode).toEqual(0);
-      expect(result.stdout).toContain('Files that would be created:');
-      expect(result.stdout).toContain('  .cursor/rules/glean-mcp.mdc');
+      expect(result.stderr).toMatchInlineSnapshot(`""`);
+      expect(result.stdout).toMatchInlineSnapshot(`
+        "Files that would be created:
+          .cursor/rules/glean-mcp.mdc"
+      `);
 
       // Verify no files were created
       expect(fs.existsSync(path.join(project.baseDir, '.cursor'))).toBe(false);
@@ -2626,9 +2855,16 @@ describe('CLI', () => {
       );
 
       expect(result.exitCode).toEqual(0);
-      expect(result.stdout).toContain('Files that would be created:');
-      expect(result.stdout).toContain('  .claude/commands/glean_search.md');
-      expect(result.stdout).toContain('  AGENTS.md');
+      expect(result.stderr).toMatchInlineSnapshot(`""`);
+      expect(result.stdout).toMatchInlineSnapshot(`
+        "Files that would be created:
+          .claude/commands/glean_search.md
+          .claude/commands/glean_chat.md
+          .claude/commands/glean_read_document.md
+          .claude/commands/glean_code_search.md
+          .claude/agents/glean-expert.md
+          AGENTS.md"
+      `);
 
       // Verify no files were created
       expect(fs.existsSync(path.join(project.baseDir, '.claude'))).toBe(false);
@@ -2650,11 +2886,14 @@ describe('CLI', () => {
       });
 
       expect(secondResult.exitCode).toEqual(0);
-      expect(secondResult.stdout).toContain(
-        'Skipping .cursor/rules/glean-mcp.mdc (already exists)',
-      );
-      expect(secondResult.stdout).toContain('Created: 0 files');
-      expect(secondResult.stdout).toContain('Skipped: 1 files (already exist)');
+      expect(secondResult.stderr).toMatchInlineSnapshot(`""`);
+      expect(secondResult.stdout).toMatchInlineSnapshot(`
+        "Skipping .cursor/rules/glean-mcp.mdc (already exists)
+
+        Initialization complete:
+          Created: 0 files
+          Skipped: 1 files (already exist)"
+      `);
     });
 
     it('fails with invalid client name', async () => {
@@ -2663,8 +2902,9 @@ describe('CLI', () => {
       });
 
       expect(result.exitCode).toEqual(1);
-      expect(result.stderr).toContain(
-        'Initialization failed: Unsupported client: invalid-client',
+      expect(result.stdout).toMatchInlineSnapshot(`""`);
+      expect(result.stderr).toMatchInlineSnapshot(
+        `"Initialization failed: Unsupported client: invalid-client"`,
       );
     });
 
@@ -2674,8 +2914,9 @@ describe('CLI', () => {
       });
 
       expect(result.exitCode).toEqual(1);
-      expect(result.stderr).toContain(
-        'Must specify --client <name> or --agents-md (or both)',
+      expect(result.stdout).toMatchInlineSnapshot(`""`);
+      expect(result.stderr).toMatchInlineSnapshot(
+        `"Initialization failed: Must specify --client <name> or --agents-md (or both)"`,
       );
     });
 
@@ -2685,7 +2926,13 @@ describe('CLI', () => {
       });
 
       expect(result.exitCode).toEqual(0);
-      expect(result.stdout).toContain('Created .cursor/rules/glean-mcp.mdc');
+      expect(result.stderr).toMatchInlineSnapshot(`""`);
+      expect(result.stdout).toMatchInlineSnapshot(`
+        "Created .cursor/rules/glean-mcp.mdc
+
+        Initialization complete:
+          Created: 1 files"
+      `);
     });
 
     it('uses custom server name when --server-name flag is provided', async () => {
@@ -2701,15 +2948,81 @@ describe('CLI', () => {
       );
 
       expect(result.exitCode).toEqual(0);
-      expect(result.stdout).toContain('Created .cursor/rules/glean-mcp.mdc');
+      expect(result.stderr).toMatchInlineSnapshot(`""`);
+      expect(result.stdout).toMatchInlineSnapshot(`
+        "Created .cursor/rules/glean-mcp.mdc
+
+        Initialization complete:
+          Created: 1 files"
+      `);
 
       // Verify the custom server name was used in the generated file
       const content = fs.readFileSync(
         path.join(project.baseDir, '.cursor', 'rules', 'glean-mcp.mdc'),
         'utf-8',
       );
-      expect(content).toContain('server key: my_custom_server');
-      expect(content).not.toContain('glean_default');
+      expect(content).toMatchInlineSnapshot(`
+        "---
+        description: >
+          Apply this rule whenever the user's request could benefit from enterprise
+          context accessible via the Glean MCP server (server key: my_custom_server).
+          This includes:
+          • Looking up or retrieving documents, policies, runbooks, prior discussions, or design docs
+            from Slack, Jira, GitHub, Confluence, Google Drive, or other indexed sources.
+          • Summarizing or explaining policies, processes, or past incidents where the
+            answer requires synthesis across multiple knowledge sources.
+          • Debugging or testing scenarios where related Jira tickets, Slack messages,
+            GitHub issues/PRs, or runbooks provide context.
+          • Code understanding or investigation where a symbol is defined, used, or configured.
+
+          When these situations occur, prefer invoking Glean MCP tools to ground the
+          answer in authoritative internal context. Chain tool calls when needed:
+          search → read_document for quoting, chat → read_document for citations, or
+          search/chat → code_search to connect knowledge to code.
+
+        alwaysApply: false
+        ---
+
+        # Glean MCP Usage Rule
+
+        ## WHEN TO INVOKE
+
+        - **Lookup / discovery** ("find/show/where is …"): call \`search\`.
+        - **Synthesis / policy / summary** ("explain/summarize/compare …"): call
+          \`chat\`; if verbatim text is required, follow with
+          \`read_document\`.
+        - **Precise quoting / inspection** (specific doc/section/table): call
+          \`read_document\`.
+        - **Code questions** ("who calls/where defined/where configured"): call
+          \`code_search\` with a specific symbol/pattern; refine
+          with repo/path/language filters.
+
+        ## CHAINS
+
+        - **lookup→quote**: search → read_document → answer with citations/quotes.
+        - **explain→sources**: chat → (optional) read_document for verbatim passages.
+        - **debug→context**: search (error/service) → read_document (tickets/PRs) →
+          code_search (symbols/paths) → propose likely fix.
+        - **code→context**: code_search → open/summarize → (optional) search for design docs/runbooks/SEVs.
+
+        ## QUERY REFINEMENT
+
+        - Add **team/product/source/timeframe** to \`search\` queries (e.g., "billing", "Confluence only", "after:2025-06").
+        - Add **repo/path/language** to \`code_search\` (e.g., \`repo:platform\`, \`path:services/auth\`, \`lang:go\`).
+
+        ## OUTPUT EXPECTATIONS
+
+        - Provide **links/titles** and a one-line **why this source**.
+        - Start with a concise summary, then **exact quotes** (with headings/anchors).
+        - If results are broad or thin, refine and retry automatically.
+
+        ## EXAMPLES
+
+        - "Find PTO policy changes this year" → \`search\` → \`read_document\` → quote changes.
+        - "Who uses ValidateSession?" → \`code_search\` → summarize call sites.
+        - "Recent errors in payments service?" → \`search\` → open Jira/Slack → \`code_search\` suspected modules.
+        "
+      `);
     });
 
     it('uses default server name when --server-name flag is not provided', async () => {
@@ -2718,6 +3031,13 @@ describe('CLI', () => {
       });
 
       expect(result.exitCode).toEqual(0);
+      expect(result.stderr).toMatchInlineSnapshot(`""`);
+      expect(result.stdout).toMatchInlineSnapshot(`
+        "Created .cursor/rules/glean-mcp.mdc
+
+        Initialization complete:
+          Created: 1 files"
+      `);
 
       // Verify the default server name was used
       const content = fs.readFileSync(
@@ -2741,26 +3061,107 @@ describe('CLI', () => {
       );
 
       expect(result.exitCode).toEqual(0);
-      expect(result.stdout).toContain(
-        'Created .claude/commands/glean_search.md',
-      );
-      expect(result.stdout).toContain('Created .claude/agents/glean-expert.md');
+      expect(result.stderr).toMatchInlineSnapshot(`""`);
+      expect(result.stdout).toMatchInlineSnapshot(`
+        "Created .claude/commands/glean_search.md
+        Created .claude/commands/glean_chat.md
+        Created .claude/commands/glean_read_document.md
+        Created .claude/commands/glean_code_search.md
+        Created .claude/agents/glean-expert.md
+
+        Initialization complete:
+          Created: 5 files"
+      `);
 
       // Check command file has correct tool call
       const searchContent = fs.readFileSync(
         path.join(project.baseDir, '.claude', 'commands', 'glean_search.md'),
         'utf-8',
       );
-      expect(searchContent).toMatch(
-        new RegExp(`mcp\\*\\*${customServerName}\\*\\*search`),
-      );
+      expect(searchContent).toMatchInlineSnapshot(`
+        "---
+        description: Enterprise search via Glean across Slack, Jira, GitHub, Confluence, Drive (permission-aware). Returns ranked sources to open/read next.
+        argument-hint: <query>
+        ---
+
+        ## Plan
+
+        User query: "$ARGUMENTS"
+
+        1. Call Glean search with the natural query.
+        2. If results are broad, refine with team/product/source/timeframe filters (e.g., "team:billing after:2025-06", "source:Confluence").
+        3. For the top 1–3 results, chain **/read_document** to extract quotes before answering.
+
+        ### TOOL CALL
+
+        mcp**acme_glean**search "$ARGUMENTS"
+
+        ### Notes
+
+        - Prefer qualifiers (PRD, RFC, runbook, Jira key, Slack channel, repository).
+        - If the user asks for verbatim quotes → **/read_document**.
+        "
+      `);
 
       // Check agent file has correct tools list
       const agentContent = fs.readFileSync(
         path.join(project.baseDir, '.claude', 'agents', 'glean-expert.md'),
         'utf-8',
       );
-      expect(agentContent).toContain(`mcp__${customServerName}__search`);
+      expect(agentContent).toMatchInlineSnapshot(`
+        "---
+        name: glean-expert
+        description: >
+          PROACTIVELY use this subagent when coding tasks would benefit from enterprise
+          context—debugging, testing, understanding code, or researching features. This
+          agent searches Slack/Jira/GitHub/Confluence/Drive via Glean, then chains
+          read/quote or code lookup for precise, sourced answers.
+        tools:
+          - mcp__acme_glean__search
+          - mcp__acme_glean__chat
+          - mcp__acme_glean__read_document
+          - mcp__acme_glean__code_search
+        model: sonnet
+
+        color: blue
+        ---
+
+        ## TRIGGERS → IMMEDIATE TOOL USE
+
+        - "Find / where is / show docs …" → **search**
+        - "Explain / summarize / what's our policy …" → **chat** (then **read_document** for quotes)
+        - "Open/quote this doc …" → **read_document**
+        - "Where in code… / who calls… / where configured… " → **code_search**
+        - Errors, test failures, stack traces, or regressions → **search** for related Jira/Slack/GitHub issues → **read_document** to extract key details → **code_search** for likely fix sites.
+
+        ## WORKFLOWS
+
+        <workflow name="lookup→quote">
+        1. search "[topic]" (add team/source/timeframe)
+        2. Pick best match → read_document id_or_url:"…"
+        3. Answer with short summary + exact quotes + links.
+
+        <workflow name="explain→sources">
+        1. chat prompt:"[question]"
+        2. If key sources cited → read_document for verbatim passages/tables.
+
+        <workflow name="debugging-context">
+        1. search "[error|service|component]" (add timeframe)
+        2. Open relevant Jira/Slack/PRs via read_document; note root-causes/workarounds.
+        3. code_search for implicated symbols/paths; summarize likely change surface.
+
+        <workflow name="code-discovery">
+        1. code_search query:"[symbol|pattern] [repo/path/lang]"
+        2. Open files; summarize responsibilities, call sites, and edge cases.
+
+        ## PRINCIPLES
+
+        - Prefer **search + read_document** when traceability/quotes matter.
+        - Prefer **chat** when synthesis across multiple sources is needed.
+        - Always return links/titles and why each source is relevant.
+        - Iterate queries with product/team/date or repo/path/language filters.
+        "
+      `);
     });
 
     it('shows custom server name in dry run output', async () => {
@@ -2777,8 +3178,11 @@ describe('CLI', () => {
       );
 
       expect(result.exitCode).toEqual(0);
-      expect(result.stdout).toContain('Files that would be created:');
-      expect(result.stdout).toContain('.cursor/rules/glean-mcp.mdc');
+      expect(result.stderr).toMatchInlineSnapshot(`""`);
+      expect(result.stdout).toMatchInlineSnapshot(`
+        "Files that would be created:
+          .cursor/rules/glean-mcp.mdc"
+      `);
 
       // Should not actually create files in dry run
       expect(fs.existsSync(path.join(project.baseDir, '.cursor'))).toBe(false);
