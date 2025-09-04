@@ -43,8 +43,75 @@ alwaysApply: false
 
 ## QUERY REFINEMENT
 
-- Add **team/product/source/timeframe** to `search` queries (e.g., "billing", "Confluence only", "after:2025-06").
-- Add **repo/path/language** to `code_search` (e.g., `repo:platform`, `path:services/auth`, `lang:go`).
+### Document Search Filters (`search`)
+
+**Person Filters:**
+
+- `owner:"person name"` or `owner:me` - Filter by document creator/modifier
+- `from:"person name"` or `from:me` - Filter by user who created/modified/commented
+
+**Date Filters:**
+
+- `updated:today|yesterday|past_week|past_month|past_year` - Filter by update date
+- `updated:"March"|"January"` - Filter by month name
+- `after:"YYYY-MM-DD"` - Documents created after date (no date later than today)
+- `before:"YYYY-MM-DD"` - Documents created before date
+
+**Source Filters:**
+
+- `channel:"channel-name"` - Slack channel (only when explicitly requested)
+- `app:confluence|github|drive|slack` - Filter by application/datasource
+- `type:pdf|document|presentation` - Filter by document type
+
+**Result Control:**
+
+- `num_results:N` - Specify number (use exact number or max for "find all")
+
+### Code Search Filters (`code_search`)
+
+**Person Filters:**
+
+- `owner:"person name"` or `owner:me` - Filter by commit creator
+- `from:"person name"` or `from:me` - Filter by code file/commit updater/commenter
+
+**Date Filters:**
+
+- `updated:today|yesterday|past_week|past_month|past_year` - Filter by update date
+- `after:"YYYY-MM-DD"` - Commits/files changed after date
+- `before:"YYYY-MM-DD"` - Commits/files changed before date
+
+**Repository Filters:**
+
+- `repo:platform|frontend|backend` - Filter by repository name
+- `path:services/auth|components/ui` - Filter by file path
+- `lang:go|python|javascript|typescript` - Filter by programming language
+
+## FILTER BEST PRACTICES
+
+### When to Use Date Filters
+
+- **Use `updated:`** when user mentions specific timeframes ("last week", "past month")
+- **Use `after:`/`before:`** for date ranges ("between Jan and March", "since 2024")
+- **Avoid date filters** for "latest" or "recent" without specific timeframe
+
+### Person Filter Guidelines
+
+- **Use quotes** for multi-word names: `from:"John Smith"`
+- **Use `owner:`** for document creators, `from:` for broader involvement
+- **Use `me`** when user refers to themselves or their work
+
+### Search Strategy
+
+- **Start broad**, then narrow with filters if too many results
+- **Combine filters** strategically: person + timeframe + source
+- **Use `num_results:`** for exhaustive searches ("find all") or specific counts
+
+### Common Pitfalls
+
+- Don't use `after:` with future dates
+- Channel filters only work for Slack (`channel:` + `app:slack`)
+- Code search `repo:` and `path:` filters need exact matches
+- Quote multi-word filter values: `channel:"platform-alerts"`
 
 ## OUTPUT EXPECTATIONS
 
@@ -54,6 +121,29 @@ alwaysApply: false
 
 ## EXAMPLES
 
-- "Find PTO policy changes this year" → `search` → `read_document` → quote changes.
-- "Who uses ValidateSession?" → `code_search` → summarize call sites.
-- "Recent errors in payments service?" → `search` → open Jira/Slack → `code_search` suspected modules.
+### Basic Queries
+
+- "Find PTO policy changes this year" → `search("PTO policy after:\"2024-01-01\"")` → `read_document` → quote changes.
+- "Who uses ValidateSession?" → `code_search("ValidateSession")` → summarize call sites.
+- "Recent errors in payments service?" → `search("payments errors updated:past_week")` → open Jira/Slack → `code_search("payments error")`.
+
+### Advanced Filter Combinations
+
+- **Team-specific recent updates**: `search("auth team updated:past_month owner:\"Sarah Chen\"")`
+- **Cross-platform bug investigation**: `code_search("authentication bug from:\"John\" updated:past_week")` + `search("auth issues channel:\"platform-alerts\" updated:past_week")`
+- **Historical analysis**: `search("migration strategy after:\"2023-01-01\" before:\"2024-01-01\" num_results:20")`
+- **Multi-repo code patterns**: `code_search("rate limiting repo:api-gateway")` + `code_search("rate limiting repo:user-service")`
+- **Documentation deep-dive**: `search("API documentation type:document app:confluence updated:past_month")`
+
+### Date Filter Patterns
+
+- **Recent changes**: `updated:today|yesterday|past_week`
+- **Quarterly reviews**: `after:"2024-07-01" before:"2024-10-01"`
+- **Monthly summaries**: `updated:"September"|"October"`
+- **Project timelines**: `"project launch" after:"2024-01-01"`
+
+### Channel & Team Workflows
+
+- **Incident response**: `search("outage channel:\"incidents\" updated:today")` → `code_search("error handling updated:today")`
+- **Feature discussions**: `search("new feature channel:\"product-planning\" updated:past_week")` → `code_search("feature flag updated:past_week")`
+- **Team retrospectives**: `search("retrospective from:\"team-lead\" updated:past_month num_results:10")`
