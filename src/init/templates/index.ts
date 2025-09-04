@@ -14,10 +14,6 @@ const __dirname = path.dirname(__filename);
  */
 export enum TemplateName {
   CURSOR_RULE = 'cursor/glean-mcp-rule',
-  CLAUDE_SEARCH_COMMAND = 'claude/commands/search',
-  CLAUDE_CHAT_COMMAND = 'claude/commands/chat',
-  CLAUDE_READ_DOCUMENT_COMMAND = 'claude/commands/read-document',
-  CLAUDE_CODE_SEARCH_COMMAND = 'claude/commands/code-search',
   CLAUDE_AGENT = 'claude/agents/glean-expert',
   AGENTS_MD = 'project/agents',
 }

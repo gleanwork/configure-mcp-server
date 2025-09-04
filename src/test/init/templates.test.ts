@@ -48,15 +48,9 @@ describe('Client File Generation', () => {
     it('returns correct file structure', async () => {
       const files = await generateClaudeCodeFiles();
 
-      expect(files).toHaveLength(5);
+      expect(files).toHaveLength(1);
 
-      const expectedPaths = [
-        '.claude/commands/glean_search.md',
-        '.claude/commands/glean_chat.md',
-        '.claude/commands/glean_read_document.md',
-        '.claude/commands/glean_code_search.md',
-        '.claude/agents/glean-expert.md',
-      ];
+      const expectedPaths = ['.claude/agents/glean-expert.md'];
 
       expectedPaths.forEach((expectedPath, index) => {
         expect(files[index].path).toBe(expectedPath);
@@ -74,25 +68,16 @@ describe('Client File Generation', () => {
       }
     });
 
-    it('command templates contain $ARGUMENTS placeholder', async () => {
+    it('agent template contains server name placeholder replacement', async () => {
       const files = await generateClaudeCodeFiles();
-      const commandFiles = files.filter((f) => f.path.includes('/commands/'));
+      const agentFile = files.find((f) => f.path.includes('/agents/'));
 
-      expect(commandFiles).toHaveLength(4);
-
-      for (const file of commandFiles) {
-        expect(file.content).toContain('$ARGUMENTS');
-      }
+      expect(agentFile).toBeTruthy();
+      expect(agentFile!.content).not.toContain('{{SERVER_NAME}}');
     });
 
     it('uses default server name when not specified', async () => {
       const files = await generateClaudeCodeFiles();
-
-      // Check command files have correct tool calls
-      const commandFiles = files.filter((f) => f.path.includes('/commands/'));
-      for (const file of commandFiles) {
-        expect(file.content).toMatch(/mcp\*\*glean_default\*\*/);
-      }
 
       // Check agent file has correct tools list
       const agentFile = files.find((f) => f.path.includes('/agents/'));
@@ -103,16 +88,6 @@ describe('Client File Generation', () => {
     it('uses custom server name when specified', async () => {
       const customServerName = 'my_custom_server';
       const files = await generateClaudeCodeFiles(customServerName);
-
-      // Check command files have correct tool calls
-      const commandFiles = files.filter((f) => f.path.includes('/commands/'));
-      for (const file of commandFiles) {
-        expect(file.content).toMatch(
-          new RegExp(`mcp\\*\\*${customServerName}\\*\\*`),
-        );
-        expect(file.content).not.toContain('glean_default');
-        expect(file.content).not.toContain('{{SERVER_NAME}}');
-      }
 
       // Check agent file has correct tools list
       const agentFile = files.find((f) => f.path.includes('/agents/'));
@@ -143,25 +118,6 @@ describe('Template Validation', () => {
       expect(frontmatter).toContain('alwaysApply:');
     });
 
-    it('claude command templates have valid frontmatter', async () => {
-      const commandTemplateNames = [
-        TemplateName.CLAUDE_SEARCH_COMMAND,
-        TemplateName.CLAUDE_CHAT_COMMAND,
-        TemplateName.CLAUDE_READ_DOCUMENT_COMMAND,
-        TemplateName.CLAUDE_CODE_SEARCH_COMMAND,
-      ];
-
-      for (const templateName of commandTemplateNames) {
-        const template = await loadTemplate(templateName);
-        const frontmatterMatch = template.match(/^---\n([\s\S]*?)\n---\n/);
-        expect(frontmatterMatch).toBeTruthy();
-
-        const frontmatter = frontmatterMatch![1];
-        expect(frontmatter).toContain('description:');
-        expect(frontmatter).toContain('argument-hint:');
-      }
-    });
-
     it('claude agent template has valid frontmatter', async () => {
       const template = await loadTemplate(TemplateName.CLAUDE_AGENT);
       const frontmatterMatch = template.match(/^---\n([\s\S]*?)\n---\n/);
@@ -180,10 +136,6 @@ describe('Template Validation', () => {
     it('no templates contain placeholder text', async () => {
       const templateNames = [
         TemplateName.CURSOR_RULE,
-        TemplateName.CLAUDE_SEARCH_COMMAND,
-        TemplateName.CLAUDE_CHAT_COMMAND,
-        TemplateName.CLAUDE_READ_DOCUMENT_COMMAND,
-        TemplateName.CLAUDE_CODE_SEARCH_COMMAND,
         TemplateName.CLAUDE_AGENT,
         TemplateName.AGENTS_MD,
       ];
@@ -200,10 +152,6 @@ describe('Template Validation', () => {
     it('all templates reference correct server key when using default', async () => {
       const templateNames = [
         TemplateName.CURSOR_RULE,
-        TemplateName.CLAUDE_SEARCH_COMMAND,
-        TemplateName.CLAUDE_CHAT_COMMAND,
-        TemplateName.CLAUDE_READ_DOCUMENT_COMMAND,
-        TemplateName.CLAUDE_CODE_SEARCH_COMMAND,
         TemplateName.CLAUDE_AGENT,
         TemplateName.AGENTS_MD,
       ];
@@ -221,10 +169,6 @@ describe('Template Validation', () => {
     it('all templates have placeholder for server name', async () => {
       const templateNames = [
         TemplateName.CURSOR_RULE,
-        TemplateName.CLAUDE_SEARCH_COMMAND,
-        TemplateName.CLAUDE_CHAT_COMMAND,
-        TemplateName.CLAUDE_READ_DOCUMENT_COMMAND,
-        TemplateName.CLAUDE_CODE_SEARCH_COMMAND,
         TemplateName.CLAUDE_AGENT,
         TemplateName.AGENTS_MD,
       ];
@@ -239,10 +183,6 @@ describe('Template Validation', () => {
     it('templates end with newlines', async () => {
       const templateNames = [
         TemplateName.CURSOR_RULE,
-        TemplateName.CLAUDE_SEARCH_COMMAND,
-        TemplateName.CLAUDE_CHAT_COMMAND,
-        TemplateName.CLAUDE_READ_DOCUMENT_COMMAND,
-        TemplateName.CLAUDE_CODE_SEARCH_COMMAND,
         TemplateName.CLAUDE_AGENT,
         TemplateName.AGENTS_MD,
       ];
@@ -296,8 +236,8 @@ describe('Template Loader', () => {
 
     it('caches templates after first load', async () => {
       // Load the same template twice
-      const template1 = await loadTemplate(TemplateName.CLAUDE_SEARCH_COMMAND);
-      const template2 = await loadTemplate(TemplateName.CLAUDE_SEARCH_COMMAND);
+      const template1 = await loadTemplate(TemplateName.CLAUDE_AGENT);
+      const template2 = await loadTemplate(TemplateName.CLAUDE_AGENT);
 
       // Should be the same content
       expect(template1).toBe(template2);
@@ -323,20 +263,14 @@ describe('Template Loader', () => {
 
   describe('Error Handling', () => {
     it('generateClaudeCodeFiles handles template loading failures gracefully', async () => {
-      // Mock loadTemplate to simulate failures
-      const originalLoadTemplate = await import(
-        '../../init/templates/index.js'
-      );
-
-      // This test would require mocking, but for now we'll verify the error format
-      // by testing with a corrupted template path scenario
+      // This test verifies the function works correctly with valid templates
       const { generateClaudeCodeFiles } = await import(
         '../../init/clients/claude-code.js'
       );
 
       // Test should pass with valid templates
       const files = await generateClaudeCodeFiles();
-      expect(files).toHaveLength(5);
+      expect(files).toHaveLength(1);
       expect(files.every((file) => file.content.length > 0)).toBe(true);
     });
   });

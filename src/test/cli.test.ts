@@ -2287,7 +2287,7 @@ describe('CLI', () => {
                 "args": [
                   "-y",
                   "@gleanwork/local-mcp-server"
-                  ],
+                ],
                 "type": "stdio",
                 "env": {
                   "GLEAN_INSTANCE": "new-instance",
@@ -2550,7 +2550,7 @@ describe('CLI', () => {
                   Make sure to run 'configure-mcp-server remote' first to set up
                   your MCP server connection at the host level.
 
-            Version: v1.0.0-beta.2
+            Version: v1.0.0-beta.3
 
         "
       `);
@@ -2617,7 +2617,7 @@ describe('CLI', () => {
                   Make sure to run 'configure-mcp-server remote' first to set up
                   your MCP server connection at the host level.
 
-            Version: v1.0.0-beta.2
+            Version: v1.0.0-beta.3
 
         "
       `);
