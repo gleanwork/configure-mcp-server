@@ -1257,7 +1257,7 @@ describe('CLI', () => {
                 "command": "npx",
                 "args": [
                   "-y",
-                  "mcp-remote@0.1.18",
+                  "mcp-remote@0.1.29",
                   "https://my-be.glean.com/mcp/default"
                 ]
               }
@@ -1693,7 +1693,7 @@ describe('CLI', () => {
                 "command": "npx",
                 "args": [
                   "-y",
-                  "mcp-remote@0.1.18",
+                  "mcp-remote@0.1.29",
                   "https://new-be.glean.com/mcp/default",
                   "--header",
                   "Authorization: Bearer auth-token"
