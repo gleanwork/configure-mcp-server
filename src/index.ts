@@ -20,6 +20,7 @@ import {
   validateFlags,
 } from './configure/index.js';
 import { availableClients } from './configure/client/index.js';
+import { initializeProject, showInitHelp } from './init/index.js';
 import { Logger, trace, LogLevel } from '@gleanwork/mcp-server-utils/logger';
 import { VERSION } from './common/version.js';
 import { checkAndOpenLaunchWarning } from '@gleanwork/mcp-server-utils/util';
@@ -47,6 +48,7 @@ async function main() {
     Commands
       local       Configure Glean's local MCP server for a given client
       remote      Configure Glean's remote MCP server for a given client
+      init        Initialize Glean MCP project tools for enhanced development experience
       help        Show this help message
 
     Options for local
@@ -63,7 +65,13 @@ async function main() {
       --env, -e       Path to .env file containing GLEAN_URL and optionally GLEAN_API_TOKEN
       --workspace     Create workspace configuration instead of global (VS Code only)
 
-    
+    Options for init
+      --client, -c      MCP client to create project files for (cursor, claude-code)
+      --agents          Create AGENTS.md file with Glean MCP instructions
+      --server-name     Server name to use in templates (default: glean_default)
+      --dryRun          Show what files would be created without creating them
+
+
     Examples
 
       Local:
@@ -83,9 +91,18 @@ async function main() {
       npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client goose
       npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client windsurf
       npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client vscode --workspace
-      
+
       # With explicit token (bypasses DCR):
       npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client cursor --token glean_api_xyz
+
+      Init:
+
+      npx @gleanwork/configure-mcp-server init --client cursor
+      npx @gleanwork/configure-mcp-server init --client claude-code
+      npx @gleanwork/configure-mcp-server init --agents
+      npx @gleanwork/configure-mcp-server init --client cursor --agents
+      npx @gleanwork/configure-mcp-server init --client cursor --server-name my_glean
+      npx @gleanwork/configure-mcp-server init --client claude-code --dryRun
 
     Run 'npx @gleanwork/configure-mcp-server help' for more details on supported clients
 
@@ -128,6 +145,9 @@ async function main() {
         type: 'boolean',
       },
       workspace: {
+        type: 'boolean',
+      },
+      dryRun: {
         type: 'boolean',
       },
     },
@@ -191,6 +211,30 @@ async function main() {
         });
       } catch (error: any) {
         console.error(`Configuration failed: ${error.message}`);
+        process.exit(1);
+      }
+      break;
+    }
+
+    case 'init': {
+      const { client, agents, dryRun, help, serverName } = cli.flags;
+
+      // Show init-specific help if requested
+      if (help) {
+        showInitHelp();
+        break;
+      }
+
+      try {
+        await initializeProject({
+          client,
+          agentsMd: Boolean(agents),
+          dryRun: Boolean(dryRun),
+          serverName:
+            typeof serverName === 'string' ? serverName : 'glean_default',
+        });
+      } catch (error: any) {
+        console.error(`Initialization failed: ${error.message}`);
         process.exit(1);
       }
       break;
