@@ -13,7 +13,3 @@
 - Nathaniel Furniss ([@nathaniel-furniss-glean](https://github.com/nathaniel-furniss-glean))
 - Steve Calvert ([@steve-calvert-glean](https://github.com/steve-calvert-glean))
 - Robert Jackson ([@robert-jackson-glean](https://github.com/robert-hackson-glean))
-
-
-
-# Changelog
