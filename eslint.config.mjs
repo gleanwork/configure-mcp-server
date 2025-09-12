@@ -23,6 +23,7 @@ export default [
       '**/node_modules',
       '**/package-log.json',
       '**/eslint.config.mjs',
+      '**/vitest.config.ts',
     ],
   },
   ...compat.extends(

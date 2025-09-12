@@ -2494,7 +2494,8 @@ describe('CLI', () => {
 
       expect(result.exitCode).toEqual(0);
       expect(result.stderr).toMatchInlineSnapshot(`""`);
-      expect(result.stdout).toMatchInlineSnapshot(`
+      expect(normalizeOutput(result.stdout, project.baseDir))
+        .toMatchInlineSnapshot(`
         "
             Usage
               Configure Glean MCP project-level tools for enhanced development experience.
@@ -2550,7 +2551,7 @@ describe('CLI', () => {
                   Make sure to run 'configure-mcp-server remote' first to set up
                   your MCP server connection at the host level.
 
-            Version: v1.0.0
+            Version: v9.9.9
 
         "
       `);
@@ -2561,7 +2562,8 @@ describe('CLI', () => {
 
       expect(result.exitCode).toEqual(0);
       expect(result.stderr).toMatchInlineSnapshot(`""`);
-      expect(result.stdout).toMatchInlineSnapshot(`
+      expect(normalizeOutput(result.stdout, project.baseDir))
+        .toMatchInlineSnapshot(`
         "
             Usage
               Configure Glean MCP project-level tools for enhanced development experience.
@@ -2617,7 +2619,7 @@ describe('CLI', () => {
                   Make sure to run 'configure-mcp-server remote' first to set up
                   your MCP server connection at the host level.
 
-            Version: v1.0.0
+            Version: v9.9.9
 
         "
       `);
