@@ -2494,7 +2494,8 @@ describe('CLI', () => {
 
       expect(result.exitCode).toEqual(0);
       expect(result.stderr).toMatchInlineSnapshot(`""`);
-      expect(result.stdout).toMatchInlineSnapshot(`
+      expect(normalizeOutput(result.stdout, project.baseDir))
+        .toMatchInlineSnapshot(`
         "
             Usage
               Configure Glean MCP project-level tools for enhanced development experience.
@@ -2550,7 +2551,7 @@ describe('CLI', () => {
                   Make sure to run 'configure-mcp-server remote' first to set up
                   your MCP server connection at the host level.
 
-            Version: v1.0.0-beta.3
+            Version: v9.9.9
 
         "
       `);
@@ -2561,7 +2562,8 @@ describe('CLI', () => {
 
       expect(result.exitCode).toEqual(0);
       expect(result.stderr).toMatchInlineSnapshot(`""`);
-      expect(result.stdout).toMatchInlineSnapshot(`
+      expect(normalizeOutput(result.stdout, project.baseDir))
+        .toMatchInlineSnapshot(`
         "
             Usage
               Configure Glean MCP project-level tools for enhanced development experience.
@@ -2617,7 +2619,7 @@ describe('CLI', () => {
                   Make sure to run 'configure-mcp-server remote' first to set up
                   your MCP server connection at the host level.
 
-            Version: v1.0.0-beta.3
+            Version: v9.9.9
 
         "
       `);
@@ -2649,7 +2651,7 @@ describe('CLI', () => {
       const content = fs.readFileSync(filePath, 'utf-8');
       expect(content).toMatchInlineSnapshot(`
         "---
-        description: >
+        description:
           Apply this rule whenever the user's request could benefit from enterprise
           context accessible via the Glean MCP server (server key: glean_default).
           This includes:
@@ -3152,7 +3154,7 @@ describe('CLI', () => {
       );
       expect(content).toMatchInlineSnapshot(`
         "---
-        description: >
+        description:
           Apply this rule whenever the user's request could benefit from enterprise
           context accessible via the Glean MCP server (server key: my_custom_server).
           This includes:

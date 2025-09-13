@@ -38,7 +38,7 @@ describe('initializeProject', () => {
       const content = fs.readFileSync(cursorRulePath, 'utf-8');
       expect(content).toMatchInlineSnapshot(`
         "---
-        description: >
+        description:
           Apply this rule whenever the user's request could benefit from enterprise
           context accessible via the Glean MCP server (server key: glean_default).
           This includes:
@@ -656,7 +656,7 @@ describe('initializeProject', () => {
 
       expect(content).toMatchInlineSnapshot(`
         "---
-        description: >
+        description:
           Apply this rule whenever the user's request could benefit from enterprise
           context accessible via the Glean MCP server (server key: glean_default).
           This includes:
@@ -818,7 +818,7 @@ describe('initializeProject', () => {
       expect(agentContent).toMatchInlineSnapshot(`
         "---
         name: glean-expert
-        description: >
+        description:
           PROACTIVELY use this subagent when coding tasks would benefit from enterprise
           context—debugging, testing, understanding code, or researching features. This
           agent searches Slack/Jira/GitHub/Confluence/Drive via Glean, then chains

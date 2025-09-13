@@ -1,5 +1,5 @@
 ---
-description: >
+description:
   Apply this rule whenever the user's request could benefit from enterprise
   context accessible via the Glean MCP server (server key: {{SERVER_NAME}}).
   This includes:

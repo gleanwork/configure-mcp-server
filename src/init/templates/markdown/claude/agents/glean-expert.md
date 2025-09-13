@@ -1,6 +1,6 @@
 ---
 name: glean-expert
-description: >
+description:
   PROACTIVELY use this subagent when coding tasks would benefit from enterprise
   context—debugging, testing, understanding code, or researching features. This
   agent searches Slack/Jira/GitHub/Confluence/Drive via Glean, then chains
