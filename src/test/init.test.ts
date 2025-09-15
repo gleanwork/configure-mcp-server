@@ -468,13 +468,13 @@ describe('initializeProject', () => {
   describe('error scenarios', () => {
     it('throws error when no options provided', async () => {
       await expect(initializeProject({})).rejects.toThrow(
-        'Must specify --client <name> or --agents-md (or both)',
+        'Must specify --client <name> or --agents (or both)',
       );
     });
 
     it('throws error when only dryRun is provided', async () => {
       await expect(initializeProject({ dryRun: true })).rejects.toThrow(
-        'Must specify --client <name> or --agents-md (or both)',
+        'Must specify --client <name> or --agents (or both)',
       );
     });
   });
