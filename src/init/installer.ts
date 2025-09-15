@@ -57,7 +57,7 @@ export async function initializeProject(options: InitOptions): Promise<void> {
 
   // Validate we have something to do
   if (filesToCreate.length === 0) {
-    throw new Error('Must specify --client <name> or --agents-md (or both)');
+    throw new Error('Must specify --client <name> or --agents (or both)');
   }
 
   if (options.dryRun) {

@@ -34,7 +34,7 @@ export function showInitHelp(): void {
       Initialize Cursor rules:
       npx @gleanwork/configure-mcp-server init --client cursor
 
-      Initialize Claude Code commands and agents:
+      Initialize Claude Code agent:
       npx @gleanwork/configure-mcp-server init --client claude-code
 
       Create only AGENTS.md:
@@ -55,10 +55,6 @@ export function showInitHelp(): void {
         .cursor/rules/glean-mcp.mdc              Glean MCP usage rule
 
       For Claude Code:
-        .claude/commands/glean_search.md         Enterprise search command
-        .claude/commands/glean_chat.md           Glean chat synthesis command
-        .claude/commands/glean_read_document.md  Document reader command
-        .claude/commands/glean_code_search.md    Code search command
         .claude/agents/glean-expert.md           Glean research agent
 
       For --agents:
