@@ -53,7 +53,7 @@
     "@gleanwork/mcp-server-utils": "^0.8.0",
     "dotenv": "^17.2.1",
     "mcp-remote": "^0.1.29",
-    "meow": "^13.2.0",
+    "meow": "^14.0.0",
     "tldts": "^7.0.10",
     "yaml": "^2.8.0"
   },
