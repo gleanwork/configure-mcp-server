@@ -37,6 +37,9 @@ You can specify your token and instance on the command line.
 # Configure for Cursor
 npx @gleanwork/configure-mcp-server --client cursor --token your_api_token --instance instance_name
 
+# Configure for Claude Code
+npx @gleanwork/configure-mcp-server --client claude-code --token your_api_token --instance instance_name
+
 # Configure for Claude Desktop
 npx @gleanwork/configure-mcp-server --client claude --token your_api_token --instance instance_name
 
