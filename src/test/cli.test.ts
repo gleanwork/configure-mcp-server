@@ -134,82 +134,32 @@ describe('CLI', () => {
     expect(result.stderr).toMatchInlineSnapshot(`""`);
     expect(normalizeOutput(result.stdout, project.baseDir))
       .toMatchInlineSnapshot(`
-        "
-          MCP server configurator for Glean
+        "Usage: configure-mcp-server [options] [command]
 
-          Usage
-            Configure popular MCP clients to add Glean as an MCP server.
+        Configure popular MCP clients to add Glean as an MCP server
 
-            Available MCP servers:
+        Options:
+          -v, --version     Output the current version
+          -h, --help        display help for command
 
-              local     A local server using Glean's API to access common tools (search, chat)
-              remote    Connect to Glean's hosted MCP servers (default tools and agents).
+        Commands:
+          local [options]   Configure Glean's local MCP server for a given client
+          remote [options]  Configure Glean's remote MCP server for a given client
+          init [options]    Initialize Glean MCP project tools for enhanced development
+                            experience
+          help              Show detailed help including supported clients
 
+        Available MCP Clients:
+          claude-code      Claude Code
+          claude-desktop   Claude for Desktop
+          cursor           Cursor
+          goose            Goose
+          vscode           Visual Studio Code
+          windsurf         Windsurf
 
-            $ npx @gleanwork/configure-mcp-server --client <client-name> [options]
-
-          Commands
-            local       Configure Glean's local MCP server for a given client
-            remote      Configure Glean's remote MCP server for a given client
-            init        Initialize Glean MCP project tools for enhanced development experience
-            help        Show this help message
-
-          Options for local
-            --client, -c    MCP client to configure for (claude-code, claude-desktop, cursor, goose, vscode, windsurf)
-            --token, -t     Glean API token (required)
-            --instance, -i  Glean instance name
-            --env, -e       Path to .env file containing GLEAN_INSTANCE and GLEAN_API_TOKEN
-            --workspace     Create workspace configuration instead of global (VS Code only)
-
-          Options for remote
-            --client, -c    MCP client to configure for (claude-code, claude-desktop, cursor, goose, vscode, windsurf)
-            --url, -u       Full MCP server URL (required, e.g., https://my-be.glean.com/mcp/default)
-            --token, -t     Glean API token (optional, OAuth will be used if not provided)
-            --env, -e       Path to .env file containing GLEAN_URL and optionally GLEAN_API_TOKEN
-            --workspace     Create workspace configuration instead of global (VS Code only)
-
-          Options for init
-            --client, -c      MCP client to create project files for (cursor, claude-code)
-            --agents          Create AGENTS.md file with Glean MCP instructions
-            --server-name     Server name to use in templates (default: glean_default)
-            --dryRun          Show what files would be created without creating them
-
-
-          Examples
-
-            Local:
-
-            npx @gleanwork/configure-mcp-server local --instance acme --client cursor --token glean_api_xyz
-            npx @gleanwork/configure-mcp-server local --instance acme --client claude --token glean_api_xyz
-            npx @gleanwork/configure-mcp-server local --instance acme --client cursor --token glean_api_xyz
-            npx @gleanwork/configure-mcp-server local --instance acme --client goose --token glean_api_xyz
-            npx @gleanwork/configure-mcp-server local --instance acme --client windsurf --env ~/.glean.env
-            npx @gleanwork/configure-mcp-server local --instance acme --client vscode --workspace --token glean_api_xyz
-
-            Remote:
-
-            npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client cursor
-            npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/agents --client claude
-            npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/analytics --client cursor
-            npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client goose
-            npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client windsurf
-            npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client vscode --workspace
-
-            # With explicit token (bypasses DCR):
-            npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client cursor --token glean_api_xyz
-
-            Init:
-
-            npx @gleanwork/configure-mcp-server init --client cursor
-            npx @gleanwork/configure-mcp-server init --client claude-code
-            npx @gleanwork/configure-mcp-server init --agents
-            npx @gleanwork/configure-mcp-server init --client cursor --agents
-            npx @gleanwork/configure-mcp-server init --client cursor --server-name my_glean
-            npx @gleanwork/configure-mcp-server init --client claude-code --dryRun
-
-          Run 'npx @gleanwork/configure-mcp-server help' for more details on supported clients
-
-          Version: v9.9.9
+        Available MCP Servers:
+          local     Glean's local MCP server with access to common tools (search, chat, read_documents, etc.)
+          remote    Glean's remote MCP servers hosted in your Glean instance
         "
       `);
   });
@@ -222,82 +172,32 @@ describe('CLI', () => {
     expect(result.stderr).toMatchInlineSnapshot(`""`);
     expect(normalizeOutput(result.stdout, project.baseDir))
       .toMatchInlineSnapshot(`
-        "
-          MCP server configurator for Glean
+        "Usage: configure-mcp-server [options] [command]
 
-          Usage
-            Configure popular MCP clients to add Glean as an MCP server.
+        Configure popular MCP clients to add Glean as an MCP server
 
-            Available MCP servers:
+        Options:
+          -v, --version     Output the current version
+          -h, --help        display help for command
 
-              local     A local server using Glean's API to access common tools (search, chat)
-              remote    Connect to Glean's hosted MCP servers (default tools and agents).
+        Commands:
+          local [options]   Configure Glean's local MCP server for a given client
+          remote [options]  Configure Glean's remote MCP server for a given client
+          init [options]    Initialize Glean MCP project tools for enhanced development
+                            experience
+          help              Show detailed help including supported clients
 
+        Available MCP Clients:
+          claude-code      Claude Code
+          claude-desktop   Claude for Desktop
+          cursor           Cursor
+          goose            Goose
+          vscode           Visual Studio Code
+          windsurf         Windsurf
 
-            $ npx @gleanwork/configure-mcp-server --client <client-name> [options]
-
-          Commands
-            local       Configure Glean's local MCP server for a given client
-            remote      Configure Glean's remote MCP server for a given client
-            init        Initialize Glean MCP project tools for enhanced development experience
-            help        Show this help message
-
-          Options for local
-            --client, -c    MCP client to configure for (claude-code, claude-desktop, cursor, goose, vscode, windsurf)
-            --token, -t     Glean API token (required)
-            --instance, -i  Glean instance name
-            --env, -e       Path to .env file containing GLEAN_INSTANCE and GLEAN_API_TOKEN
-            --workspace     Create workspace configuration instead of global (VS Code only)
-
-          Options for remote
-            --client, -c    MCP client to configure for (claude-code, claude-desktop, cursor, goose, vscode, windsurf)
-            --url, -u       Full MCP server URL (required, e.g., https://my-be.glean.com/mcp/default)
-            --token, -t     Glean API token (optional, OAuth will be used if not provided)
-            --env, -e       Path to .env file containing GLEAN_URL and optionally GLEAN_API_TOKEN
-            --workspace     Create workspace configuration instead of global (VS Code only)
-
-          Options for init
-            --client, -c      MCP client to create project files for (cursor, claude-code)
-            --agents          Create AGENTS.md file with Glean MCP instructions
-            --server-name     Server name to use in templates (default: glean_default)
-            --dryRun          Show what files would be created without creating them
-
-
-          Examples
-
-            Local:
-
-            npx @gleanwork/configure-mcp-server local --instance acme --client cursor --token glean_api_xyz
-            npx @gleanwork/configure-mcp-server local --instance acme --client claude --token glean_api_xyz
-            npx @gleanwork/configure-mcp-server local --instance acme --client cursor --token glean_api_xyz
-            npx @gleanwork/configure-mcp-server local --instance acme --client goose --token glean_api_xyz
-            npx @gleanwork/configure-mcp-server local --instance acme --client windsurf --env ~/.glean.env
-            npx @gleanwork/configure-mcp-server local --instance acme --client vscode --workspace --token glean_api_xyz
-
-            Remote:
-
-            npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client cursor
-            npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/agents --client claude
-            npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/analytics --client cursor
-            npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client goose
-            npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client windsurf
-            npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client vscode --workspace
-
-            # With explicit token (bypasses DCR):
-            npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client cursor --token glean_api_xyz
-
-            Init:
-
-            npx @gleanwork/configure-mcp-server init --client cursor
-            npx @gleanwork/configure-mcp-server init --client claude-code
-            npx @gleanwork/configure-mcp-server init --agents
-            npx @gleanwork/configure-mcp-server init --client cursor --agents
-            npx @gleanwork/configure-mcp-server init --client cursor --server-name my_glean
-            npx @gleanwork/configure-mcp-server init --client claude-code --dryRun
-
-          Run 'npx @gleanwork/configure-mcp-server help' for more details on supported clients
-
-          Version: v9.9.9
+        Available MCP Servers:
+          local     Glean's local MCP server with access to common tools (search, chat, read_documents, etc.)
+          remote    Glean's remote MCP servers hosted in your Glean instance
         "
       `);
   });
@@ -306,15 +206,13 @@ describe('CLI', () => {
     const result = await runBin('invalid-command');
 
     expect(result.exitCode).toEqual(1);
-    expect(result.stderr).toMatchInlineSnapshot(`
-      "Unknown command: invalid-command
-      Run with --help for usage information"
-    `);
+    expect(result.stderr).toMatchInlineSnapshot(`"error: unknown command 'invalid-command'"`);
     expect(result.stdout).toMatchInlineSnapshot(`""`);
   });
 
   it('handles invalid clients', async () => {
     const result = await runBin(
+      'local',
       '--client',
       'invalid-client',
       '--instance',
@@ -329,134 +227,9 @@ describe('CLI', () => {
     expect(result.stdout).toMatchInlineSnapshot(`""`);
   });
 
-  for (const command of ['local', 'remote']) {
-    describe(command, () => {
-      it('fails when only token provided', async () => {
-        const result = await runBin(
-          '--client',
-          'cursor',
-          '--token',
-          'test-token',
-          {
-            env: {
-              GLEAN_MCP_CONFIG_DIR: project.baseDir,
-              HOME: project.baseDir,
-              USERPROFILE: project.baseDir,
-              APPDATA: project.baseDir,
-            },
-          },
-        );
-
-        expect(result.exitCode).toEqual(1);
-        expect(result.stderr).toMatchInlineSnapshot(`
-          "
-          "Warning: Configuring without complete credentials.
-          You must provide either:
-            1. Both --token and --instance, or
-            2. --env pointing to a .env file containing GLEAN_API_TOKEN and GLEAN_INSTANCE
-
-          Continuing with configuration, but you will need to set credentials manually later."
-
-          Error configuring client: Local configuration requires an instance (--instance) or URL. Please provide it via command line options or in your .env file."
-        `);
-      });
-
-      it('fails when only instance provided', async () => {
-        const result = await runBin(
-          '--client',
-          'cursor',
-          '--instance',
-          'test-instance',
-          {
-            env: {
-              GLEAN_MCP_CONFIG_DIR: project.baseDir,
-              HOME: project.baseDir,
-              USERPROFILE: project.baseDir,
-              APPDATA: project.baseDir,
-            },
-          },
-        );
-
-        expect(result.exitCode).toEqual(1);
-        expect(result.stderr).toMatchInlineSnapshot(
-          `"Error configuring client: Local configuration requires an API token (--token). Please provide it via command line options or in your .env file."`,
-        );
-      });
-
-      it('fails when env file has only token', async () => {
-        await project.write({
-          '.env': 'GLEAN_API_TOKEN=env-token\n',
-        });
-
-        const result = await runBin(
-          '--client',
-          'cursor',
-          '--env',
-          envFilePath,
-          {
-            env: {
-              GLEAN_MCP_CONFIG_DIR: project.baseDir,
-              HOME: project.baseDir,
-              USERPROFILE: project.baseDir,
-              APPDATA: project.baseDir,
-            },
-          },
-        );
-
-        expect(result.exitCode).toEqual(1);
-        expect(result.stderr).toMatchInlineSnapshot(
-          `"Error configuring client: Local configuration requires an instance (--instance) or URL. Please provide it via command line options or in your .env file."`,
-        );
-      });
-
-      it('fails when env file has only instance', async () => {
-        await project.write({
-          '.env': 'GLEAN_INSTANCE=env-instance\n',
-        });
-
-        const result = await runBin(
-          '--client',
-          'cursor',
-          '--env',
-          envFilePath,
-          {
-            env: {
-              GLEAN_MCP_CONFIG_DIR: project.baseDir,
-              HOME: project.baseDir,
-              USERPROFILE: project.baseDir,
-              APPDATA: project.baseDir,
-            },
-          },
-        );
-
-        expect(result.exitCode).toEqual(1);
-        expect(result.stderr).toMatchInlineSnapshot(
-          `"Error configuring client: Local configuration requires an API token (--token). Please provide it via command line options or in your .env file."`,
-        );
-      });
-
-      it('fails when neither token nor instance provided', async () => {
-        const result = await runBin('--client', 'cursor', {
-          env: {
-            GLEAN_MCP_CONFIG_DIR: project.baseDir,
-          },
-        });
-
-        expect(result.exitCode).toEqual(1);
-        expect(result.stderr).toMatchInlineSnapshot(`
-          "Error: You must provide either:
-            1. Both --token and --instance for local configuration, or
-            2. --url for remote configuration, or
-            3. --env pointing to a .env file with configuration
-          Run with --help for usage information"
-        `);
-      });
-    });
-  }
-
   describe('local', () => {
     it('can configure with custom instance and token', async () => {
-      const result = await runBin(
+      const result = await runBin('local', 
         '--client',
         'cursor',
         '--instance',
@@ -498,7 +271,7 @@ describe('CLI', () => {
       });
 
       it('creates a new config file when none exists', async () => {
-        const result = await runBin(
+        const result = await runBin('local', 
           '--client',
           'claude-code',
           '--token',
@@ -568,7 +341,7 @@ describe('CLI', () => {
 
         createConfigFile(configFilePath, existingConfig);
 
-        const result = await runBin(
+        const result = await runBin('local', 
           '--client',
           'claude-code',
           '--token',
@@ -634,7 +407,7 @@ describe('CLI', () => {
     });
 
     it('uses token auth when both token and instance provided via flags', async () => {
-      const result = await runBin(
+      const result = await runBin('local', 
         '--client',
         'cursor',
         '--token',
@@ -690,7 +463,7 @@ describe('CLI', () => {
         '.env': 'GLEAN_API_TOKEN=env-token\nGLEAN_INSTANCE=env-instance\n',
       });
 
-      const result = await runBin('--client', 'cursor', '--env', envFilePath, {
+      const result = await runBin('local', '--client', 'cursor', '--env', envFilePath, {
         env: {
           GLEAN_MCP_CONFIG_DIR: project.baseDir,
         },
@@ -734,7 +507,7 @@ describe('CLI', () => {
     });
 
     it('uses token auth when both token and instance provided via environment variables', async () => {
-      const result = await runBin('--client', 'cursor', {
+      const result = await runBin('local', '--client', 'cursor', {
         env: {
           GLEAN_MCP_CONFIG_DIR: project.baseDir,
           GLEAN_API_TOKEN: 'process-env-token',
@@ -770,7 +543,7 @@ describe('CLI', () => {
         '.env': 'GLEAN_API_TOKEN=env-token\nGLEAN_INSTANCE=env-instance\n',
       });
 
-      const result = await runBin(
+      const result = await runBin('local', 
         '--client',
         'cursor',
         '--token',
@@ -812,7 +585,7 @@ describe('CLI', () => {
     it('warns when env file path does not exist', async () => {
       const nonExistentPath = path.join(project.baseDir, 'nonexistent.env');
 
-      const result = await runBin(
+      const result = await runBin('local', 
         '--client',
         'cursor',
         '--env',
@@ -847,7 +620,7 @@ describe('CLI', () => {
       });
 
       it('creates a new config file when none exists', async () => {
-        const result = await runBin(
+        const result = await runBin('local', 
           '--client',
           'cursor',
           '--token',
@@ -919,7 +692,7 @@ describe('CLI', () => {
 
         createConfigFile(configFilePath, existingConfig);
 
-        const result = await runBin(
+        const result = await runBin('local', 
           '--client',
           'cursor',
           '--token',
@@ -1091,7 +864,7 @@ describe('CLI', () => {
       });
 
       it('creates a new config file when none exists', async () => {
-        const result = await runBin(
+        const result = await runBin('local', 
           '--client',
           'claude',
           '--token',
@@ -1163,7 +936,7 @@ describe('CLI', () => {
 
         createConfigFile(configFilePath, existingConfig);
 
-        const result = await runBin(
+        const result = await runBin('local', 
           '--client',
           'claude',
           '--token',
@@ -1529,7 +1302,7 @@ describe('CLI', () => {
       });
 
       it('creates a new config file when none exists', async () => {
-        const result = await runBin(
+        const result = await runBin('local', 
           '--client',
           'windsurf',
           '--token',
@@ -1601,7 +1374,7 @@ describe('CLI', () => {
 
         createConfigFile(configFilePath, existingConfig);
 
-        const result = await runBin(
+        const result = await runBin('local', 
           '--client',
           'windsurf',
           '--token',
@@ -1751,7 +1524,7 @@ describe('CLI', () => {
       });
 
       it('creates a new config file when none exists', async () => {
-        const result = await runBin(
+        const result = await runBin('local', 
           '--client',
           'goose',
           '--token',
@@ -1814,7 +1587,7 @@ describe('CLI', () => {
 
         createConfigFile(configFilePath, existingConfig);
 
-        const result = await runBin(
+        const result = await runBin('local', 
           '--client',
           'goose',
           '--token',
@@ -2089,7 +1862,7 @@ describe('CLI', () => {
       });
 
       it('creates a new config file when none exists', async () => {
-        const result = await runBin(
+        const result = await runBin('local', 
           '--client',
           'vscode',
           '--token',
@@ -2163,7 +1936,7 @@ describe('CLI', () => {
 
         createConfigFile(configFilePath, existingConfig);
 
-        const result = await runBin(
+        const result = await runBin('local', 
           '--client',
           'vscode',
           '--token',
@@ -2314,8 +2087,6 @@ describe('CLI', () => {
         'cursor',
         '--token',
         'glean_api_test',
-        '--instance',
-        'test-domain',
         {
           env: {
             GLEAN_MCP_CONFIG_DIR: project.baseDir,
@@ -2325,7 +2096,7 @@ describe('CLI', () => {
 
       expect(result.exitCode).toEqual(1);
       expect(result.stderr).toContain(
-        'Remote configurations require a full URL (--url)',
+        'Remote configuration requires a URL (--url)',
       );
     });
 
@@ -2416,76 +2187,6 @@ describe('CLI', () => {
       `);
     });
 
-    it('warns when --agents is used with --url', async () => {
-      const result = await runBin(
-        'remote',
-        '--url',
-        'https://my-be.glean.com/mcp/custom-agent',
-        '--agents',
-        '--client',
-        'cursor',
-        '--token',
-        'test-token',
-        {
-          env: {
-            GLEAN_MCP_CONFIG_DIR: project.baseDir,
-          },
-        },
-      );
-
-      expect(result.exitCode).toEqual(0);
-
-      expect(normalizeOutput(result.stderr, project.baseDir)).toContain(
-        'Note: --agents flag is ignored when using --url',
-      );
-
-      const configFileContents = fs.readFileSync(
-        path.join(project.baseDir, '.cursor', 'mcp.json'),
-        'utf8',
-      );
-      const config = JSON.parse(configFileContents);
-
-      expect(Object.keys(config.mcpServers)[0]).toBe('glean_agents');
-    });
-
-    it('warns when both --url and --instance are provided and ignores instance', async () => {
-      const result = await runBin(
-        'remote',
-        '--url',
-        'https://my-be.glean.com/mcp/analytics',
-        '--instance',
-        'test-instance',
-        '--client',
-        'cursor',
-        '--token',
-        'test-token',
-        {
-          env: {
-            GLEAN_MCP_CONFIG_DIR: project.baseDir,
-          },
-        },
-      );
-
-      expect(result.exitCode).toEqual(0);
-
-      const output = normalizeOutput(
-        result.stdout + result.stderr,
-        project.baseDir,
-      );
-      expect(output).toContain(
-        'Warning: Both --instance and --url were provided. The --instance flag will be ignored when --url is specified.',
-      );
-
-      const configPath = path.join(project.baseDir, '.cursor', 'mcp.json');
-      const configFileContents = fs.readFileSync(configPath, 'utf-8');
-      const config = JSON.parse(configFileContents);
-      expect(Object.keys(config.mcpServers)[0]).toBe('glean_analytics');
-
-      expect(config.mcpServers.glean_analytics.type).toBe('http');
-      expect(config.mcpServers.glean_analytics.url).toBe(
-        'https://my-be.glean.com/mcp/analytics',
-      );
-    });
   });
 
   describe('init', () => {
@@ -2496,61 +2197,19 @@ describe('CLI', () => {
       expect(result.stderr).toMatchInlineSnapshot(`""`);
       expect(normalizeOutput(result.stdout, project.baseDir))
         .toMatchInlineSnapshot(`
-        "
-            Usage
-              Configure Glean MCP project-level tools for enhanced development experience.
+          "Usage: configure-mcp-server init [options]
 
-              $ npx @gleanwork/configure-mcp-server init [--client <client-name>] [--agents] [options]
+          Initialize Glean MCP project tools for enhanced development experience
 
-            Commands
-              init        Initialize Glean MCP project tools
-
-            Options for init
-              --client, -c      MCP client to create project files for (cursor, claude-code)
-              --agents          Create AGENTS.md file with Glean MCP instructions
-              --server-name     Server name to use in templates (default: glean_default)
-              --dryRun          Show what files would be created without creating them
-              --help, -h        Show this help message
-
-            Examples
-
-              Initialize Cursor rules:
-              npx @gleanwork/configure-mcp-server init --client cursor
-
-              Initialize Claude Code agent:
-              npx @gleanwork/configure-mcp-server init --client claude-code
-
-              Create only AGENTS.md:
-              npx @gleanwork/configure-mcp-server init --agents
-
-              Create both Cursor files and AGENTS.md:
-              npx @gleanwork/configure-mcp-server init --client cursor --agents
-
-              Use custom server name:
-              npx @gleanwork/configure-mcp-server init --client cursor --server-name my_glean
-
-              Preview what would be created for Claude Code:
-              npx @gleanwork/configure-mcp-server init --client claude-code --dryRun
-
-            Project Files Created
-
-              For Cursor:
-                .cursor/rules/glean-mcp.mdc              Glean MCP usage rule
-
-              For Claude Code:
-                .claude/agents/glean-expert.md           Glean research agent
-
-              For --agents:
-                AGENTS.md                                Standard agent instructions file
-
-            Note: This command creates project-level files in the current directory.
-                  Make sure to run 'configure-mcp-server remote' first to set up
-                  your MCP server connection at the host level.
-
-            Version: v9.9.9
-
-        "
-      `);
+          Options:
+            -c, --client <client>  MCP client to create project files for (cursor,
+                                   claude-code)
+            --agents               Create AGENTS.md file with Glean MCP instructions
+            --server-name <name>   Server name to use in templates (default:
+                                   "glean_default")
+            --dryRun               Show what files would be created without creating them
+            -h, --help             display help for command"
+        `);
     });
 
     it('shows help output when -h is provided', async () => {
@@ -2560,61 +2219,19 @@ describe('CLI', () => {
       expect(result.stderr).toMatchInlineSnapshot(`""`);
       expect(normalizeOutput(result.stdout, project.baseDir))
         .toMatchInlineSnapshot(`
-        "
-            Usage
-              Configure Glean MCP project-level tools for enhanced development experience.
+          "Usage: configure-mcp-server init [options]
 
-              $ npx @gleanwork/configure-mcp-server init [--client <client-name>] [--agents] [options]
+          Initialize Glean MCP project tools for enhanced development experience
 
-            Commands
-              init        Initialize Glean MCP project tools
-
-            Options for init
-              --client, -c      MCP client to create project files for (cursor, claude-code)
-              --agents          Create AGENTS.md file with Glean MCP instructions
-              --server-name     Server name to use in templates (default: glean_default)
-              --dryRun          Show what files would be created without creating them
-              --help, -h        Show this help message
-
-            Examples
-
-              Initialize Cursor rules:
-              npx @gleanwork/configure-mcp-server init --client cursor
-
-              Initialize Claude Code agent:
-              npx @gleanwork/configure-mcp-server init --client claude-code
-
-              Create only AGENTS.md:
-              npx @gleanwork/configure-mcp-server init --agents
-
-              Create both Cursor files and AGENTS.md:
-              npx @gleanwork/configure-mcp-server init --client cursor --agents
-
-              Use custom server name:
-              npx @gleanwork/configure-mcp-server init --client cursor --server-name my_glean
-
-              Preview what would be created for Claude Code:
-              npx @gleanwork/configure-mcp-server init --client claude-code --dryRun
-
-            Project Files Created
-
-              For Cursor:
-                .cursor/rules/glean-mcp.mdc              Glean MCP usage rule
-
-              For Claude Code:
-                .claude/agents/glean-expert.md           Glean research agent
-
-              For --agents:
-                AGENTS.md                                Standard agent instructions file
-
-            Note: This command creates project-level files in the current directory.
-                  Make sure to run 'configure-mcp-server remote' first to set up
-                  your MCP server connection at the host level.
-
-            Version: v9.9.9
-
-        "
-      `);
+          Options:
+            -c, --client <client>  MCP client to create project files for (cursor,
+                                   claude-code)
+            --agents               Create AGENTS.md file with Glean MCP instructions
+            --server-name <name>   Server name to use in templates (default:
+                                   "glean_default")
+            --dryRun               Show what files would be created without creating them
+            -h, --help             display help for command"
+        `);
     });
 
     it('creates cursor files with --client cursor', async () => {
