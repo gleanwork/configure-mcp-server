@@ -1,4 +1,4 @@
-# Contributing to @gleanwork/mcp-server
+# Contributing to @gleanwork/configure-mcp-server
 
 Thank you for your interest in contributing to the Glean MCP Server! This document provides guidelines and instructions for development.
 
@@ -7,8 +7,8 @@ Thank you for your interest in contributing to the Glean MCP Server! This docume
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/gleanwork/mcp-server.git
-cd mcp-server
+git clone https://github.com/gleanwork/configure-mcp-server.git
+cd configure-mcp-server
 ```
 
 1. Ensure `node` and `npm` are installed. This project has a built-in
@@ -38,34 +38,12 @@ npm run build
 npm test
 ```
 
-## Repo Organization
+## Running the CLI Locally
 
-The repository is structured as a monorepo with the following packages:
-
-- `@gleanwork/configure-mcp-server` a tool for configuring popular MCP clients to use Glean.
-- `@gleanwork/local-mcp-server` the stdio MCP server that exposes Glean APIs to local assistants.
-- `@gleanwork/mcp-server-utils` a collection of utilities used by both the configure tool and local mcp server.
-
-## Running the Server Locally
-
-The server communicates via stdio, making it ideal for integration with AI models and other tools:
+The CLI is built into the `build` directory:
 
 ```bash
-node packages/local-server/build/index.js
-```
-
-Input and output follow the JSON-RPC 2.0 protocol, with each message on a new line.
-
-## Documentation
-
-### Running Documentation Locally
-
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm docs:dev
+node ./build/index.js [command]
 ```
 
 ## Making Changes
