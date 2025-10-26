@@ -160,6 +160,16 @@ describe('CLI', () => {
         Available MCP Servers:
           local     Glean's local MCP server with access to common tools (search, chat, read_documents, etc.)
           remote    Glean's remote MCP servers hosted in your Glean instance
+
+        Examples:
+          Configure local MCP server:
+            $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --instance acme
+
+          Configure remote MCP server:
+            $ npx -y @gleanwork/configure-mcp-server remote --client cursor --url https://my-be.glean.com/mcp/default
+
+          Initialize project files:
+            $ npx -y @gleanwork/configure-mcp-server init --client cursor
         "
       `);
   });
@@ -198,6 +208,16 @@ describe('CLI', () => {
         Available MCP Servers:
           local     Glean's local MCP server with access to common tools (search, chat, read_documents, etc.)
           remote    Glean's remote MCP servers hosted in your Glean instance
+
+        Examples:
+          Configure local MCP server:
+            $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --instance acme
+
+          Configure remote MCP server:
+            $ npx -y @gleanwork/configure-mcp-server remote --client cursor --url https://my-be.glean.com/mcp/default
+
+          Initialize project files:
+            $ npx -y @gleanwork/configure-mcp-server init --client cursor
         "
       `);
   });
@@ -2208,7 +2228,13 @@ describe('CLI', () => {
             --server-name <name>   Server name to use in templates (default:
                                    "glean_default")
             --dryRun               Show what files would be created without creating them
-            -h, --help             display help for command"
+            -h, --help             display help for command
+
+          Examples:
+            $ npx -y @gleanwork/configure-mcp-server init --client cursor
+            $ npx -y @gleanwork/configure-mcp-server init --client claude-code --agents
+            $ npx -y @gleanwork/configure-mcp-server init --client cursor --server-name my_glean --dryRun
+          "
         `);
     });
 
@@ -2230,7 +2256,13 @@ describe('CLI', () => {
             --server-name <name>   Server name to use in templates (default:
                                    "glean_default")
             --dryRun               Show what files would be created without creating them
-            -h, --help             display help for command"
+            -h, --help             display help for command
+
+          Examples:
+            $ npx -y @gleanwork/configure-mcp-server init --client cursor
+            $ npx -y @gleanwork/configure-mcp-server init --client claude-code --agents
+            $ npx -y @gleanwork/configure-mcp-server init --client cursor --server-name my_glean --dryRun
+          "
         `);
     });
 

@@ -44,6 +44,16 @@ ${clientListFormatted}
 Available MCP Servers:
   local     Glean's local MCP server with access to common tools (search, chat, read_documents, etc.)
   remote    Glean's remote MCP servers hosted in your Glean instance
+
+Examples:
+  Configure local MCP server:
+    $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --instance acme
+
+  Configure remote MCP server:
+    $ npx -y @gleanwork/configure-mcp-server remote --client cursor --url https://my-be.glean.com/mcp/default
+
+  Initialize project files:
+    $ npx -y @gleanwork/configure-mcp-server init --client cursor
 `,
     );
 
@@ -62,6 +72,15 @@ Available MCP Servers:
       'Create workspace configuration instead of global (VS Code only)',
     )
     .option('--trace', 'Enable trace logging')
+    .addHelpText(
+      'after',
+      `
+Examples:
+  $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --instance acme
+  $ npx -y @gleanwork/configure-mcp-server local --client vscode --env ~/.glean.env
+  $ npx -y @gleanwork/configure-mcp-server local --client vscode --workspace --token xxx --instance acme
+`,
+    )
     .action(async (options) => {
       if (options.trace) {
         Logger.getInstance().setLogLevel(LogLevel.TRACE);
@@ -117,6 +136,15 @@ Available MCP Servers:
       'Create workspace configuration instead of global (VS Code only)',
     )
     .option('--trace', 'Enable trace logging')
+    .addHelpText(
+      'after',
+      `
+Examples:
+  $ npx -y @gleanwork/configure-mcp-server remote --client cursor --url https://my-be.glean.com/mcp/default
+  $ npx -y @gleanwork/configure-mcp-server remote --client cursor --url https://my-be.glean.com/mcp/default --token xxx
+  $ npx -y @gleanwork/configure-mcp-server remote --client vscode --url https://my-be.glean.com/mcp/default --env ~/.glean.env
+`,
+    )
     .action(async (options) => {
       if (options.trace) {
         Logger.getInstance().setLogLevel(LogLevel.TRACE);
@@ -170,6 +198,15 @@ Available MCP Servers:
     .option(
       '--dryRun',
       'Show what files would be created without creating them',
+    )
+    .addHelpText(
+      'after',
+      `
+Examples:
+  $ npx -y @gleanwork/configure-mcp-server init --client cursor
+  $ npx -y @gleanwork/configure-mcp-server init --client claude-code --agents
+  $ npx -y @gleanwork/configure-mcp-server init --client cursor --server-name my_glean --dryRun
+`,
     )
     .action(async (options) => {
       const { client, agents, dryRun, serverName } = options;
