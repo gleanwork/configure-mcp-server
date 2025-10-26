@@ -42,13 +42,13 @@ npx -y @gleanwork/configure-mcp-server remote --url https://your-instance-be.gle
 For local server installations, specify both token and instance:
 
 ```bash
-npx @gleanwork/configure-mcp-server --client cursor --token your-api-token --instance instance-name
+npx -y @gleanwork/configure-mcp-server local --client cursor --token your-api-token --instance instance-name
 ```
 
 You can also use an environment file:
 
 ```bash
-npx @gleanwork/configure-mcp-server --client cursor --env path/to/.env.glean
+npx -y @gleanwork/configure-mcp-server local --client cursor --env path/to/.env.glean
 ```
 
 The environment file should contain:
@@ -73,16 +73,16 @@ You can initialize project-level tools and prompts for enhanced development expe
 
 ```bash
 # Initialize Cursor rules
-npx @gleanwork/configure-mcp-server init --client cursor
+npx -y @gleanwork/configure-mcp-server init --client cursor
 
 # Initialize Claude Code agents
-npx @gleanwork/configure-mcp-server init --client claude-code
+npx -y @gleanwork/configure-mcp-server init --client claude-code
 
 # Create AGENTS.md file
-npx @gleanwork/configure-mcp-server init --agents
+npx -y @gleanwork/configure-mcp-server init --agents
 
 # Preview files without creating them
-npx @gleanwork/configure-mcp-server init --client cursor --dryRun
+npx -y @gleanwork/configure-mcp-server init --client cursor --dryRun
 ```
 
 This creates client-specific files:
@@ -97,13 +97,13 @@ By default, the CLI uses `glean_default` as the server name in generated templat
 
 ```bash
 # Use custom server name with Cursor
-npx @gleanwork/configure-mcp-server init --client cursor --server-name my_company_glean
+npx -y @gleanwork/configure-mcp-server init --client cursor --server-name my_company_glean
 
 # Use custom server name with Claude Code
-npx @gleanwork/configure-mcp-server init --client claude-code --server-name enterprise_glean
+npx -y @gleanwork/configure-mcp-server init --client claude-code --server-name enterprise_glean
 
 # Combine with other options
-npx @gleanwork/configure-mcp-server init --client cursor --agents --server-name acme_glean
+npx -y @gleanwork/configure-mcp-server init --client cursor --agents --server-name acme_glean
 ```
 
 This ensures that all generated prompts and configurations reference the correct server name for your MCP setup. The server name must match the name you used when configuring your MCP server connection.

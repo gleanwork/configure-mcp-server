@@ -1,256 +1,243 @@
 #!/usr/bin/env node
-/**
- * @fileoverview Glean Model Context Protocol (MCP) Configuration Utilities
- *
- * This is the main entry point for the @gleanwork/configure-mcp-server
- * package. It handles MCP client configuration for various host applications,
- * supporting both local and remote MCP server setups.
- *
- * 1. Configuring MCP settings for different host applications
- * 2. Supporting local MCP servers with instance + token authentication
- * 3. Supporting remote MCP servers with URL-based configuration
- *
- * @module @gleanwork/mcp-server
- */
 
-import meow from 'meow';
+import { Command } from 'commander';
 import {
   configure,
   listSupportedClients,
   validateFlags,
 } from './configure/index.js';
 import { availableClients } from './configure/client/index.js';
-import { initializeProject, showInitHelp } from './init/index.js';
+import { initializeProject } from './init/index.js';
 import { Logger, trace, LogLevel } from '@gleanwork/mcp-server-utils/logger';
 import { VERSION } from './common/version.js';
 import { checkAndOpenLaunchWarning } from '@gleanwork/mcp-server-utils/util';
 
-/**
- * Main function to handle command line arguments and branch between configure and auth modes
- */
+async function getClientList(): Promise<string> {
+  const clients = Object.entries(availableClients);
+  if (clients.length === 0) {
+    return 'No clients available';
+  }
+  const longestName = Math.max(...clients.map(([key]) => key.length));
+  return clients
+    .map(([key, config]) => `  ${key.padEnd(longestName + 2)} ${config.displayName}`)
+    .join('\n');
+}
+
 async function main() {
   await checkAndOpenLaunchWarning(VERSION);
 
   const clientList = Object.keys(availableClients).join(', ');
+  const clientListFormatted = await getClientList();
 
-  const help = `
-    Usage
-      Configure popular MCP clients to add Glean as an MCP server.
+  const program = new Command();
 
-      Available MCP servers:
+  program
+    .name('configure-mcp-server')
+    .description('Configure popular MCP clients to add Glean as an MCP server')
+    .version(VERSION, '-v, --version', 'Output the current version')
+    .addHelpText(
+      'after',
+      `
+Available MCP Clients:
+${clientListFormatted}
 
-        local     A local server using Glean's API to access common tools (search, chat)
-        remote    Connect to Glean's hosted MCP servers (default tools and agents).
+Available MCP Servers:
+  local     Glean's local MCP server with access to common tools (search, chat, read_documents, etc.)
+  remote    Glean's remote MCP servers hosted in your Glean instance
 
+Examples:
+  Configure local MCP server:
+    $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --instance acme
 
-      $ npx @gleanwork/configure-mcp-server --client <client-name> [options]
+  Configure remote MCP server:
+    $ npx -y @gleanwork/configure-mcp-server remote --client cursor --url https://my-be.glean.com/mcp/default
 
-    Commands
-      local       Configure Glean's local MCP server for a given client
-      remote      Configure Glean's remote MCP server for a given client
-      init        Initialize Glean MCP project tools for enhanced development experience
-      help        Show this help message
+  Initialize project files:
+    $ npx -y @gleanwork/configure-mcp-server init --client cursor
+`,
+    );
 
-    Options for local
-      --client, -c    MCP client to configure for (${clientList || 'loading available clients...'})
-      --token, -t     Glean API token (required)
-      --instance, -i  Glean instance name
-      --env, -e       Path to .env file containing GLEAN_INSTANCE and GLEAN_API_TOKEN
-      --workspace     Create workspace configuration instead of global (VS Code only)
+  program
+    .command('local')
+    .description("Configure Glean's local MCP server for a given client")
+    .option('-c, --client <client>', `MCP client to configure (${clientList})`)
+    .option('-i, --instance <instance>', 'Glean instance name')
+    .option('-t, --token <token>', 'Glean API token (required)')
+    .option(
+      '-e, --env <path>',
+      'Path to .env file containing GLEAN_INSTANCE and GLEAN_API_TOKEN',
+    )
+    .option(
+      '--workspace',
+      'Create workspace configuration instead of global (VS Code only)',
+    )
+    .option('--trace', 'Enable trace logging')
+    .addHelpText(
+      'after',
+      `
+Examples:
+  $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --instance acme
+  $ npx -y @gleanwork/configure-mcp-server local --client vscode --env ~/.glean.env
+  $ npx -y @gleanwork/configure-mcp-server local --client vscode --workspace --token xxx --instance acme
+`,
+    )
+    .action(async (options) => {
+      if (options.trace) {
+        Logger.getInstance().setLogLevel(LogLevel.TRACE);
+      }
 
-    Options for remote
-      --client, -c    MCP client to configure for (${clientList || 'loading available clients...'})
-      --url, -u       Full MCP server URL (required, e.g., https://my-be.glean.com/mcp/default)
-      --token, -t     Glean API token (optional, OAuth will be used if not provided)
-      --env, -e       Path to .env file containing GLEAN_URL and optionally GLEAN_API_TOKEN
-      --workspace     Create workspace configuration instead of global (VS Code only)
+      trace(process.title, `ppid/pid: [${process.ppid} / ${process.pid}]`);
+      trace(process.execPath, process.execArgv, process.argv);
 
-    Options for init
-      --client, -c      MCP client to create project files for (cursor, claude-code)
-      --agents          Create AGENTS.md file with Glean MCP instructions
-      --server-name     Server name to use in templates (default: glean_default)
-      --dryRun          Show what files would be created without creating them
+      const { client, token, instance, env, workspace } = options;
 
-
-    Examples
-
-      Local:
-
-      npx @gleanwork/configure-mcp-server local --instance acme --client cursor --token glean_api_xyz
-      npx @gleanwork/configure-mcp-server local --instance acme --client claude --token glean_api_xyz
-      npx @gleanwork/configure-mcp-server local --instance acme --client cursor --token glean_api_xyz
-      npx @gleanwork/configure-mcp-server local --instance acme --client goose --token glean_api_xyz
-      npx @gleanwork/configure-mcp-server local --instance acme --client windsurf --env ~/.glean.env
-      npx @gleanwork/configure-mcp-server local --instance acme --client vscode --workspace --token glean_api_xyz
-
-      Remote:
-
-      npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client cursor
-      npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/agents --client claude
-      npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/analytics --client cursor
-      npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client goose
-      npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client windsurf
-      npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client vscode --workspace
-
-      # With explicit token (bypasses DCR):
-      npx @gleanwork/configure-mcp-server remote --url https://my-be.glean.com/mcp/default --client cursor --token glean_api_xyz
-
-      Init:
-
-      npx @gleanwork/configure-mcp-server init --client cursor
-      npx @gleanwork/configure-mcp-server init --client claude-code
-      npx @gleanwork/configure-mcp-server init --agents
-      npx @gleanwork/configure-mcp-server init --client cursor --agents
-      npx @gleanwork/configure-mcp-server init --client cursor --server-name my_glean
-      npx @gleanwork/configure-mcp-server init --client claude-code --dryRun
-
-    Run 'npx @gleanwork/configure-mcp-server help' for more details on supported clients
-
-    Version: v${VERSION}
-
-`;
-
-  const cli = meow(help, {
-    importMeta: import.meta,
-    flags: {
-      agents: {
-        type: 'boolean',
-        default: false,
-      },
-      client: {
-        type: 'string',
-        shortFlag: 'c',
-      },
-      token: {
-        type: 'string',
-        shortFlag: 't',
-      },
-      instance: {
-        type: 'string',
-        shortFlag: 'i',
-      },
-      url: {
-        type: 'string',
-        shortFlag: 'u',
-      },
-      env: {
-        type: 'string',
-        shortFlag: 'e',
-      },
-      help: {
-        type: 'boolean',
-        shortFlag: 'h',
-      },
-      trace: {
-        type: 'boolean',
-      },
-      workspace: {
-        type: 'boolean',
-      },
-      dryRun: {
-        type: 'boolean',
-      },
-    },
-  });
-
-  if (!cli.flags.trace) {
-    Logger.getInstance().setLogLevel(LogLevel.INFO);
-  }
-
-  trace(process.title, `ppid/pid: [${process.ppid} / ${process.pid}]`);
-  trace(process.execPath, process.execArgv, process.argv);
-
-  // Get the command, defaulting to 'local' if none provided
-  const command = cli.input.length === 0 ? 'local' : cli.input[0].toLowerCase();
-  switch (command) {
-    case 'remote': {
-      const { client, token, instance, url, env, workspace, agents } =
-        cli.flags;
-
-      if (!(await validateFlags(client, token, instance, url, env))) {
+      if (workspace && client && client !== 'vscode') {
+        console.error(
+          'Error: --workspace option is only available for VS Code client',
+        );
         process.exit(1);
       }
 
-      // Warn if --agents is used with --url since the server is determined by the URL
-      if (url && agents) {
-        console.warn(
-          'Note: --agents flag is ignored when using --url. The server is determined by the URL path.\n',
-        );
+      if (!(await validateFlags(client, token, instance, undefined, env))) {
+        process.exit(1);
       }
 
       try {
-        await configure(client as string, {
+        await configure(client, {
           token,
           instance,
+          envPath: env,
+          workspace,
+        });
+      } catch (error: any) {
+        console.error(`Configuration failed: ${error.message}`);
+        process.exit(1);
+      }
+    });
+
+  program
+    .command('remote')
+    .description("Configure Glean's remote MCP server for a given client")
+    .option('-c, --client <client>', `MCP client to configure (${clientList})`)
+    .option(
+      '-u, --url <url>',
+      'Full MCP server URL (required, e.g., https://my-be.glean.com/mcp/default)',
+    )
+    .option(
+      '-t, --token <token>',
+      'Glean API token (optional, OAuth will be used if not provided)',
+    )
+    .option(
+      '-e, --env <path>',
+      'Path to .env file containing GLEAN_URL and optionally GLEAN_API_TOKEN',
+    )
+    .option(
+      '--workspace',
+      'Create workspace configuration instead of global (VS Code only)',
+    )
+    .option('--trace', 'Enable trace logging')
+    .addHelpText(
+      'after',
+      `
+Examples:
+  $ npx -y @gleanwork/configure-mcp-server remote --client cursor --url https://my-be.glean.com/mcp/default
+  $ npx -y @gleanwork/configure-mcp-server remote --client cursor --url https://my-be.glean.com/mcp/default --token xxx
+  $ npx -y @gleanwork/configure-mcp-server remote --client vscode --url https://my-be.glean.com/mcp/default --env ~/.glean.env
+`,
+    )
+    .action(async (options) => {
+      if (options.trace) {
+        Logger.getInstance().setLogLevel(LogLevel.TRACE);
+      }
+
+      trace(process.title, `ppid/pid: [${process.ppid} / ${process.pid}]`);
+      trace(process.execPath, process.execArgv, process.argv);
+
+      const { client, token, url, env, workspace } = options;
+
+      if (workspace && client && client !== 'vscode') {
+        console.error(
+          'Error: --workspace option is only available for VS Code client',
+        );
+        process.exit(1);
+      }
+
+      if (!(await validateFlags(client, token, undefined, url, env))) {
+        process.exit(1);
+      }
+
+      try {
+        await configure(client, {
+          token,
           url,
           envPath: env,
           remote: true,
-          agents,
           workspace,
         });
       } catch (error: any) {
         console.error(`Configuration failed: ${error.message}`);
         process.exit(1);
       }
-      break;
-    }
-    case 'local': {
-      const { client, token, instance, url, env, workspace } = cli.flags;
+    });
 
-      if (!(await validateFlags(client, token, instance, url, env))) {
-        process.exit(1);
-      }
-
-      try {
-        await configure(client as string, {
-          token,
-          instance,
-          url,
-          envPath: env,
-          workspace,
-        });
-      } catch (error: any) {
-        console.error(`Configuration failed: ${error.message}`);
-        process.exit(1);
-      }
-      break;
-    }
-
-    case 'init': {
-      const { client, agents, dryRun, help, serverName } = cli.flags;
-
-      // Show init-specific help if requested
-      if (help) {
-        showInitHelp();
-        break;
-      }
+  program
+    .command('init')
+    .description(
+      'Initialize Glean MCP project tools for enhanced development experience',
+    )
+    .option(
+      '-c, --client <client>',
+      'MCP client to create project files for (cursor, claude-code)',
+    )
+    .option('--agents', 'Create AGENTS.md file with Glean MCP instructions')
+    .option(
+      '--server-name <name>',
+      'Server name to use in templates',
+      'glean_default',
+    )
+    .option(
+      '--dryRun',
+      'Show what files would be created without creating them',
+    )
+    .addHelpText(
+      'after',
+      `
+Examples:
+  $ npx -y @gleanwork/configure-mcp-server init --client cursor
+  $ npx -y @gleanwork/configure-mcp-server init --client claude-code --agents
+  $ npx -y @gleanwork/configure-mcp-server init --client cursor --server-name my_glean --dryRun
+`,
+    )
+    .action(async (options) => {
+      const { client, agents, dryRun, serverName } = options;
 
       try {
         await initializeProject({
           client,
           agentsMd: Boolean(agents),
           dryRun: Boolean(dryRun),
-          serverName:
-            typeof serverName === 'string' ? serverName : 'glean_default',
+          serverName: serverName || 'glean_default',
         });
       } catch (error: any) {
         console.error(`Initialization failed: ${error.message}`);
         process.exit(1);
       }
-      break;
-    }
+    });
 
-    case 'help': {
-      console.log(cli.help);
+  program
+    .command('help')
+    .description('Show detailed help including supported clients')
+    .action(async () => {
+      program.help();
       await listSupportedClients();
-      break;
-    }
+    });
 
-    default: {
-      console.error(`Unknown command: ${command}`);
-      console.error('Run with --help for usage information');
-      process.exit(1);
-    }
+  Logger.getInstance().setLogLevel(LogLevel.INFO);
+
+  await program.parseAsync(process.argv);
+
+  if (!process.argv.slice(2).length) {
+    program.help();
   }
 }
 

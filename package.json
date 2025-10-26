@@ -51,9 +51,9 @@
   "dependencies": {
     "@gleanwork/mcp-config-schema": "^0.13.0",
     "@gleanwork/mcp-server-utils": "^0.8.0",
+    "commander": "^14.0.2",
     "dotenv": "^17.2.1",
     "mcp-remote": "^0.1.29",
-    "meow": "^14.0.0",
     "tldts": "^7.0.10",
     "yaml": "^2.8.0"
   },
