@@ -4,56 +4,48 @@
 [![npm version](https://badge.fury.io/js/@gleanwork%2Fconfigure-mcp-server.svg)](https://badge.fury.io/js/@gleanwork%2Fconfigure-mcp-server)
 [![License](https://img.shields.io/npm/l/@gleanwork%2Fconfigure-mcp-server.svg)](https://github.com/gleanwork/configure-mcp-server/blob/main/LICENSE)
 
-This package is for configuring popular MCP clients to connect to Glean's API using [@gleanwork/local-mcp-server](https://github.com/gleanwork/configure-mcp-server/tree/main/packages/local-mcp-server).
+A command-line utility for configuring popular MCP clients to connect to Glean's MCP servers.
+
+## Overview
+
+This package configures MCP clients to connect to:
+
+- **Remote MCP servers** (primary): URL-based servers that use OAuth with Dynamic Client Registration (DCR) for authentication
+- **Local MCP server** (experimental): Locally-installed server instances using `@gleanwork/local-mcp-server`
+
+## Authentication
+
+**OAuth with Dynamic Client Registration (Recommended)**: Automatic authentication with no manual token management required. This is the preferred method for remote MCP servers.
+
+**Bearer Tokens**: For MCP hosts that don't support OAuth, you can use user-scoped Client API tokens with the `MCP` scope. Contact your Glean administrator to provision these tokens.
 
 ## Configuration
 
-### API Tokens
+### Remote MCP Servers (Recommended)
 
-You'll need Glean [API credentials](https://developers.glean.com/client/authentication#glean-issued-tokens), and specifically a [user-scoped API token](https://developers.glean.com/client/authentication#user). API Tokens require the following scopes: `chat`, `search`. You should speak to your Glean administrator to provision these tokens.
-
-### Configure Environment Variables
-
-1. Set up your Glean API credentials:
-
-   ```bash
-   export GLEAN_INSTANCE=instance_name
-   export GLEAN_API_TOKEN=your_api_token
-   ```
-
-   Note: For backward compatibility, `GLEAN_SUBDOMAIN` is still supported, but `GLEAN_INSTANCE` is preferred.
-
-1. (Optional) For [global tokens](https://developers.glean.com/indexing/authentication/permissions#global-tokens) that support impersonation:
-
-   ```bash
-   export GLEAN_ACT_AS=user@example.com
-   ```
-
-## Client Configuration
-
-You can specify your token and instance on the command line.
+Configure your client to connect to a remote MCP server using OAuth:
 
 ```bash
-# Configure for Cursor
-npx @gleanwork/configure-mcp-server --client cursor --token your_api_token --instance instance_name
-
-# Configure for Claude Code
-npx @gleanwork/configure-mcp-server --client claude-code --token your_api_token --instance instance_name
-
-# Configure for Claude Desktop
-npx @gleanwork/configure-mcp-server --client claude --token your_api_token --instance instance_name
-
-# Configure for VS Code
-npx @gleanwork/configure-mcp-server --client vscode --token your_api_token --instance instance_name
-
-# Configure for Windsurf
-npx @gleanwork/configure-mcp-server --client windsurf --token your_api_token --instance instance_name
-
-# Configure for Goose
-npx @gleanwork/configure-mcp-server --client goose --token your_api_token --instance instance_name
+npx -y @gleanwork/configure-mcp-server remote --url https://your-instance-be.glean.com/mcp/default --client cursor
 ```
 
-Alternatively, you can use an environment file:
+Supported clients: `cursor`, `claude-desktop`, `claude-code`, `vscode`, `windsurf`, `goose`
+
+For clients that don't support OAuth, you can specify a token:
+
+```bash
+npx -y @gleanwork/configure-mcp-server remote --url https://your-instance-be.glean.com/mcp/default --client cursor --token your-api-token
+```
+
+### Local MCP Server
+
+For local server installations, specify both token and instance:
+
+```bash
+npx @gleanwork/configure-mcp-server --client cursor --token your-api-token --instance instance-name
+```
+
+You can also use an environment file:
 
 ```bash
 npx @gleanwork/configure-mcp-server --client cursor --env path/to/.env.glean
@@ -62,16 +54,18 @@ npx @gleanwork/configure-mcp-server --client cursor --env path/to/.env.glean
 The environment file should contain:
 
 ```bash
-GLEAN_INSTANCE=instance_name
-GLEAN_API_TOKEN=your_api_token
+GLEAN_INSTANCE=instance-name
+GLEAN_API_TOKEN=your-api-token
 ```
 
-After configuration:
+Note: For backward compatibility, `GLEAN_SUBDOMAIN` is still supported, but `GLEAN_INSTANCE` is preferred.
 
-- For Cursor: Restart Cursor and the agent will have access to Glean tools
-- For Claude Desktop: Restart Claude and use the hammer icon to access Glean tools
-- For Windsurf: Open Settings > Advanced Settings, scroll to Cascade section, and press refresh
-- For Goose: Restart Goose to load the new configuration
+### Post-Configuration Steps
+
+- **Cursor**: Restart Cursor and the agent will have access to Glean tools
+- **Claude Desktop**: Restart Claude and use the hammer icon to access Glean tools
+- **Windsurf**: Open Settings > Advanced Settings, scroll to Cascade section, and press refresh
+- **Goose**: Restart Goose to load the new configuration
 
 ## Project Initialization
 
