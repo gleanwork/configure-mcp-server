@@ -9,7 +9,7 @@
   "homepage": "",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/gleanwork/mcp-server.git",
+    "url": "git+ssh://git@github.com/gleanwork/configure-mcp-server.git",
     "directory": "packages/configure-mcp-server"
   },
   "license": "MIT",
