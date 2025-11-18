@@ -152,8 +152,11 @@ describe('CLI', () => {
         Available MCP Clients:
           claude-code      Claude Code
           claude-desktop   Claude for Desktop
+          codex            Codex
           cursor           Cursor
           goose            Goose
+          jetbrains        JetBrains AI Assistant
+          junie            Junie (JetBrains)
           vscode           Visual Studio Code
           windsurf         Windsurf
 
@@ -200,8 +203,11 @@ describe('CLI', () => {
         Available MCP Clients:
           claude-code      Claude Code
           claude-desktop   Claude for Desktop
+          codex            Codex
           cursor           Cursor
           goose            Goose
+          jetbrains        JetBrains AI Assistant
+          junie            Junie (JetBrains)
           vscode           Visual Studio Code
           windsurf         Windsurf
 
@@ -242,7 +248,7 @@ describe('CLI', () => {
     expect(result.exitCode).toEqual(1);
     expect(result.stderr).toMatchInlineSnapshot(`
       "Unsupported MCP client: invalid-client
-      Supported clients: claude-code, claude-desktop, cursor, goose, vscode, windsurf"
+      Supported clients: claude-code, claude-desktop, codex, cursor, goose, jetbrains, junie, vscode, windsurf"
     `);
     expect(result.stdout).toMatchInlineSnapshot(`""`);
   });
@@ -1514,14 +1520,7 @@ describe('CLI', () => {
                 "url": "https://old.glean.com/mcp"
               },
               "glean_default": {
-                "command": "npx",
-                "args": [
-                  "-y",
-                  "mcp-remote@0.1.29",
-                  "https://new-be.glean.com/mcp/default",
-                  "--header",
-                  "Authorization: Bearer auth-token"
-                ]
+                "serverUrl": "https://new-be.glean.com/mcp/default"
               }
             },
             "windsurf-config": {

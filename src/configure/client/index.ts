@@ -9,7 +9,7 @@ import {
   MCPConfigRegistry,
   ClientId,
   CLIENT,
-  type GleanServerConfig,
+  type MCPServerConfig,
   buildMcpServerName,
   buildConfiguration,
 } from '@gleanwork/mcp-config-schema';
@@ -25,8 +25,11 @@ import type {
 
 import claudeCodeClient from './claude-code.js';
 import claudeDesktopClient from './claude-desktop.js';
+import codexClient from './codex.js';
 import cursorClient from './cursor.js';
 import gooseClient from './goose.js';
+import jetbrainsClient from './jetbrains.js';
+import junieClient from './junie.js';
 import vscodeClient from './vscode.js';
 import windsurfClient from './windsurf.js';
 
@@ -64,7 +67,7 @@ export function createMcpServersConfig(
 ): MCPServersConfig {
   const isRemote = options?.remote === true;
 
-  const serverData: GleanServerConfig = {
+  const serverData: MCPServerConfig = {
     transport: isRemote ? 'http' : 'stdio',
     serverUrl: isRemote ? instanceOrUrl : undefined,
     instance: !isRemote ? instanceOrUrl : undefined,
@@ -184,10 +187,10 @@ export function createBaseClient(
     throw new Error(`Unknown client: ${clientId}`);
   }
   const displayName = clientInfo.displayName;
-  const serverKey = clientInfo.configStructure.serverKey || 'mcpServers';
+  const serversPropertyName = clientInfo.configStructure.serversPropertyName || 'mcpServers';
 
-  // If no custom hook is provided, create default one using the correct serverKey
-  const effectiveMcpServersHook = mcpServersHook || ((servers) => ({ [serverKey]: servers }));
+  // If no custom hook is provided, create default one using the correct serversPropertyName
+  const effectiveMcpServersHook = mcpServersHook || ((servers) => ({ [serversPropertyName]: servers }));
 
   return {
     displayName,
@@ -219,10 +222,10 @@ export function createBaseClient(
       const result = { ...existingConfig } as ConfigFileContents;
 
       // Get the servers from the new config using the correct key
-      const newServers = (newConfig as any)[serverKey] as MCPServersConfig;
-      const existingServers = ((result as any)[serverKey] as MCPServersConfig) || {};
+      const newServers = (newConfig as any)[serversPropertyName] as MCPServersConfig;
+      const existingServers = ((result as any)[serversPropertyName] as MCPServersConfig) || {};
 
-      (result as any)[serverKey] = updateMcpServersConfig(
+      (result as any)[serversPropertyName] = updateMcpServersConfig(
         existingServers,
         newServers,
       );
@@ -252,8 +255,11 @@ export function updateMcpServersConfig(
 export const availableClients: Record<string, MCPClientConfig> = {
   'claude-code': claudeCodeClient,
   'claude-desktop': claudeDesktopClient,
+  'codex': codexClient,
   'cursor': cursorClient,
   'goose': gooseClient,
+  'jetbrains': jetbrainsClient,
+  'junie': junieClient,
   'vscode': vscodeClient,
   'windsurf': windsurfClient,
 };
