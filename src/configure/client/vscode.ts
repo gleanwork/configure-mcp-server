@@ -18,7 +18,7 @@ import type {
 } from '../types.js';
 import {
   CLIENT,
-  type GleanServerConfig,
+  type MCPServerConfig,
   buildConfiguration,
   buildMcpServerName,
 } from '@gleanwork/mcp-config-schema';
@@ -33,7 +33,7 @@ function createVSCodeConfig(
 ): MCPConfig {
   const isRemote = options?.remote === true;
 
-  const serverData: GleanServerConfig = {
+  const serverData: MCPServerConfig = {
     transport: isRemote ? 'http' : 'stdio',
     serverUrl: isRemote ? instanceOrUrl : undefined,
     instance: !isRemote ? instanceOrUrl : undefined,
