@@ -1,6 +1,19 @@
 # Changelog
 
 
+
+## v2.1.0 (2025-11-25)
+
+#### :rocket: Enhancement
+* [#46](https://github.com/gleanwork/configure-mcp-server/pull/46) deps: Upgrades mcp-config-schema to 2.0.0 ([@steve-calvert-glean](https://github.com/steve-calvert-glean))
+
+#### :house: Internal
+* [#45](https://github.com/gleanwork/configure-mcp-server/pull/45) internal: Adds CLAUDE.md ([@steve-calvert-glean](https://github.com/steve-calvert-glean))
+
+#### Committers: 1
+- Steve Calvert ([@steve-calvert-glean](https://github.com/steve-calvert-glean))
+
+
 ## v2.0.0 (2025-10-26)
 
 #### :boom: Breaking Change
