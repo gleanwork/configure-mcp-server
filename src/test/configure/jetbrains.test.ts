@@ -59,7 +59,7 @@ describe('JetBrains MCP Client', () => {
           "glean_default": {
             "args": [
               "-y",
-              "mcp-remote@0.1.29",
+              "mcp-remote@0.1.37",
               "https://example-instance-be.glean.com/mcp/default",
               "--header",
               "Authorization: Bearer test-token",

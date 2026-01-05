@@ -1087,7 +1087,7 @@ describe('CLI', () => {
                 "command": "npx",
                 "args": [
                   "-y",
-                  "mcp-remote@0.1.29",
+                  "mcp-remote@0.1.37",
                   "https://my-be.glean.com/mcp/default"
                 ]
               }
