@@ -143,11 +143,10 @@ describe('VS Code MCP Client', () => {
     `);
   });
 
-  it('should generate a valid VS Code workspace config template with URL (remote: agents)', () => {
+  it('should generate a valid VS Code workspace config template with URL (remote: agents endpoint)', () => {
     const options: ConfigureOptions = {
       workspace: true,
       remote: true,
-      agents: true,
     };
     const config = vscodeClient.configTemplate(
       'https://example-instance-be.glean.com/mcp/agents',

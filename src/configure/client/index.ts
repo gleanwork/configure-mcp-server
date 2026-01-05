@@ -9,10 +9,14 @@ import {
   MCPConfigRegistry,
   ClientId,
   CLIENT,
-  type MCPServerConfig,
+  type MCPConnectionOptions,
   buildMcpServerName,
-  buildConfiguration,
-} from '@gleanwork/mcp-config-schema';
+  createGleanEnv,
+  createGleanUrlEnv,
+  createGleanHeaders,
+  createGleanRegistry,
+} from '@gleanwork/mcp-config';
+
 import mcpRemotePackageJson from 'mcp-remote/package.json' with { type: 'json' };
 import type {
   ConfigureOptions,
@@ -67,34 +71,43 @@ export function createMcpServersConfig(
 ): MCPServersConfig {
   const isRemote = options?.remote === true;
 
-  const serverData: MCPServerConfig = {
+  // For stdio transport, determine if we have a URL or instance name
+  const getEnvVars = () => {
+    if (isRemote) return undefined;
+    if (URL.canParse(instanceOrUrl)) {
+      return createGleanUrlEnv(instanceOrUrl, apiToken);
+    }
+    return createGleanEnv(instanceOrUrl, apiToken);
+  };
+
+  const serverData: MCPConnectionOptions = {
     transport: isRemote ? 'http' : 'stdio',
     serverUrl: isRemote ? instanceOrUrl : undefined,
-    instance: !isRemote ? instanceOrUrl : undefined,
-    apiToken: apiToken,
+    env: getEnvVars(),
+    headers: isRemote && apiToken ? createGleanHeaders(apiToken) : undefined,
     serverName: isRemote
       ? buildMcpServerName({
           transport: 'http',
           serverUrl: instanceOrUrl,
-          agents: options?.agents,
         })
       : undefined,
   };
 
-  const configObj = buildConfiguration(clientId, serverData);
-  
-  const registry = new MCPConfigRegistry();
+  const registry = createGleanRegistry();
   const builder = registry.createBuilder(clientId);
-  const servers = builder.getNormalizedServersConfig(configObj) as MCPServersConfig;
+  const configObj = builder.buildConfiguration(serverData);
+  const servers = builder.getNormalizedServersConfig(configObj);
 
   if (isRemote) {
     for (const [, serverConfig] of Object.entries(servers)) {
+      // Type guard for stdio server config with command and args
       if (
         serverConfig &&
+        typeof serverConfig === 'object' &&
         'command' in serverConfig &&
         serverConfig.command === 'npx' &&
         'args' in serverConfig &&
-        serverConfig.args
+        Array.isArray(serverConfig.args)
       ) {
         serverConfig.args = serverConfig.args.map((arg: string) => {
           if (arg === 'mcp-remote' || arg.startsWith('mcp-remote@')) {
@@ -190,7 +203,9 @@ export function createBaseClient(
   const serversPropertyName = clientInfo.configStructure.serversPropertyName || 'mcpServers';
 
   // If no custom hook is provided, create default one using the correct serversPropertyName
-  const effectiveMcpServersHook = mcpServersHook || ((servers) => ({ [serversPropertyName]: servers }));
+  // Cast through unknown required because TypeScript can't verify computed property names match the union
+  const effectiveMcpServersHook: (servers: MCPServersConfig, options?: ConfigureOptions) => MCPConfig =
+    mcpServersHook || ((servers) => ({ [serversPropertyName]: servers }) as unknown as MCPConfig);
 
   return {
     displayName,

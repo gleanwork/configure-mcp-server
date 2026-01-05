@@ -1087,7 +1087,7 @@ describe('CLI', () => {
                 "command": "npx",
                 "args": [
                   "-y",
-                  "mcp-remote@0.1.29",
+                  "mcp-remote@0.1.37",
                   "https://my-be.glean.com/mcp/default"
                 ]
               }
@@ -1520,7 +1520,10 @@ describe('CLI', () => {
                 "url": "https://old.glean.com/mcp"
               },
               "glean_default": {
-                "serverUrl": "https://new-be.glean.com/mcp/default"
+                "serverUrl": "https://new-be.glean.com/mcp/default",
+                "headers": {
+                  "Authorization": "Bearer auth-token"
+                }
               }
             },
             "windsurf-config": {
