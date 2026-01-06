@@ -96,25 +96,49 @@ export function createMcpServersConfig(
   const registry = createGleanRegistry();
   const builder = registry.createBuilder(clientId);
   const configObj = builder.buildConfiguration(serverData);
-  const servers = builder.getNormalizedServersConfig(configObj);
+
+  // Get client config to extract servers using the correct property name
+  const clientInfo = registry.getConfig(clientId);
+  if (!clientInfo) {
+    throw new Error(`Unknown client: ${clientId}`);
+  }
+  const serversPropertyName =
+    clientInfo.configStructure.serversPropertyName || 'mcpServers';
+
+  // Extract servers directly from the config without normalization
+  // This preserves client-specific properties (e.g., Goose's cmd, envs, timeout, etc.)
+  const servers = (configObj as Record<string, unknown>)[
+    serversPropertyName
+  ] as MCPServersConfig;
 
   if (isRemote) {
+    // Get the correct property names for this client's stdio config
+    const stdioMapping = clientInfo.configStructure.stdioPropertyMapping;
+    const commandProp = stdioMapping?.commandProperty || 'command';
+    const argsProp = stdioMapping?.argsProperty || 'args';
+
     for (const [, serverConfig] of Object.entries(servers)) {
       // Type guard for stdio server config with command and args
+      // (some clients use mcp-remote as a bridge for HTTP transport)
       if (
         serverConfig &&
         typeof serverConfig === 'object' &&
-        'command' in serverConfig &&
-        serverConfig.command === 'npx' &&
-        'args' in serverConfig &&
-        Array.isArray(serverConfig.args)
+        commandProp in serverConfig &&
+        (serverConfig as Record<string, unknown>)[commandProp] === 'npx' &&
+        argsProp in serverConfig &&
+        Array.isArray((serverConfig as Record<string, unknown>)[argsProp])
       ) {
-        serverConfig.args = serverConfig.args.map((arg: string) => {
-          if (arg === 'mcp-remote' || arg.startsWith('mcp-remote@')) {
-            return `mcp-remote@${mcpRemoteVersion}`;
-          }
-          return arg;
-        });
+        const args = (serverConfig as Record<string, unknown>)[
+          argsProp
+        ] as string[];
+        (serverConfig as Record<string, unknown>)[argsProp] = args.map(
+          (arg: string) => {
+            if (arg === 'mcp-remote' || arg.startsWith('mcp-remote@')) {
+              return `mcp-remote@${mcpRemoteVersion}`;
+            }
+            return arg;
+          },
+        );
       }
     }
   }

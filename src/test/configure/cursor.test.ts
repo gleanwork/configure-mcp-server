@@ -1,14 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import codexClient from '../../configure/client/codex.js';
+import cursorClient from '../../configure/client/cursor.js';
 import type { ConfigureOptions, MCPConfig } from '../../configure/index.js';
 import os from 'os';
 import path from 'path';
 
-describe('Codex MCP Client', () => {
+describe('Cursor MCP Client', () => {
   const homedir = os.homedir();
 
   it('should have the correct display name', () => {
-    expect(codexClient.displayName).toBe('Codex');
+    expect(cursorClient.displayName).toBe('Cursor');
   });
 
   it('should generate the correct config path based on platform', () => {
@@ -16,21 +16,21 @@ describe('Codex MCP Client', () => {
     let expectedPath: string;
 
     if (platform === 'win32') {
-      expectedPath = path.join(homedir, '.codex', 'config.toml');
+      expectedPath = path.join(homedir, '.cursor', 'mcp.json');
     } else {
-      // darwin and linux both use $HOME/.codex/config.toml
-      expectedPath = path.join(homedir, '.codex', 'config.toml');
+      // darwin and linux both use $HOME/.cursor/mcp.json
+      expectedPath = path.join(homedir, '.cursor', 'mcp.json');
     }
 
-    expect(codexClient.configFilePath(homedir)).toBe(expectedPath);
+    expect(cursorClient.configFilePath(homedir)).toBe(expectedPath);
   });
 
-  it('should generate a valid Codex MCP config template with instance', () => {
-    const config = codexClient.configTemplate('example-instance', 'test-token');
+  it('should generate a valid Cursor MCP config template with instance', () => {
+    const config = cursorClient.configTemplate('example-instance', 'test-token');
 
     expect(config).toMatchInlineSnapshot(`
       {
-        "mcp_servers": {
+        "mcpServers": {
           "glean_local": {
             "args": [
               "-y",
@@ -41,28 +41,30 @@ describe('Codex MCP Client', () => {
               "GLEAN_API_TOKEN": "test-token",
               "GLEAN_INSTANCE": "example-instance",
             },
+            "type": "stdio",
           },
         },
       }
     `);
   });
 
-  it('should generate a valid Codex remote config template with URL (native HTTP)', () => {
+  it('should generate a valid Cursor remote config template with URL (native HTTP)', () => {
     const options: ConfigureOptions = { remote: true };
-    const config = codexClient.configTemplate(
+    const config = cursorClient.configTemplate(
       'https://example-instance-be.glean.com/mcp/default',
       'test-token',
       options,
     );
 
-    // Codex supports native HTTP transport
+    // Cursor supports native HTTP transport
     expect(config).toMatchInlineSnapshot(`
       {
-        "mcp_servers": {
+        "mcpServers": {
           "glean_default": {
-            "http_headers": {
+            "headers": {
               "Authorization": "Bearer test-token",
             },
+            "type": "http",
             "url": "https://example-instance-be.glean.com/mcp/default",
           },
         },
@@ -72,17 +74,17 @@ describe('Codex MCP Client', () => {
 
   it('should include success message with instructions', () => {
     const configPath = '/path/to/config';
-    const message = codexClient.successMessage(configPath);
+    const message = cursorClient.successMessage(configPath);
 
-    expect(message).toContain('Codex MCP configuration has been configured');
+    expect(message).toContain('Cursor MCP configuration has been configured');
     expect(message).toContain(configPath);
-    expect(message).toContain('Restart Codex');
+    expect(message).toContain('Restart Cursor');
   });
 
   it('should update config correctly', () => {
-    const existingConfig = { mcp_servers: { other: {} } };
+    const existingConfig = { mcpServers: { other: {} } };
     const newConfig: MCPConfig = {
-      mcp_servers: {
+      mcpServers: {
         glean: {
           command: 'npx',
           args: ['-y', '@gleanwork/local-mcp-server'],
@@ -91,12 +93,12 @@ describe('Codex MCP Client', () => {
       },
     };
 
-    const updated = codexClient.updateConfig(existingConfig, newConfig, {});
+    const updated = cursorClient.updateConfig(existingConfig, newConfig, {});
 
     expect(updated).toMatchObject({
-      mcp_servers: {
+      mcpServers: {
         other: {},
-        glean: (newConfig as any).mcp_servers.glean,
+        glean: (newConfig as any).mcpServers.glean,
       },
     });
   });
