@@ -5,7 +5,7 @@
  */
 
 import { createBaseClient } from './index.js';
-import { CLIENT } from '@gleanwork/mcp-config-schema';
+import { CLIENT } from '@gleanwork/mcp-config';
 
 const claudeClient = createBaseClient(CLIENT.CLAUDE_DESKTOP, [
   'Restart Claude Desktop',

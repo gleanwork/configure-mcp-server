@@ -14,17 +14,22 @@ import type {
   ConfigureOptions,
   VSCodeConfig,
   MCPConfig,
+  MCPServersConfig,
   ConfigFileContents,
 } from '../types.js';
 import {
   CLIENT,
-  type MCPServerConfig,
-  buildConfiguration,
+  type MCPConnectionOptions,
   buildMcpServerName,
-} from '@gleanwork/mcp-config-schema';
+  createGleanEnv,
+  createGleanUrlEnv,
+  createGleanHeaders,
+  createGleanRegistry,
+} from '@gleanwork/mcp-config';
+
 
 /**
- * Creates configuration using the mcp-config-schema builder
+ * Creates configuration using the mcp-config builder
  */
 function createVSCodeConfig(
   instanceOrUrl?: string,
@@ -33,21 +38,31 @@ function createVSCodeConfig(
 ): MCPConfig {
   const isRemote = options?.remote === true;
 
-  const serverData: MCPServerConfig = {
+  // For stdio transport, determine if we have a URL or instance name
+  const getEnvVars = () => {
+    if (isRemote || !instanceOrUrl) return undefined;
+    if (URL.canParse(instanceOrUrl)) {
+      return createGleanUrlEnv(instanceOrUrl, apiToken);
+    }
+    return createGleanEnv(instanceOrUrl, apiToken);
+  };
+
+  const serverData: MCPConnectionOptions = {
     transport: isRemote ? 'http' : 'stdio',
     serverUrl: isRemote ? instanceOrUrl : undefined,
-    instance: !isRemote ? instanceOrUrl : undefined,
-    apiToken: apiToken,
+    env: getEnvVars(),
+    headers: isRemote && apiToken ? createGleanHeaders(apiToken) : undefined,
     serverName: isRemote
       ? buildMcpServerName({
           transport: 'http',
           serverUrl: instanceOrUrl,
-          agents: options?.agents,
         })
       : undefined,
   };
 
-  return buildConfiguration(CLIENT.VSCODE, serverData) as MCPConfig;
+  const registry = createGleanRegistry();
+  const builder = registry.createBuilder(CLIENT.VSCODE);
+  return builder.buildConfiguration(serverData) as VSCodeConfig;
 }
 
 const vscodeClient = createBaseClient(CLIENT.VSCODE, [
@@ -118,10 +133,11 @@ vscodeClient.updateConfig = (
   const result = { ...existingConfig } as ConfigFileContents & VSCodeConfig;
   
   // Handle migration from old format (mcp.servers) to new format (servers)
-  let existingServers = result.servers || {};
-  if (result.mcp?.servers) {
+  let existingServers: MCPServersConfig = result.servers || {};
+  const mcp = result.mcp;
+  if (mcp && typeof mcp === 'object' && 'servers' in mcp && mcp.servers && typeof mcp.servers === 'object') {
     // Migrate old format servers to new format
-    existingServers = { ...existingServers, ...result.mcp.servers };
+    existingServers = { ...existingServers, ...(mcp.servers as MCPServersConfig) };
     // Remove the old mcp property
     delete result.mcp;
   }

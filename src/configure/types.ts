@@ -2,7 +2,13 @@
  * Configuration types for Glean MCP Server
  */
 
-import type { ServerConfig, McpServersConfig } from '@gleanwork/mcp-config-schema';
+import type {
+  MCPConnectionOptions,
+  MCPServersRecord,
+  MCPConfig as SchemaMCPConfig,
+  StandardMCPConfig as SchemaStandardMCPConfig,
+  VSCodeMCPConfig,
+} from '@gleanwork/mcp-config';
 
 /**
  * Configure options interface
@@ -11,7 +17,6 @@ export interface ConfigureOptions {
   token?: string;
   instance?: string;
   remote?: boolean;
-  agents?: boolean;
   url?: string;
   envPath?: string;
   workspace?: boolean;
@@ -20,38 +25,27 @@ export interface ConfigureOptions {
 /**
  * Re-export types from the schema package for backward compatibility
  */
-export type MCPServerConfig = ServerConfig;
+export type MCPServerConfig = MCPConnectionOptions;
 
 /**
- * Extract the servers collection type from the wrapped config
- * The package's McpServersConfig is { mcpServers: ... }, but we need just the inner part
+ * Servers collection type (inner content of config)
  */
-export type MCPServersConfig = McpServersConfig extends { mcpServers: infer S }
-  ? S
-  : Record<string, ServerConfig>;
+export type MCPServersConfig = MCPServersRecord;
 
 /**
  * Standard MCP configuration format (Claude, Cursor, Windsurf)
  */
-export interface StandardMCPConfig {
-  mcpServers: MCPServersConfig;
-}
+export type StandardMCPConfig = SchemaStandardMCPConfig;
 
 /**
  * VS Code configuration format
  */
-export interface VSCodeConfig {
-  servers: MCPServersConfig;
-  [key: string]: unknown;
-}
+export type VSCodeConfig = VSCodeMCPConfig;
 
 /**
  * Union of all possible MCP configuration formats
  */
-export type MCPConfig =
-  | StandardMCPConfig
-  | VSCodeConfig
-  | Record<string, any>; // Goose and other YAML-based configs
+export type MCPConfig = SchemaMCPConfig;
 
 /**
  * Generic config file contents that might contain MCP configuration

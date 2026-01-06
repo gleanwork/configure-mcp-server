@@ -1520,7 +1520,10 @@ describe('CLI', () => {
                 "url": "https://old.glean.com/mcp"
               },
               "glean_default": {
-                "serverUrl": "https://new-be.glean.com/mcp/default"
+                "serverUrl": "https://new-be.glean.com/mcp/default",
+                "headers": {
+                  "Authorization": "Bearer auth-token"
+                }
               }
             },
             "windsurf-config": {

@@ -86,7 +86,7 @@ Handles MCP server configuration for different clients. Key files:
   - `MCPConfig`: Union type for all config formats
 
 - **`src/configure/client/index.ts`**: Client abstraction layer
-  - `createMcpServersConfig()`: Core function that generates MCP server configuration using `@gleanwork/mcp-config-schema`
+  - `createMcpServersConfig()`: Core function that generates MCP server configuration using `@gleanwork/mcp-config`
   - `createBaseClient()`: Factory for creating client configurations
   - `availableClients`: Registry of all supported MCP clients
   - Each client exports an `MCPClientConfig` with: `displayName`, `configFilePath()`, `configTemplate()`, `successMessage()`, `updateConfig()`
@@ -112,7 +112,7 @@ Creates project-level files for enhanced AI coding experience:
 
 ### Key Dependencies
 
-- **`@gleanwork/mcp-config-schema`**: Provides the canonical configuration schema and builder for all MCP clients. This package defines `MCPConfigRegistry`, `buildConfiguration()`, and `buildMcpServerName()`.
+- **`@gleanwork/mcp-config`**: Provides the canonical configuration schema and builder for all MCP clients, plus Glean-specific helpers. This package re-exports from `@gleanwork/mcp-config-schema` and adds helpers like `createGleanEnv()`, `createGleanHeaders()`, and `createGleanRegistry()`.
 - **`@gleanwork/mcp-server-utils`**: Shared utilities including logger and instance validation.
 - **`mcp-remote`**: Proxy package for remote MCP servers over HTTP.
 - **`commander`**: CLI framework (migrated from meow in v2.0.0).
@@ -126,7 +126,7 @@ Creates project-level files for enhanced AI coding experience:
    - Loads credentials from multiple sources (flags > env file > environment)
    - Validates instance connectivity (unless `_SKIP_INSTANCE_PREFLIGHT=true`)
    - Gets client-specific config via `availableClients[client]`
-   - Calls `client.configTemplate()` to generate new config using `@gleanwork/mcp-config-schema`
+   - Calls `client.configTemplate()` to generate new config using `@gleanwork/mcp-config`
    - For remote configs, pins `mcp-remote` version from package.json
    - Merges with existing config if present using `client.updateConfig()`
    - Writes JSON or YAML file
@@ -144,7 +144,7 @@ Creates project-level files for enhanced AI coding experience:
 
 ### Config File Locations
 
-Each client has platform-specific paths defined in `@gleanwork/mcp-config-schema`. The `GLEAN_MCP_CONFIG_DIR` environment variable can override the default directory.
+Each client has platform-specific paths defined in `@gleanwork/mcp-config`. The `GLEAN_MCP_CONFIG_DIR` environment variable can override the default directory.
 
 ### Important Patterns
 
@@ -160,7 +160,7 @@ Each client has platform-specific paths defined in `@gleanwork/mcp-config-schema
 1. Create `src/configure/client/your-client.ts`
 2. Use `createBaseClient()` from `index.ts` or implement `MCPClientConfig` interface
 3. Add to `availableClients` map in `src/configure/client/index.ts`
-4. Add corresponding `CLIENT.YOUR_CLIENT` constant to `@gleanwork/mcp-config-schema` package
+4. Add corresponding `CLIENT.YOUR_CLIENT` constant to `@gleanwork/mcp-config-schema` package (which is re-exported by `@gleanwork/mcp-config`)
 5. Add tests in `src/test/configure/your-client.test.ts`
 
 ### Adding Init Templates
