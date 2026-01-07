@@ -2,6 +2,24 @@
 
 
 
+
+## v3.0.0 (2026-01-07)
+
+#### :boom: Breaking Change
+* [#62](https://github.com/gleanwork/configure-mcp-server/pull/62) chore: Update minimum Node version to 22 LTS ([@steve-calvert-glean](https://github.com/steve-calvert-glean))
+
+#### :memo: Documentation
+* [#60](https://github.com/gleanwork/configure-mcp-server/pull/60) docs: add GA stability badge to README ([@steve-calvert-glean](https://github.com/steve-calvert-glean))
+
+#### :house: Internal
+* [#61](https://github.com/gleanwork/configure-mcp-server/pull/61) chore: migrate from @scalvert/bin-tester to bintastic ([@steve-calvert-glean](https://github.com/steve-calvert-glean))
+* [#59](https://github.com/gleanwork/configure-mcp-server/pull/59) fix: expands test coverage and fixes assertion mismatches ([@steve-calvert-glean](https://github.com/steve-calvert-glean))
+* [#57](https://github.com/gleanwork/configure-mcp-server/pull/57) deps: Migrate from mcp-config-schema to mcp-config wrapper package ([@steve-calvert-glean](https://github.com/steve-calvert-glean))
+
+#### Committers: 1
+- Steve Calvert ([@steve-calvert-glean](https://github.com/steve-calvert-glean))
+
+
 ## v2.1.0 (2025-11-25)
 
 #### :rocket: Enhancement
