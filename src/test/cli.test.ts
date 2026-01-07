@@ -1586,12 +1586,18 @@ describe('CLI', () => {
         expect(configFileContents).toMatchInlineSnapshot(`
           "extensions:
             glean_local:
-              type: stdio
-              command: npx
+              name: glean_local
+              cmd: npx
               args:
                 - -y
                 - "@gleanwork/local-mcp-server"
-              env:
+              type: stdio
+              timeout: 300
+              enabled: true
+              bundled: null
+              description: null
+              env_keys: []
+              envs:
                 GLEAN_INSTANCE: test-domain
                 GLEAN_API_TOKEN: glean_api_test
           "
@@ -1652,12 +1658,18 @@ describe('CLI', () => {
               enabled: true
           extensions:
             glean_local:
-              type: stdio
-              command: npx
+              name: glean_local
+              cmd: npx
               args:
                 - -y
                 - "@gleanwork/local-mcp-server"
-              env:
+              type: stdio
+              timeout: 300
+              enabled: true
+              bundled: null
+              description: null
+              env_keys: []
+              envs:
                 GLEAN_INSTANCE: test-domain
                 GLEAN_API_TOKEN: glean_api_test
           "
@@ -1706,11 +1718,18 @@ describe('CLI', () => {
         expect(configFileContents).toMatchInlineSnapshot(`
           "extensions:
             glean_analytics:
-              type: http
-              env: {}
-              url: https://my-be.glean.com/mcp/analytics
+              enabled: true
+              name: glean_analytics
+              type: streamable_http
+              uri: https://my-be.glean.com/mcp/analytics
+              envs: {}
+              env_keys: []
               headers:
                 Authorization: Bearer test-token
+              description: ""
+              timeout: 300
+              bundled: null
+              available_tools: []
           "
         `);
       });
@@ -1746,11 +1765,18 @@ describe('CLI', () => {
         expect(configFileContents).toMatchInlineSnapshot(`
           "extensions:
             glean_default:
-              type: http
-              env: {}
-              url: https://my-be.glean.com/mcp/default
+              enabled: true
+              name: glean_default
+              type: streamable_http
+              uri: https://my-be.glean.com/mcp/default
+              envs: {}
+              env_keys: []
               headers:
                 Authorization: Bearer test-token
+              description: ""
+              timeout: 300
+              bundled: null
+              available_tools: []
           "
         `);
       });
@@ -1835,10 +1861,17 @@ describe('CLI', () => {
               args:
                 - old-arg
             glean_default:
-              type: http
-              env: {}
-              url: https://my-be.glean.com/mcp/default
+              enabled: true
+              name: glean_default
+              type: streamable_http
+              uri: https://my-be.glean.com/mcp/default
+              envs: {}
+              env_keys: []
               headers: {}
+              description: ""
+              timeout: 300
+              bundled: null
+              available_tools: []
           ollama:
             host: http://localhost:11434
             model: llama3.1:8b
