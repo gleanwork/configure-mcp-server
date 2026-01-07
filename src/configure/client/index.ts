@@ -124,21 +124,29 @@ export function createMcpServersConfig(
         serverConfig &&
         typeof serverConfig === 'object' &&
         commandProp in serverConfig &&
-        (serverConfig as Record<string, unknown>)[commandProp] === 'npx' &&
-        argsProp in serverConfig &&
-        Array.isArray((serverConfig as Record<string, unknown>)[argsProp])
+        argsProp in serverConfig
       ) {
-        const args = (serverConfig as Record<string, unknown>)[
-          argsProp
-        ] as string[];
-        (serverConfig as Record<string, unknown>)[argsProp] = args.map(
-          (arg: string) => {
-            if (arg === 'mcp-remote' || arg.startsWith('mcp-remote@')) {
-              return `mcp-remote@${mcpRemoteVersion}`;
-            }
-            return arg;
-          },
-        );
+        const config = serverConfig as Record<string, unknown>;
+        const commandValue = config[commandProp];
+        const argsValue = config[argsProp];
+
+        // Assert expected types - fail fast if assumptions are wrong
+        if (commandValue !== 'npx') continue;
+        if (!Array.isArray(argsValue)) {
+          throw new Error(
+            `Expected ${argsProp} to be an array, got ${typeof argsValue}`,
+          );
+        }
+
+        config[argsProp] = argsValue.map((arg: unknown) => {
+          if (typeof arg !== 'string') {
+            throw new Error(`Expected arg to be a string, got ${typeof arg}`);
+          }
+          if (arg === 'mcp-remote' || arg.startsWith('mcp-remote@')) {
+            return `mcp-remote@${mcpRemoteVersion}`;
+          }
+          return arg;
+        });
       }
     }
   }
