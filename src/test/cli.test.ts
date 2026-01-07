@@ -1,10 +1,13 @@
 import path from 'path';
 import fs from 'fs';
-import { createBinTester, BinTesterProject } from '@scalvert/bin-tester';
+import { createBintastic, BintasticProject, type Result } from 'bintastic';
 import { fileURLToPath } from 'node:url';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import type { ConfigFileContents } from '../configure/index.js';
 import yaml from 'yaml';
+
+/** Execa result stdout/stderr type */
+type ExecaOutput = Result['stdout'];
 
 // Define config paths - MUST match what the actual CLI uses for each platform
 function getClaudeConfigPath() {
@@ -40,8 +43,9 @@ const gooseConfigPath = {
   configFileName: 'config.yaml',
 };
 
-function normalizeOutput(output: string, baseDir: string): string {
-  let normalized = normalizeBaseDirOutput(output, baseDir);
+function normalizeOutput(output: ExecaOutput, baseDir: string): string {
+  const outputStr = String(output ?? '');
+  let normalized = normalizeBaseDirOutput(outputStr, baseDir);
   normalized = normalizeVersionOutput(normalized);
   normalized = normalizeVSCodeConfigPath(normalized);
   normalized = normalizeClaudeConfigPath(normalized);
@@ -93,7 +97,7 @@ function createConfigFile(configFilePath: string, config: ConfigFileContents) {
 }
 
 describe('CLI', () => {
-  let project: BinTesterProject;
+  let project: BintasticProject;
   let configPath: string;
   let configFilePath: string;
   let envFilePath: string;
@@ -101,7 +105,7 @@ describe('CLI', () => {
 
   const { configDir, configFileName } = cursorConfigPath;
 
-  const { setupProject, teardownProject, runBin } = createBinTester({
+  const { setupProject, teardownProject, runBin } = createBintastic({
     binPath: fileURLToPath(new URL('../../build/index.js', import.meta.url)),
   });
 
