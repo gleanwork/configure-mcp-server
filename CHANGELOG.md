@@ -3,6 +3,19 @@
 
 
 
+
+## v3.0.1 (2026-01-09)
+
+#### :bug: Bug Fix
+* [#63](https://github.com/gleanwork/configure-mcp-server/pull/63) chore: Remove engines field and restore Node 20 CI testing ([@steve-calvert-glean](https://github.com/steve-calvert-glean))
+
+#### :house: Internal
+* [#63](https://github.com/gleanwork/configure-mcp-server/pull/63) chore: Remove engines field and restore Node 20 CI testing ([@steve-calvert-glean](https://github.com/steve-calvert-glean))
+
+#### Committers: 1
+- Steve Calvert ([@steve-calvert-glean](https://github.com/steve-calvert-glean))
+
+
 ## v3.0.0 (2026-01-07)
 
 #### :boom: Breaking Change
