@@ -124,11 +124,20 @@ describe('Claude Desktop MCP Client', () => {
       {},
     );
 
-    expect(updated).toMatchObject({
-      mcpServers: {
-        other: {},
-        glean: (newConfig as any).mcpServers.glean,
-      },
-    });
+    expect(updated).toMatchInlineSnapshot(`
+      {
+        "mcpServers": {
+          "glean": {
+            "args": [
+              "-y",
+              "@gleanwork/local-mcp-server",
+            ],
+            "command": "npx",
+            "env": {},
+          },
+          "other": {},
+        },
+      }
+    `);
   });
 });

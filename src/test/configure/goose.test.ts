@@ -118,11 +118,20 @@ describe('Goose MCP Client', () => {
 
     const updated = gooseClient.updateConfig(existingConfig, newConfig, {});
 
-    expect(updated).toMatchObject({
-      extensions: {
-        other: {},
-        glean: (newConfig as any).extensions.glean,
-      },
-    });
+    expect(updated).toMatchInlineSnapshot(`
+      {
+        "extensions": {
+          "glean": {
+            "args": [
+              "-y",
+              "@gleanwork/local-mcp-server",
+            ],
+            "command": "npx",
+            "env": {},
+          },
+          "other": {},
+        },
+      }
+    `);
   });
 });

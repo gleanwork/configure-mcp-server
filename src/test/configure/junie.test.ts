@@ -16,10 +16,10 @@ describe('Junie MCP Client', () => {
     let expectedPath: string;
 
     if (platform === 'win32') {
-      expectedPath = path.join(homedir, '.junie', 'mcp.json');
+      expectedPath = path.join(homedir, '.junie', 'mcp', 'mcp.json');
     } else {
-      // darwin and linux both use $HOME/.junie/mcp.json
-      expectedPath = path.join(homedir, '.junie', 'mcp.json');
+      // darwin and linux both use $HOME/.junie/mcp/mcp.json
+      expectedPath = path.join(homedir, '.junie', 'mcp', 'mcp.json');
     }
 
     expect(junieClient.configFilePath(homedir)).toBe(expectedPath);
@@ -99,11 +99,20 @@ describe('Junie MCP Client', () => {
 
     const updated = junieClient.updateConfig(existingConfig, newConfig, {});
 
-    expect(updated).toMatchObject({
-      mcpServers: {
-        other: {},
-        glean: newConfig.mcpServers.glean,
-      },
-    });
+    expect(updated).toMatchInlineSnapshot(`
+      {
+        "mcpServers": {
+          "glean": {
+            "args": [
+              "-y",
+              "@gleanwork/local-mcp-server",
+            ],
+            "command": "npx",
+            "env": {},
+          },
+          "other": {},
+        },
+      }
+    `);
   });
 });
