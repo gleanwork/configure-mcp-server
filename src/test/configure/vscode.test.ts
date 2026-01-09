@@ -232,10 +232,21 @@ describe('VS Code MCP Client', () => {
 
     const updated = vscodeClient.updateConfig(existingConfig, newConfig, {});
 
-    expect(updated).toMatchObject({
-      someOtherConfig: true,
-      servers: newConfig.servers,
-    });
+    expect(updated).toMatchInlineSnapshot(`
+      {
+        "servers": {
+          "glean": {
+            "args": [
+              "-y",
+              "@gleanwork/local-mcp-server",
+            ],
+            "command": "npx",
+            "env": {},
+          },
+        },
+        "someOtherConfig": true,
+      }
+    `);
   });
 
   it('should update workspace config correctly', () => {
@@ -257,10 +268,21 @@ describe('VS Code MCP Client', () => {
       options,
     );
 
-    expect(updated).toMatchObject({
-      someOtherConfig: true,
-      servers: newConfig.servers,
-    });
+    expect(updated).toMatchInlineSnapshot(`
+      {
+        "servers": {
+          "glean": {
+            "args": [
+              "-y",
+              "@gleanwork/local-mcp-server",
+            ],
+            "command": "npx",
+            "env": {},
+          },
+        },
+        "someOtherConfig": true,
+      }
+    `);
   });
 
   it('should generate a valid VS Code workspace config template with URL', () => {

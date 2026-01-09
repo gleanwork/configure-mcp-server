@@ -44,7 +44,7 @@ describe('JetBrains MCP Client', () => {
     `);
   });
 
-  it('should generate a valid JetBrains remote config template with URL (uses mcp-remote)', () => {
+  it('should generate a valid JetBrains remote config template with URL', () => {
     const options: ConfigureOptions = { remote: true };
     const config = jetbrainsClient.configTemplate(
       'https://example-instance-be.glean.com/mcp/default',
@@ -52,20 +52,15 @@ describe('JetBrains MCP Client', () => {
       options,
     );
 
-    // JetBrains only supports stdio, so remote uses mcp-remote proxy
     expect(config).toMatchInlineSnapshot(`
       {
         "mcpServers": {
           "glean_default": {
-            "args": [
-              "-y",
-              "mcp-remote@0.1.37",
-              "https://example-instance-be.glean.com/mcp/default",
-              "--header",
-              "Authorization: Bearer test-token",
-            ],
-            "command": "npx",
-            "type": "stdio",
+            "headers": {
+              "Authorization": "Bearer test-token",
+            },
+            "type": "http",
+            "url": "https://example-instance-be.glean.com/mcp/default",
           },
         },
       }
@@ -95,11 +90,20 @@ describe('JetBrains MCP Client', () => {
 
     const updated = jetbrainsClient.updateConfig(existingConfig, newConfig, {});
 
-    expect(updated).toMatchObject({
-      mcpServers: {
-        other: {},
-        glean: newConfig.mcpServers.glean,
-      },
-    });
+    expect(updated).toMatchInlineSnapshot(`
+      {
+        "mcpServers": {
+          "glean": {
+            "args": [
+              "-y",
+              "@gleanwork/local-mcp-server",
+            ],
+            "command": "npx",
+            "env": {},
+          },
+          "other": {},
+        },
+      }
+    `);
   });
 });

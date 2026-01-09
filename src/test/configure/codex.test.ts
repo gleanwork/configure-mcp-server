@@ -93,11 +93,20 @@ describe('Codex MCP Client', () => {
 
     const updated = codexClient.updateConfig(existingConfig, newConfig, {});
 
-    expect(updated).toMatchObject({
-      mcp_servers: {
-        other: {},
-        glean: (newConfig as any).mcp_servers.glean,
-      },
-    });
+    expect(updated).toMatchInlineSnapshot(`
+      {
+        "mcp_servers": {
+          "glean": {
+            "args": [
+              "-y",
+              "@gleanwork/local-mcp-server",
+            ],
+            "command": "npx",
+            "env": {},
+          },
+          "other": {},
+        },
+      }
+    `);
   });
 });

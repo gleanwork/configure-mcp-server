@@ -50,7 +50,7 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@gleanwork/mcp-config": "^1.0.0",
+    "@gleanwork/mcp-config": "^2.0.0",
     "@gleanwork/mcp-server-utils": "^0.9.1",
     "commander": "^14.0.2",
     "dotenv": "^17.2.1",
@@ -85,9 +85,6 @@
     "tsx": "^4.20.3",
     "typescript": "^5.8.2",
     "vitest": "^4.0.6"
-  },
-  "engines": {
-    "node": ">=22"
   },
   "publishConfig": {
     "access": "public",

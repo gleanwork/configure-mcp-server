@@ -98,11 +98,20 @@ describe('Windsurf MCP Client', () => {
 
     const updated = windsurfClient.updateConfig(existingConfig, newConfig, {});
 
-    expect(updated).toMatchObject({
-      mcpServers: {
-        other: {},
-        glean: (newConfig as any).mcpServers.glean,
-      },
-    });
+    expect(updated).toMatchInlineSnapshot(`
+      {
+        "mcpServers": {
+          "glean": {
+            "args": [
+              "-y",
+              "@gleanwork/local-mcp-server",
+            ],
+            "command": "npx",
+            "env": {},
+          },
+          "other": {},
+        },
+      }
+    `);
   });
 });
