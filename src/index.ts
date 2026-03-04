@@ -92,6 +92,7 @@ Examples:
       trace(process.execPath, process.execArgv, process.argv);
 
       const { client, token, instance, serverUrl, env, workspace } = options;
+      const url = serverUrl; // map --server-url to url at CLI boundary
 
       if (workspace && client && client !== 'vscode') {
         console.error(
@@ -100,7 +101,7 @@ Examples:
         process.exit(1);
       }
 
-      if (!(await validateFlags(client, token, instance, undefined, env, serverUrl))) {
+      if (!(await validateFlags(client, token, instance, url, env))) {
         process.exit(1);
       }
 
@@ -108,7 +109,7 @@ Examples:
         await configure(client, {
           token,
           instance,
-          url: serverUrl,  // --server-url maps to url
+          url,
           envPath: env,
           workspace,
         });

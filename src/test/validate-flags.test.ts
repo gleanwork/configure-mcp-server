@@ -253,14 +253,13 @@ describe('validateFlags', () => {
     expect(consoleState.getState('error')).toEqual('');
   });
 
-  it('should return true when serverUrl flag is provided with token', async () => {
+  it('should return true when server URL is provided with token', async () => {
     const result = await validateFlags(
       'client',
       'token',
       undefined,
-      undefined,
-      undefined,
       'https://my-company-be.glean.com',
+      undefined,
     );
 
     expect(result).toBe(true);

@@ -367,7 +367,6 @@ export async function validateFlags(
   instance: string | undefined,
   url: string | undefined,
   env: string | undefined,
-  serverUrl?: string | undefined,
 ): Promise<boolean> {
   if (!client) {
     console.error('Error: --client parameter is required');
@@ -376,7 +375,7 @@ export async function validateFlags(
     return false;
   }
 
-  const hasDeployment = Boolean(instance || url || serverUrl);
+  const hasDeployment = Boolean(instance || url);
   const hasToken = Boolean(token);
 
   const hasEnvironmentToken = Boolean(process.env.GLEAN_API_TOKEN);
