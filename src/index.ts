@@ -62,7 +62,7 @@ Examples:
     .description("Configure Glean's local MCP server for a given client")
     .option('-c, --client <client>', `MCP client to configure (${clientList})`)
     .option('-s, --server-url <serverUrl>', 'Glean server URL (e.g., https://my-company-be.glean.com)')
-    .option('-i, --instance <instance>', 'Glean instance name')
+    .option('-i, --instance <instance>', 'Glean instance name (deprecated, use --server-url)')
     .option('-t, --token <token>', 'Glean API token (required)')
     .option(
       '-e, --env <path>',
@@ -78,9 +78,9 @@ Examples:
       `
 Examples:
   $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --server-url https://acme-be.glean.com
-  $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --instance acme
+  $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --instance acme  (deprecated)
   $ npx -y @gleanwork/configure-mcp-server local --client vscode --env ~/.glean.env
-  $ npx -y @gleanwork/configure-mcp-server local --client vscode --workspace --token xxx --instance acme
+  $ npx -y @gleanwork/configure-mcp-server local --client vscode --workspace --token xxx --server-url https://your-company-be.glean.com
 `,
     )
     .action(async (options) => {

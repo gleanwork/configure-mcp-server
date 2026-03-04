@@ -43,6 +43,9 @@ npx -y @gleanwork/configure-mcp-server remote --url https://your-instance-be.gle
 For local server installations, specify both token and instance:
 
 ```bash
+npx -y @gleanwork/configure-mcp-server local --client cursor --token your-api-token --server-url https://your-company-be.glean.com
+
+# Deprecated: --instance is still accepted but --server-url is preferred
 npx -y @gleanwork/configure-mcp-server local --client cursor --token your-api-token --instance instance-name
 ```
 
@@ -55,11 +58,13 @@ npx -y @gleanwork/configure-mcp-server local --client cursor --env path/to/.env.
 The environment file should contain:
 
 ```bash
-GLEAN_INSTANCE=instance-name
+GLEAN_SERVER_URL=https://your-company-be.glean.com
 GLEAN_API_TOKEN=your-api-token
+# Deprecated: GLEAN_INSTANCE is still accepted but GLEAN_SERVER_URL is preferred
+# GLEAN_INSTANCE=instance-name
 ```
 
-Note: For backward compatibility, `GLEAN_SUBDOMAIN` is still supported, but `GLEAN_INSTANCE` is preferred.
+Note: Both `GLEAN_SUBDOMAIN` and `GLEAN_INSTANCE` are deprecated. Use `GLEAN_SERVER_URL` instead.
 
 ### Post-Configuration Steps
 
