@@ -118,7 +118,7 @@ describe('configure', () => {
             "command": "npx",
             "env": {
               "GLEAN_API_TOKEN": "test-token",
-              "GLEAN_URL": "https://example.com/rest/api/v1",
+              "GLEAN_SERVER_URL": "https://example.com/rest/api/v1",
             },
             "type": "stdio",
           },
@@ -215,10 +215,10 @@ describe('configure', () => {
     `);
   });
 
-  it('should configure with serverUrl option', async () => {
+  it('should configure with url option (server URL)', async () => {
     const options = {
       token: 'test-token',
-      serverUrl: 'https://my-company-be.glean.com',
+      url: 'https://my-company-be.glean.com',
     };
 
     await configure('cursor', options);
@@ -246,10 +246,10 @@ describe('configure', () => {
     expect(config.mcpServers.glean_local.env).toHaveProperty('GLEAN_API_TOKEN', 'env-token');
   });
 
-  it('should prefer serverUrl over instance when both provided', async () => {
+  it('should prefer url over instance when both provided', async () => {
     const options = {
       token: 'test-token',
-      serverUrl: 'https://my-company-be.glean.com',
+      url: 'https://my-company-be.glean.com',
       instance: 'my-company',
     };
 

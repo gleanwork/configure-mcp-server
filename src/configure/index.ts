@@ -31,13 +31,11 @@ import type { ConfigureOptions } from './types.js';
  */
 function loadCredentials(options: ConfigureOptions): {
   instance?: string;
-  serverUrl?: string;
   url?: string;
   apiToken?: string;
 } {
-  const result: { instance?: string; serverUrl?: string; url?: string; apiToken?: string } = {
+  const result: { instance?: string; url?: string; apiToken?: string } = {
     instance: undefined,
-    serverUrl: undefined,
     url: undefined,
     apiToken: undefined,
   };
@@ -61,7 +59,7 @@ function loadCredentials(options: ConfigureOptions): {
 
         // Check for server URL first, then URL, then instance
         if (envConfig.parsed?.GLEAN_SERVER_URL) {
-          result.serverUrl = envConfig.parsed.GLEAN_SERVER_URL;
+          result.url = envConfig.parsed.GLEAN_SERVER_URL;
         } else if (envConfig.parsed?.GLEAN_URL) {
           result.url = envConfig.parsed.GLEAN_URL;
         } else if (
@@ -79,10 +77,6 @@ function loadCredentials(options: ConfigureOptions): {
   }
 
   // Direct options take precedence over env file
-  if (options.serverUrl) {
-    result.serverUrl = options.serverUrl;
-  }
-
   if (options.instance) {
     result.instance = options.instance;
   }
@@ -96,9 +90,9 @@ function loadCredentials(options: ConfigureOptions): {
   }
 
   // Fall back to environment variables if not set via options or env file
-  if (!result.serverUrl && !result.instance && !result.url) {
+  if (!result.instance && !result.url) {
     if (process.env.GLEAN_SERVER_URL) {
-      result.serverUrl = process.env.GLEAN_SERVER_URL;
+      result.url = process.env.GLEAN_SERVER_URL;
     } else if (process.env.GLEAN_URL) {
       result.url = process.env.GLEAN_URL;
     } else if (process.env.GLEAN_INSTANCE || process.env.GLEAN_SUBDOMAIN) {
@@ -146,18 +140,10 @@ export async function configure(client: string, options: ConfigureOptions) {
     process.exit(1);
   }
 
-  // Handle conflicting flags - serverUrl takes precedence
-  if (options.serverUrl && options.instance) {
+  // Handle conflicting flags - url takes precedence over instance
+  if (options.url && options.instance) {
     console.warn(
-      'Warning: Both --server-url and --instance were provided. The --instance flag will be ignored when --server-url is specified.',
-    );
-    delete options.instance;
-  }
-
-  // Handle conflicting --instance and --url flags
-  if (options.instance && options.url) {
-    console.warn(
-      'Warning: Both --instance and --url were provided. The --instance flag will be ignored when --url is specified.',
+      'Warning: Both --instance and --url/--server-url were provided. The --instance flag will be ignored when a URL is specified.',
     );
     delete options.instance;
   }
@@ -205,16 +191,11 @@ export async function configure(client: string, options: ConfigureOptions) {
 
   try {
     // Load credentials from all sources first (flags, env files, environment)
-    const { instance, serverUrl, url, apiToken } = loadCredentials(options);
+    const { instance, url, apiToken } = loadCredentials(options);
 
     // Determine what we're configuring based on what's provided
-    // serverUrl takes precedence over url which takes precedence over instance
-    const instanceOrUrl = serverUrl || url || instance;
-
-    // Pass serverUrl through to options so downstream config generation can use it
-    if (serverUrl && !options.serverUrl) {
-      options.serverUrl = serverUrl;
-    }
+    // url takes precedence over instance
+    const instanceOrUrl = url || instance;
 
     // Validate based on configuration type
     if (options.remote) {
@@ -230,8 +211,8 @@ export async function configure(client: string, options: ConfigureOptions) {
         trace('Remote configuration using DCR (no token provided)');
       }
     } else {
-      // Local: both instance/serverUrl and token required
-      if (!instance && !url && !serverUrl) {
+      // Local: both instance/url and token required
+      if (!instance && !url) {
         throw new Error(
           'Local configuration requires a server URL (--server-url), instance (--instance), or URL. Please provide it via command line options or in your .env file.',
         );

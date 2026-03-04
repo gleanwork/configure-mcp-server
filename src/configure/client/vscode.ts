@@ -22,7 +22,6 @@ import {
   type MCPConnectionOptions,
   buildMcpServerName,
   createGleanEnv,
-  createGleanUrlEnv,
   createGleanHeaders,
   createGleanRegistry,
 } from '@gleanwork/mcp-config';
@@ -41,8 +40,12 @@ function createVSCodeConfig(
   // For stdio transport, determine if we have a URL or instance name
   const getEnvVars = () => {
     if (isRemote || !instanceOrUrl) return undefined;
+    // For local configs, if it's a parseable URL, use GLEAN_SERVER_URL
     if (URL.canParse(instanceOrUrl)) {
-      return createGleanUrlEnv(instanceOrUrl, apiToken);
+      return {
+        GLEAN_SERVER_URL: instanceOrUrl,
+        ...(apiToken && { GLEAN_API_TOKEN: apiToken }),
+      };
     }
     return createGleanEnv(instanceOrUrl, apiToken);
   };

@@ -108,7 +108,7 @@ Examples:
         await configure(client, {
           token,
           instance,
-          serverUrl,
+          url: serverUrl,  // --server-url maps to url
           envPath: env,
           workspace,
         });
