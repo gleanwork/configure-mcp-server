@@ -41,6 +41,7 @@ function createVSCodeConfig(
   const getEnvVars = () => {
     if (isRemote || !instanceOrUrl) return undefined;
     // For local configs, if it's a parseable URL, use GLEAN_SERVER_URL
+    // TODO: Replace with createGleanServerUrlEnv() from @gleanwork/mcp-config once available
     if (URL.canParse(instanceOrUrl)) {
       return {
         GLEAN_SERVER_URL: instanceOrUrl,

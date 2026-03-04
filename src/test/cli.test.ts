@@ -633,7 +633,7 @@ describe('CLI', () => {
       ).toMatchInlineSnapshot(
         `
         "Warning: .env file not found at <TMP_DIR>/nonexistent.env
-        Error configuring client: Local configuration requires a server URL (--server-url), instance (--instance), or URL. Please provide it via command line options or in your .env file."
+        Error configuring client: Local configuration requires a server URL (--server-url) or instance name (--instance). You can also provide these via environment variables or a .env file."
       `,
       );
     });

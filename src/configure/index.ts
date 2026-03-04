@@ -214,7 +214,7 @@ export async function configure(client: string, options: ConfigureOptions) {
       // Local: both instance/url and token required
       if (!instance && !url) {
         throw new Error(
-          'Local configuration requires a server URL (--server-url), instance (--instance), or URL. Please provide it via command line options or in your .env file.',
+          'Local configuration requires a server URL (--server-url) or instance name (--instance). You can also provide these via environment variables or a .env file.',
         );
       }
       if (!apiToken) {
@@ -393,7 +393,7 @@ export async function validateFlags(
 
   if (instance && url) {
     console.warn(
-      'Warning: Both --instance and --url were provided. The --instance flag will be ignored when --url is specified.',
+      'Warning: Both --instance and --server-url/--url were provided. The --instance flag will be ignored when a URL is specified.',
     );
   }
 

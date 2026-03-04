@@ -133,7 +133,7 @@ Examples:
     )
     .option(
       '-e, --env <path>',
-      'Path to .env file containing GLEAN_URL and optionally GLEAN_API_TOKEN',
+      'Path to .env file containing GLEAN_SERVER_URL (or GLEAN_URL) and optionally GLEAN_API_TOKEN',
     )
     .option(
       '--workspace',
