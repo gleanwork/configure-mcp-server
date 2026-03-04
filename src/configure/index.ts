@@ -31,11 +31,13 @@ import type { ConfigureOptions } from './types.js';
  */
 function loadCredentials(options: ConfigureOptions): {
   instance?: string;
+  serverUrl?: string;
   url?: string;
   apiToken?: string;
 } {
-  const result: { instance?: string; url?: string; apiToken?: string } = {
+  const result: { instance?: string; serverUrl?: string; url?: string; apiToken?: string } = {
     instance: undefined,
+    serverUrl: undefined,
     url: undefined,
     apiToken: undefined,
   };
@@ -57,8 +59,10 @@ function loadCredentials(options: ConfigureOptions): {
           );
         }
 
-        // Check for URL first, then instance
-        if (envConfig.parsed?.GLEAN_URL) {
+        // Check for server URL first, then URL, then instance
+        if (envConfig.parsed?.GLEAN_SERVER_URL) {
+          result.serverUrl = envConfig.parsed.GLEAN_SERVER_URL;
+        } else if (envConfig.parsed?.GLEAN_URL) {
           result.url = envConfig.parsed.GLEAN_URL;
         } else if (
           envConfig.parsed?.GLEAN_INSTANCE ||
@@ -75,6 +79,10 @@ function loadCredentials(options: ConfigureOptions): {
   }
 
   // Direct options take precedence over env file
+  if (options.serverUrl) {
+    result.serverUrl = options.serverUrl;
+  }
+
   if (options.instance) {
     result.instance = options.instance;
   }
@@ -88,8 +96,10 @@ function loadCredentials(options: ConfigureOptions): {
   }
 
   // Fall back to environment variables if not set via options or env file
-  if (!result.instance && !result.url) {
-    if (process.env.GLEAN_URL) {
+  if (!result.serverUrl && !result.instance && !result.url) {
+    if (process.env.GLEAN_SERVER_URL) {
+      result.serverUrl = process.env.GLEAN_SERVER_URL;
+    } else if (process.env.GLEAN_URL) {
       result.url = process.env.GLEAN_URL;
     } else if (process.env.GLEAN_INSTANCE || process.env.GLEAN_SUBDOMAIN) {
       result.instance =
@@ -134,6 +144,14 @@ export async function configure(client: string, options: ConfigureOptions) {
       'Configuration failed: --workspace flag is only supported for VS Code',
     );
     process.exit(1);
+  }
+
+  // Handle conflicting flags - serverUrl takes precedence
+  if (options.serverUrl && options.instance) {
+    console.warn(
+      'Warning: Both --server-url and --instance were provided. The --instance flag will be ignored when --server-url is specified.',
+    );
+    delete options.instance;
   }
 
   // Handle conflicting --instance and --url flags
@@ -187,10 +205,16 @@ export async function configure(client: string, options: ConfigureOptions) {
 
   try {
     // Load credentials from all sources first (flags, env files, environment)
-    const { instance, url, apiToken } = loadCredentials(options);
+    const { instance, serverUrl, url, apiToken } = loadCredentials(options);
 
     // Determine what we're configuring based on what's provided
-    const instanceOrUrl = url || instance;
+    // serverUrl takes precedence over url which takes precedence over instance
+    const instanceOrUrl = serverUrl || url || instance;
+
+    // Pass serverUrl through to options so downstream config generation can use it
+    if (serverUrl && !options.serverUrl) {
+      options.serverUrl = serverUrl;
+    }
 
     // Validate based on configuration type
     if (options.remote) {
@@ -206,10 +230,10 @@ export async function configure(client: string, options: ConfigureOptions) {
         trace('Remote configuration using DCR (no token provided)');
       }
     } else {
-      // Local: both instance and token required
-      if (!instance && !url) {
+      // Local: both instance/serverUrl and token required
+      if (!instance && !url && !serverUrl) {
         throw new Error(
-          'Local configuration requires an instance (--instance) or URL. Please provide it via command line options or in your .env file.',
+          'Local configuration requires a server URL (--server-url), instance (--instance), or URL. Please provide it via command line options or in your .env file.',
         );
       }
       if (!apiToken) {
@@ -332,7 +356,7 @@ export async function listSupportedClients() {
 
   console.log('\nUsage:');
   console.log(
-    '  npx @gleanwork/configure-mcp-server --client <client> [--token <token>] [--instance <instance>]',
+    '  npx @gleanwork/configure-mcp-server --client <client> [--token <token>] [--server-url <url>]',
   );
   console.log(
     '  npx @gleanwork/configure-mcp-server --client <client> --env <path-to-env-file>',
@@ -342,7 +366,7 @@ export async function listSupportedClients() {
   if (clients.length > 0) {
     const exampleClient = clients[0][0];
     console.log(
-      `  npx @gleanwork/configure-mcp-server --client ${exampleClient} --token your-token --instance your-instance`,
+      `  npx @gleanwork/configure-mcp-server --client ${exampleClient} --token your-token --server-url https://your-company-be.glean.com`,
     );
     console.log(
       `  npx @gleanwork/configure-mcp-server --client ${exampleClient} --env ~/.glean.env`,
@@ -362,6 +386,7 @@ export async function validateFlags(
   instance: string | undefined,
   url: string | undefined,
   env: string | undefined,
+  serverUrl?: string | undefined,
 ): Promise<boolean> {
   if (!client) {
     console.error('Error: --client parameter is required');
@@ -370,12 +395,13 @@ export async function validateFlags(
     return false;
   }
 
-  const hasDeployment = Boolean(instance || url);
+  const hasDeployment = Boolean(instance || url || serverUrl);
   const hasToken = Boolean(token);
 
   const hasEnvironmentToken = Boolean(process.env.GLEAN_API_TOKEN);
   const hasEnvironmentInstance = Boolean(
-    process.env.GLEAN_INSTANCE ||
+    process.env.GLEAN_SERVER_URL ||
+      process.env.GLEAN_INSTANCE ||
       process.env.GLEAN_SUBDOMAIN ||
       process.env.GLEAN_URL,
   );
@@ -398,7 +424,7 @@ export async function validateFlags(
   if (!hasAnyInstance && !hasAnyToken && !hasEnvParam) {
     console.error('Error: You must provide either:');
     console.error(
-      '  1. Both --token and --instance for local configuration, or',
+      '  1. Both --token and --server-url for local configuration, or',
     );
     console.error('  2. --url for remote configuration, or');
     console.error('  3. --env pointing to a .env file with configuration');
@@ -411,8 +437,8 @@ export async function validateFlags(
     console.error(`
 "Warning: Configuring without complete credentials.
 You must provide either:
-  1. Both --token and --instance, or
-  2. --env pointing to a .env file containing GLEAN_API_TOKEN and GLEAN_INSTANCE
+  1. Both --token and --server-url, or
+  2. --env pointing to a .env file containing GLEAN_API_TOKEN and GLEAN_SERVER_URL
 
 Continuing with configuration, but you will need to set credentials manually later."
 `);

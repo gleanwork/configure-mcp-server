@@ -63,7 +63,7 @@ describe('Junie MCP Client', () => {
           "glean_default": {
             "args": [
               "-y",
-              "mcp-remote@0.1.37",
+              "mcp-remote@0.1.38",
               "https://example-instance-be.glean.com/mcp/default",
               "--header",
               "Authorization: Bearer test-token",

@@ -71,9 +71,15 @@ export function createMcpServersConfig(
 ): MCPServersConfig {
   const isRemote = options?.remote === true;
 
-  // For stdio transport, determine if we have a URL or instance name
+  // For stdio transport, determine if we have a server URL, URL, or instance name
   const getEnvVars = () => {
     if (isRemote) return undefined;
+    if (options?.serverUrl) {
+      return {
+        GLEAN_SERVER_URL: instanceOrUrl,
+        ...(apiToken && { GLEAN_API_TOKEN: apiToken }),
+      };
+    }
     if (URL.canParse(instanceOrUrl)) {
       return createGleanUrlEnv(instanceOrUrl, apiToken);
     }

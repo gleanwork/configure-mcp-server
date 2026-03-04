@@ -170,7 +170,7 @@ describe('CLI', () => {
 
         Examples:
           Configure local MCP server:
-            $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --instance acme
+            $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --server-url https://acme-be.glean.com
 
           Configure remote MCP server:
             $ npx -y @gleanwork/configure-mcp-server remote --client cursor --url https://my-be.glean.com/mcp/default
@@ -221,7 +221,7 @@ describe('CLI', () => {
 
         Examples:
           Configure local MCP server:
-            $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --instance acme
+            $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --server-url https://acme-be.glean.com
 
           Configure remote MCP server:
             $ npx -y @gleanwork/configure-mcp-server remote --client cursor --url https://my-be.glean.com/mcp/default
@@ -633,7 +633,7 @@ describe('CLI', () => {
       ).toMatchInlineSnapshot(
         `
         "Warning: .env file not found at <TMP_DIR>/nonexistent.env
-        Error configuring client: Local configuration requires an instance (--instance) or URL. Please provide it via command line options or in your .env file."
+        Error configuring client: Local configuration requires a server URL (--server-url), instance (--instance), or URL. Please provide it via command line options or in your .env file."
       `,
       );
     });
@@ -1091,7 +1091,7 @@ describe('CLI', () => {
                 "command": "npx",
                 "args": [
                   "-y",
-                  "mcp-remote@0.1.37",
+                  "mcp-remote@0.1.38",
                   "https://my-be.glean.com/mcp/default"
                 ]
               }

@@ -15,6 +15,7 @@ describe('validateFlags', () => {
     delete process.env.GLEAN_INSTANCE;
     delete process.env.GLEAN_SUBDOMAIN;
     delete process.env.GLEAN_URL;
+    delete process.env.GLEAN_SERVER_URL;
   });
 
   afterEach(() => {
@@ -63,7 +64,7 @@ describe('validateFlags', () => {
     expect(result).toBe(false);
     expect(consoleState.getState('error')).toMatchInlineSnapshot(`
       "Error: You must provide either:
-        1. Both --token and --instance for local configuration, or
+        1. Both --token and --server-url for local configuration, or
         2. --url for remote configuration, or
         3. --env pointing to a .env file with configuration
       Run with --help for usage information"
@@ -84,8 +85,8 @@ describe('validateFlags', () => {
       "
       "Warning: Configuring without complete credentials.
       You must provide either:
-        1. Both --token and --instance, or
-        2. --env pointing to a .env file containing GLEAN_API_TOKEN and GLEAN_INSTANCE
+        1. Both --token and --server-url, or
+        2. --env pointing to a .env file containing GLEAN_API_TOKEN and GLEAN_SERVER_URL
 
       Continuing with configuration, but you will need to set credentials manually later."
       "
@@ -198,8 +199,8 @@ describe('validateFlags', () => {
       "
       "Warning: Configuring without complete credentials.
       You must provide either:
-        1. Both --token and --instance, or
-        2. --env pointing to a .env file containing GLEAN_API_TOKEN and GLEAN_INSTANCE
+        1. Both --token and --server-url, or
+        2. --env pointing to a .env file containing GLEAN_API_TOKEN and GLEAN_SERVER_URL
 
       Continuing with configuration, but you will need to set credentials manually later."
       "
@@ -244,6 +245,36 @@ describe('validateFlags', () => {
       'client',
       undefined,
       'flag-instance',
+      undefined,
+      undefined,
+    );
+
+    expect(result).toBe(true);
+    expect(consoleState.getState('error')).toEqual('');
+  });
+
+  it('should return true when serverUrl flag is provided with token', async () => {
+    const result = await validateFlags(
+      'client',
+      'token',
+      undefined,
+      undefined,
+      undefined,
+      'https://my-company-be.glean.com',
+    );
+
+    expect(result).toBe(true);
+    expect(consoleState.getState('error')).toEqual('');
+  });
+
+  it('should return true when GLEAN_SERVER_URL environment variable is set', async () => {
+    process.env.GLEAN_SERVER_URL = 'https://my-company-be.glean.com';
+    process.env.GLEAN_API_TOKEN = 'env-token';
+
+    const result = await validateFlags(
+      'client',
+      undefined,
+      undefined,
       undefined,
       undefined,
     );

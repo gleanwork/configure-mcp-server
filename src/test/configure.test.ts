@@ -215,6 +215,52 @@ describe('configure', () => {
     `);
   });
 
+  it('should configure with serverUrl option', async () => {
+    const options = {
+      token: 'test-token',
+      serverUrl: 'https://my-company-be.glean.com',
+    };
+
+    await configure('cursor', options);
+
+    const configPath = path.join(tempDir, '.cursor', 'mcp.json');
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    expect(config.mcpServers.glean_local.env).toHaveProperty('GLEAN_SERVER_URL', 'https://my-company-be.glean.com');
+    expect(config.mcpServers.glean_local.env).toHaveProperty('GLEAN_API_TOKEN', 'test-token');
+    expect(config.mcpServers.glean_local.env).not.toHaveProperty('GLEAN_INSTANCE');
+    expect(config.mcpServers.glean_local.env).not.toHaveProperty('GLEAN_URL');
+
+    // validateInstance should not be called with serverUrl
+    expect(validateInstance).not.toHaveBeenCalled();
+  });
+
+  it('should configure with GLEAN_SERVER_URL environment variable', async () => {
+    process.env.GLEAN_SERVER_URL = 'https://env-company-be.glean.com';
+    process.env.GLEAN_API_TOKEN = 'env-token';
+
+    await configure('cursor', {});
+
+    const configPath = path.join(tempDir, '.cursor', 'mcp.json');
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    expect(config.mcpServers.glean_local.env).toHaveProperty('GLEAN_SERVER_URL', 'https://env-company-be.glean.com');
+    expect(config.mcpServers.glean_local.env).toHaveProperty('GLEAN_API_TOKEN', 'env-token');
+  });
+
+  it('should prefer serverUrl over instance when both provided', async () => {
+    const options = {
+      token: 'test-token',
+      serverUrl: 'https://my-company-be.glean.com',
+      instance: 'my-company',
+    };
+
+    await configure('cursor', options);
+
+    const configPath = path.join(tempDir, '.cursor', 'mcp.json');
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    expect(config.mcpServers.glean_local.env).toHaveProperty('GLEAN_SERVER_URL', 'https://my-company-be.glean.com');
+    expect(config.mcpServers.glean_local.env).not.toHaveProperty('GLEAN_INSTANCE');
+  });
+
   it('should include GLEAN_INSTANCE for local (non-remote) configurations', async () => {
     const options = {
       token: 'test-token',

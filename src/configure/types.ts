@@ -16,6 +16,7 @@ import type {
 export interface ConfigureOptions {
   token?: string;
   instance?: string;
+  serverUrl?: string;
   remote?: boolean;
   url?: string;
   envPath?: string;
