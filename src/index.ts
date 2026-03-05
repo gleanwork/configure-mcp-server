@@ -47,7 +47,7 @@ Available MCP Servers:
 
 Examples:
   Configure local MCP server:
-    $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --instance acme
+    $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --server-url https://acme-be.glean.com
 
   Configure remote MCP server:
     $ npx -y @gleanwork/configure-mcp-server remote --client cursor --url https://my-be.glean.com/mcp/default
@@ -61,11 +61,12 @@ Examples:
     .command('local')
     .description("Configure Glean's local MCP server for a given client")
     .option('-c, --client <client>', `MCP client to configure (${clientList})`)
-    .option('-i, --instance <instance>', 'Glean instance name')
+    .option('-s, --server-url <serverUrl>', 'Glean server URL (e.g., https://my-company-be.glean.com)')
+    .option('-i, --instance <instance>', 'Glean instance name (deprecated, use --server-url)')
     .option('-t, --token <token>', 'Glean API token (required)')
     .option(
       '-e, --env <path>',
-      'Path to .env file containing GLEAN_INSTANCE and GLEAN_API_TOKEN',
+      'Path to .env file containing GLEAN_SERVER_URL and GLEAN_API_TOKEN',
     )
     .option(
       '--workspace',
@@ -76,9 +77,10 @@ Examples:
       'after',
       `
 Examples:
-  $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --instance acme
+  $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --server-url https://acme-be.glean.com
+  $ npx -y @gleanwork/configure-mcp-server local --client cursor --token xxx --instance acme  (deprecated)
   $ npx -y @gleanwork/configure-mcp-server local --client vscode --env ~/.glean.env
-  $ npx -y @gleanwork/configure-mcp-server local --client vscode --workspace --token xxx --instance acme
+  $ npx -y @gleanwork/configure-mcp-server local --client vscode --workspace --token xxx --server-url https://your-company-be.glean.com
 `,
     )
     .action(async (options) => {
@@ -89,7 +91,8 @@ Examples:
       trace(process.title, `ppid/pid: [${process.ppid} / ${process.pid}]`);
       trace(process.execPath, process.execArgv, process.argv);
 
-      const { client, token, instance, env, workspace } = options;
+      const { client, token, instance, serverUrl, env, workspace } = options;
+      const url = serverUrl; // map --server-url to url at CLI boundary
 
       if (workspace && client && client !== 'vscode') {
         console.error(
@@ -98,7 +101,7 @@ Examples:
         process.exit(1);
       }
 
-      if (!(await validateFlags(client, token, instance, undefined, env))) {
+      if (!(await validateFlags(client, token, instance, url, env))) {
         process.exit(1);
       }
 
@@ -106,6 +109,7 @@ Examples:
         await configure(client, {
           token,
           instance,
+          url,
           envPath: env,
           workspace,
         });
@@ -129,7 +133,7 @@ Examples:
     )
     .option(
       '-e, --env <path>',
-      'Path to .env file containing GLEAN_URL and optionally GLEAN_API_TOKEN',
+      'Path to .env file containing GLEAN_SERVER_URL (or GLEAN_URL) and optionally GLEAN_API_TOKEN',
     )
     .option(
       '--workspace',

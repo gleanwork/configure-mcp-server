@@ -12,10 +12,10 @@ import {
   type MCPConnectionOptions,
   buildMcpServerName,
   createGleanEnv,
-  createGleanUrlEnv,
+  createGleanServerUrlEnv,
   createGleanHeaders,
   createGleanRegistry,
-} from '@gleanwork/mcp-config';
+} from '@gleanwork/mcp-config-glean';
 
 import mcpRemotePackageJson from 'mcp-remote/package.json' with { type: 'json' };
 import type {
@@ -74,8 +74,9 @@ export function createMcpServersConfig(
   // For stdio transport, determine if we have a URL or instance name
   const getEnvVars = () => {
     if (isRemote) return undefined;
+    // For local configs, if it's a parseable URL, use GLEAN_SERVER_URL
     if (URL.canParse(instanceOrUrl)) {
-      return createGleanUrlEnv(instanceOrUrl, apiToken);
+      return createGleanServerUrlEnv(instanceOrUrl, apiToken);
     }
     return createGleanEnv(instanceOrUrl, apiToken);
   };

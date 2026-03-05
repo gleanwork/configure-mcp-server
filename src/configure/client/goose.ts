@@ -1,5 +1,5 @@
 import { createBaseClient } from './index.js';
-import { CLIENT } from '@gleanwork/mcp-config';
+import { CLIENT } from '@gleanwork/mcp-config-glean';
 
 const gooseClient = createBaseClient(CLIENT.GOOSE, ['Restart Goose']);
 
