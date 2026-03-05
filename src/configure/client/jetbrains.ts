@@ -5,7 +5,7 @@
  */
 
 import { createBaseClient } from './index.js';
-import { CLIENT } from '@gleanwork/mcp-config';
+import { CLIENT } from '@gleanwork/mcp-config-glean';
 
 const jetbrainsClient = createBaseClient(CLIENT.JETBRAINS, [
   'Restart your JetBrains IDE',

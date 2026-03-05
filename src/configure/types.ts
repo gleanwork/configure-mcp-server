@@ -8,7 +8,7 @@ import type {
   MCPConfig as SchemaMCPConfig,
   StandardMCPConfig as SchemaStandardMCPConfig,
   VSCodeMCPConfig,
-} from '@gleanwork/mcp-config';
+} from '@gleanwork/mcp-config-glean';
 
 /**
  * Configure options interface

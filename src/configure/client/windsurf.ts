@@ -5,7 +5,7 @@
  */
 
 import { createBaseClient } from './index.js';
-import { CLIENT } from '@gleanwork/mcp-config';
+import { CLIENT } from '@gleanwork/mcp-config-glean';
 
 const windsurfClient = createBaseClient(CLIENT.WINDSURF, [
   'Open Windsurf Settings > Advanced Settings',

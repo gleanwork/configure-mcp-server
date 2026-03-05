@@ -5,7 +5,7 @@
  */
 
 import { createBaseClient } from './index.js';
-import { CLIENT } from '@gleanwork/mcp-config';
+import { CLIENT } from '@gleanwork/mcp-config-glean';
 
 const claudeCodeClient = createBaseClient(CLIENT.CLAUDE_CODE, [
   'Run `claude mcp list` and verify the server is listed',

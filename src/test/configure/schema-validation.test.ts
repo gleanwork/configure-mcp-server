@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { validateGeneratedConfig, CLIENT } from '@gleanwork/mcp-config';
+import { validateGeneratedConfig, CLIENT } from '@gleanwork/mcp-config-glean';
 import type { ConfigureOptions } from '../../configure/index.js';
 
 import claudeCodeClient from '../../configure/client/claude-code.js';

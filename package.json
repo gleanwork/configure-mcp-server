@@ -50,7 +50,7 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@gleanwork/mcp-config": "^2.0.0",
+    "@gleanwork/mcp-config-glean": "^4.3.0",
     "@gleanwork/mcp-server-utils": "^0.9.1",
     "commander": "^14.0.2",
     "dotenv": "^17.2.1",
