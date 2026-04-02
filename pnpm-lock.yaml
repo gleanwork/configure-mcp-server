@@ -8,12 +8,12 @@ importers:
 
   .:
     dependencies:
-      '@gleanwork/mcp-config':
-        specifier: ^2.0.0
-        version: 2.0.1(zod@4.3.6)
+      '@gleanwork/mcp-config-glean':
+        specifier: ^4.3.0
+        version: 4.3.0(zod@4.3.6)
       '@gleanwork/mcp-server-utils':
-        specifier: ^0.9.1
-        version: 0.9.1
+        specifier: ^0.10.1
+        version: 0.10.1
       commander:
         specifier: ^14.0.2
         version: 14.0.3
@@ -324,23 +324,18 @@ packages:
   '@gar/promisify@1.1.3':
     resolution: {integrity: sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==}
 
-  '@gleanwork/connect-mcp-server@0.2.4':
-    resolution: {integrity: sha512-9EswjKncBNcAZtWzBJi3oBHVMR5d/75iOHJNFkjvR0Imqrd2coVp/o5LSckyKHYwm/8TeybDbr2KkLISpfNRag==}
-    hasBin: true
+  '@gleanwork/mcp-config-glean@4.3.0':
+    resolution: {integrity: sha512-/JGxc0EG1lw47AOfhDYxH7gLA0jvZsdo+C5M/fuxVOdTpjVLC14PyMT7DkNjEob0j6i4uHQm5DUEvnGWHdwSEQ==}
+    engines: {node: '>=20'}
 
-  '@gleanwork/mcp-config-schema@3.1.1':
-    resolution: {integrity: sha512-JlgYiN2+YZm1gHVrFkA3BzLZG7VGuMXy83XZ6mcrMWP4hf53vpuGoEvo3oqBPdUXLhXcodFbZGukccFkD8cV6A==}
+  '@gleanwork/mcp-config-schema@4.3.0':
+    resolution: {integrity: sha512-qajPyFZoNYVhFJ0IBgSQDRaLFPL5ysgTjdzCJYx7SG1lygHHz220Fj5lC7wP2/ntJiCmiQv8jl7zAS5kOnDNgg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
 
-  '@gleanwork/mcp-config@2.0.1':
-    resolution: {integrity: sha512-2XeXy2rpu+mCjIXUMPOM1mEKilVs5z+1EUtU9V6xykgEzVe91ibvjFcRQdtstIckTuNqCJfPIcUnTAGrPaLzeQ==}
-    engines: {node: '>=20'}
-    deprecated: This package has been renamed to @gleanwork/mcp-config-glean. Please install @gleanwork/mcp-config-glean instead.
-
-  '@gleanwork/mcp-server-utils@0.9.1':
-    resolution: {integrity: sha512-mRExkYjku9QFFjGGSI/U/NLJAnBaai+pyDpYdFpMqqi/91jsrSfhcrUtyKxES0rjE95GLIjpSKLi9YTSPio+Ig==}
+  '@gleanwork/mcp-server-utils@0.10.1':
+    resolution: {integrity: sha512-7LSnNPBgaHXCHDqIIzUHXlmc/s/tSnPRLYS1XCMJENtX/oI2wQpH62LxJg8tA+GeZMeQlvz12EpxOZsbdJ5R2Q==}
     engines: {node: '>=20'}
 
   '@gwhitney/detect-indent@7.0.1':
@@ -3338,8 +3333,8 @@ packages:
     resolution: {integrity: sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==}
     engines: {node: '>= 6.0.0', npm: '>= 3.0.0'}
 
-  smol-toml@1.6.0:
-    resolution: {integrity: sha512-4zemZi0HvTnYwLfrpk/CF9LOd9Lt87kAt50GnqhMpyF9U3poDAP2+iukq2bZsO/ufegbYehBkqINbsWxj4l4cw==}
+  smol-toml@1.6.1:
+    resolution: {integrity: sha512-dWUG8F5sIIARXih1DTaQAX4SsiTXhInKf1buxdY9DIg4ZYPZK5nGM1VRIYmEbDbsHt7USo99xSLFu5Q1IqTmsg==}
     engines: {node: '>= 18'}
 
   socks-proxy-agent@6.2.1:
@@ -4088,38 +4083,27 @@ snapshots:
 
   '@gar/promisify@1.1.3': {}
 
-  '@gleanwork/connect-mcp-server@0.2.4':
+  '@gleanwork/mcp-config-glean@4.3.0(zod@4.3.6)':
     dependencies:
-      express: 4.22.1
-      open: 10.2.0
-      strict-url-sanitise: 0.0.1
+      '@gleanwork/mcp-config-schema': 4.3.0(zod@4.3.6)
     transitivePeerDependencies:
-      - supports-color
+      - zod
 
-  '@gleanwork/mcp-config-schema@3.1.1(zod@4.3.6)':
+  '@gleanwork/mcp-config-schema@4.3.0(zod@4.3.6)':
     dependencies:
       glob: 13.0.6
       js-yaml: 4.1.1
       mkdirp: 3.0.1
-      smol-toml: 1.6.0
+      smol-toml: 1.6.1
       zod: 4.3.6
 
-  '@gleanwork/mcp-config@2.0.1(zod@4.3.6)':
+  '@gleanwork/mcp-server-utils@0.10.1':
     dependencies:
-      '@gleanwork/mcp-config-schema': 3.1.1(zod@4.3.6)
-    transitivePeerDependencies:
-      - zod
-
-  '@gleanwork/mcp-server-utils@0.9.1':
-    dependencies:
-      '@gleanwork/connect-mcp-server': 0.2.4
       dotenv: 17.3.1
       fs-extra: 11.3.4
-      open: 10.2.0
+      open: 11.0.0
       tldts: 7.0.24
       zod: 4.3.6
-    transitivePeerDependencies:
-      - supports-color
 
   '@gwhitney/detect-indent@7.0.1': {}
 
@@ -7522,7 +7506,7 @@ snapshots:
 
   smart-buffer@4.2.0: {}
 
-  smol-toml@1.6.0: {}
+  smol-toml@1.6.1: {}
 
   socks-proxy-agent@6.2.1:
     dependencies:
