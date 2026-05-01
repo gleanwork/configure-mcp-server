@@ -25,30 +25,7 @@ describe('Junie MCP Client', () => {
     expect(junieClient.configFilePath(homedir)).toBe(expectedPath);
   });
 
-  it('should generate a valid Junie MCP config template with instance', () => {
-    const config = junieClient.configTemplate('example-instance', 'test-token');
-
-    expect(config).toMatchInlineSnapshot(`
-      {
-        "mcpServers": {
-          "glean_local": {
-            "args": [
-              "-y",
-              "@gleanwork/local-mcp-server",
-            ],
-            "command": "npx",
-            "env": {
-              "GLEAN_API_TOKEN": "test-token",
-              "GLEAN_INSTANCE": "example-instance",
-            },
-            "type": "stdio",
-          },
-        },
-      }
-    `);
-  });
-
-  it('should generate a valid Junie remote config template with URL (uses mcp-remote)', () => {
+  it('should generate a valid Junie remote config template with URL', () => {
     const options: ConfigureOptions = { remote: true };
     const config = junieClient.configTemplate(
       'https://example-instance-be.glean.com/mcp/default',
@@ -56,20 +33,14 @@ describe('Junie MCP Client', () => {
       options,
     );
 
-    // Junie only supports stdio, so remote uses mcp-remote proxy
     expect(config).toMatchInlineSnapshot(`
       {
         "mcpServers": {
           "glean_default": {
-            "args": [
-              "-y",
-              "mcp-remote@0.1.37",
-              "https://example-instance-be.glean.com/mcp/default",
-              "--header",
-              "Authorization: Bearer test-token",
-            ],
-            "command": "npx",
-            "type": "stdio",
+            "headers": {
+              "Authorization": "Bearer test-token",
+            },
+            "url": "https://example-instance-be.glean.com/mcp/default",
           },
         },
       }

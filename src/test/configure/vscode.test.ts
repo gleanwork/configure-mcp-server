@@ -66,60 +66,6 @@ describe('VS Code MCP Client', () => {
     }
   });
 
-  it('should generate a valid VS Code MCP config template with instance', () => {
-    const config = vscodeClient.configTemplate(
-      'example-instance',
-      'test-token',
-    );
-
-    expect(config).toMatchInlineSnapshot(`
-      {
-        "servers": {
-          "glean_local": {
-            "args": [
-              "-y",
-              "@gleanwork/local-mcp-server",
-            ],
-            "command": "npx",
-            "env": {
-              "GLEAN_API_TOKEN": "test-token",
-              "GLEAN_INSTANCE": "example-instance",
-            },
-            "type": "stdio",
-          },
-        },
-      }
-    `);
-  });
-
-  it('should generate a valid VS Code workspace config template with instance (local)', () => {
-    const options: ConfigureOptions = { workspace: true };
-    const config = vscodeClient.configTemplate(
-      'example-instance',
-      'test-token',
-      options,
-    );
-
-    expect(config).toMatchInlineSnapshot(`
-      {
-        "servers": {
-          "glean_local": {
-            "args": [
-              "-y",
-              "@gleanwork/local-mcp-server",
-            ],
-            "command": "npx",
-            "env": {
-              "GLEAN_API_TOKEN": "test-token",
-              "GLEAN_INSTANCE": "example-instance",
-            },
-            "type": "stdio",
-          },
-        },
-      }
-    `);
-  });
-
   it('should generate a valid VS Code workspace config template with URL (remote: default)', () => {
     const options: ConfigureOptions = { workspace: true, remote: true };
     const config = vscodeClient.configTemplate(
@@ -163,32 +109,6 @@ describe('VS Code MCP Client', () => {
             },
             "type": "http",
             "url": "https://example-instance-be.glean.com/mcp/agents",
-          },
-        },
-      }
-    `);
-  });
-
-  it('should generate a valid VS Code MCP config template with URL', () => {
-    const config = vscodeClient.configTemplate(
-      'https://example.com/rest/api/v1',
-      'test-token',
-    );
-
-    expect(config).toMatchInlineSnapshot(`
-      {
-        "servers": {
-          "glean_local": {
-            "args": [
-              "-y",
-              "@gleanwork/local-mcp-server",
-            ],
-            "command": "npx",
-            "env": {
-              "GLEAN_API_TOKEN": "test-token",
-              "GLEAN_SERVER_URL": "https://example.com/rest/api/v1",
-            },
-            "type": "stdio",
           },
         },
       }
@@ -285,38 +205,10 @@ describe('VS Code MCP Client', () => {
     `);
   });
 
-  it('should generate a valid VS Code workspace config template with URL', () => {
-    const options: ConfigureOptions = { workspace: true };
+  it('should generate a valid VS Code workspace config template with URL (remote)', () => {
+    const options: ConfigureOptions = { workspace: true, remote: true };
     const config = vscodeClient.configTemplate(
-      'https://example.com/rest/api/v1',
-      'test-token',
-      options,
-    );
-
-    expect(config).toMatchInlineSnapshot(`
-          {
-            "servers": {
-              "glean_local": {
-                "args": [
-                  "-y",
-                  "@gleanwork/local-mcp-server",
-                ],
-                "command": "npx",
-                "env": {
-                  "GLEAN_API_TOKEN": "test-token",
-                  "GLEAN_SERVER_URL": "https://example.com/rest/api/v1",
-                },
-                "type": "stdio",
-              },
-            },
-          }
-        `);
-  });
-
-  it('should generate global config when workspace option is false', () => {
-    const options: ConfigureOptions = { workspace: false };
-    const config = vscodeClient.configTemplate(
-      'example-instance',
+      'https://example.com/mcp/default',
       'test-token',
       options,
     );
@@ -324,17 +216,12 @@ describe('VS Code MCP Client', () => {
     expect(config).toMatchInlineSnapshot(`
       {
         "servers": {
-          "glean_local": {
-            "args": [
-              "-y",
-              "@gleanwork/local-mcp-server",
-            ],
-            "command": "npx",
-            "env": {
-              "GLEAN_API_TOKEN": "test-token",
-              "GLEAN_INSTANCE": "example-instance",
+          "glean_default": {
+            "headers": {
+              "Authorization": "Bearer test-token",
             },
-            "type": "stdio",
+            "type": "http",
+            "url": "https://example.com/mcp/default",
           },
         },
       }

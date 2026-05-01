@@ -25,29 +25,6 @@ describe('Cursor MCP Client', () => {
     expect(cursorClient.configFilePath(homedir)).toBe(expectedPath);
   });
 
-  it('should generate a valid Cursor MCP config template with instance', () => {
-    const config = cursorClient.configTemplate('example-instance', 'test-token');
-
-    expect(config).toMatchInlineSnapshot(`
-      {
-        "mcpServers": {
-          "glean_local": {
-            "args": [
-              "-y",
-              "@gleanwork/local-mcp-server",
-            ],
-            "command": "npx",
-            "env": {
-              "GLEAN_API_TOKEN": "test-token",
-              "GLEAN_INSTANCE": "example-instance",
-            },
-            "type": "stdio",
-          },
-        },
-      }
-    `);
-  });
-
   it('should generate a valid Cursor remote config template with URL (native HTTP)', () => {
     const options: ConfigureOptions = { remote: true };
     const config = cursorClient.configTemplate(

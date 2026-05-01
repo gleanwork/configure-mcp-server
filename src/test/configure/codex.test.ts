@@ -25,28 +25,6 @@ describe('Codex MCP Client', () => {
     expect(codexClient.configFilePath(homedir)).toBe(expectedPath);
   });
 
-  it('should generate a valid Codex MCP config template with instance', () => {
-    const config = codexClient.configTemplate('example-instance', 'test-token');
-
-    expect(config).toMatchInlineSnapshot(`
-      {
-        "mcp_servers": {
-          "glean_local": {
-            "args": [
-              "-y",
-              "@gleanwork/local-mcp-server",
-            ],
-            "command": "npx",
-            "env": {
-              "GLEAN_API_TOKEN": "test-token",
-              "GLEAN_INSTANCE": "example-instance",
-            },
-          },
-        },
-      }
-    `);
-  });
-
   it('should generate a valid Codex remote config template with URL (native HTTP)', () => {
     const options: ConfigureOptions = { remote: true };
     const config = codexClient.configTemplate(

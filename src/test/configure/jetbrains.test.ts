@@ -18,32 +18,6 @@ describe('JetBrains MCP Client', () => {
     );
   });
 
-  it('should generate a valid JetBrains MCP config template with instance', () => {
-    const config = jetbrainsClient.configTemplate(
-      'example-instance',
-      'test-token',
-    );
-
-    expect(config).toMatchInlineSnapshot(`
-      {
-        "mcpServers": {
-          "glean_local": {
-            "args": [
-              "-y",
-              "@gleanwork/local-mcp-server",
-            ],
-            "command": "npx",
-            "env": {
-              "GLEAN_API_TOKEN": "test-token",
-              "GLEAN_INSTANCE": "example-instance",
-            },
-            "type": "stdio",
-          },
-        },
-      }
-    `);
-  });
-
   it('should generate a valid JetBrains remote config template with URL', () => {
     const options: ConfigureOptions = { remote: true };
     const config = jetbrainsClient.configTemplate(

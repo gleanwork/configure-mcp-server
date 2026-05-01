@@ -11,6 +11,28 @@ import { initializeProject } from './init/index.js';
 import { Logger, trace, LogLevel } from '@gleanwork/mcp-server-utils/logger';
 import { VERSION } from './common/version.js';
 import { checkAndOpenLaunchWarning } from '@gleanwork/mcp-server-utils/util';
+import { createGleanRegistry } from '@gleanwork/mcp-config-glean';
+
+/**
+ * Friendly pre-flight check for the `local` subcommand: Glean's registry no longer
+ * advertises a local server, so stdio installs via this CLI are not supported
+ * against it. Surface a clear message and the remote-path alternative before any
+ * other validation or filesystem work.
+ */
+function ensureLocalServerAvailable(): void {
+  const registry = createGleanRegistry();
+  if (registry.hasLocalServer()) return;
+
+  console.error(
+    [
+      'No local MCP server is configured for this registry.',
+      "Local installation isn't supported here — use the remote transport instead:",
+      '',
+      '  configure-mcp-server remote --url <your-server-url> --client <client>',
+    ].join('\n'),
+  );
+  process.exit(1);
+}
 
 async function getClientList(): Promise<string> {
   const clients = Object.entries(availableClients);
@@ -90,6 +112,8 @@ Examples:
 
       trace(process.title, `ppid/pid: [${process.ppid} / ${process.pid}]`);
       trace(process.execPath, process.execArgv, process.argv);
+
+      ensureLocalServerAvailable();
 
       const { client, token, instance, serverUrl, env, workspace } = options;
       const url = serverUrl; // map --server-url to url at CLI boundary

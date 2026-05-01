@@ -41,32 +41,6 @@ describe('Claude Desktop MCP Client', () => {
     expect(claudeDesktopClient.configFilePath(homedir)).toBe(expectedPath);
   });
 
-  it('should generate a valid Claude Desktop MCP config template with instance', () => {
-    const config = claudeDesktopClient.configTemplate(
-      'example-instance',
-      'test-token',
-    );
-
-    expect(config).toMatchInlineSnapshot(`
-      {
-        "mcpServers": {
-          "glean_local": {
-            "args": [
-              "-y",
-              "@gleanwork/local-mcp-server",
-            ],
-            "command": "npx",
-            "env": {
-              "GLEAN_API_TOKEN": "test-token",
-              "GLEAN_INSTANCE": "example-instance",
-            },
-            "type": "stdio",
-          },
-        },
-      }
-    `);
-  });
-
   it('should generate a valid Claude Desktop remote config template with URL (native HTTP)', () => {
     const options: ConfigureOptions = { remote: true };
     const config = claudeDesktopClient.configTemplate(

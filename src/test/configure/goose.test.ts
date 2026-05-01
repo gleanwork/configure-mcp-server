@@ -34,35 +34,6 @@ describe('Goose MCP Client', () => {
     expect(gooseClient.configFilePath(homedir)).toBe(expectedPath);
   });
 
-  it('should generate a valid Goose MCP config template with instance', () => {
-    const config = gooseClient.configTemplate('example-instance', 'test-token');
-
-    expect(config).toMatchInlineSnapshot(`
-      {
-        "extensions": {
-          "glean_local": {
-            "args": [
-              "-y",
-              "@gleanwork/local-mcp-server",
-            ],
-            "bundled": null,
-            "cmd": "npx",
-            "description": null,
-            "enabled": true,
-            "env_keys": [],
-            "envs": {
-              "GLEAN_API_TOKEN": "test-token",
-              "GLEAN_INSTANCE": "example-instance",
-            },
-            "name": "glean_local",
-            "timeout": 300,
-            "type": "stdio",
-          },
-        },
-      }
-    `);
-  });
-
   it('should generate a valid Goose remote config template with URL (native HTTP)', () => {
     const options: ConfigureOptions = { remote: true };
     const config = gooseClient.configTemplate(
