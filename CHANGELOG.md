@@ -4,6 +4,18 @@
 
 
 
+## v3.2.0 (2026-05-04)
+
+#### :rocket: Enhancement
+
+- [#78](https://github.com/gleanwork/configure-mcp-server/pull/78) feat: friendly error when no local MCP server is configured ([@steve-calvert-glean](https://github.com/steve-calvert-glean))
+
+#### Committers: 1
+
+- Steve Calvert ([@steve-calvert-glean](https://github.com/steve-calvert-glean))
+
+
+
 ## v3.0.1 (2026-01-09)
 
 #### :bug: Bug Fix
