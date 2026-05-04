@@ -6,7 +6,6 @@ import path from 'path';
 import fs from 'fs';
 import { Logger } from '@gleanwork/mcp-server-utils/logger';
 
-// Mock dependencies
 vi.mock('@gleanwork/mcp-server-utils/util', () => ({
   validateInstance: vi.fn(),
 }));
@@ -20,173 +19,35 @@ describe('configure', () => {
   let consoleErrorOutput: string[];
 
   beforeEach(() => {
-    // Save original environment
     originalEnv = { ...process.env };
     originalHome = os.homedir();
     originalExit = process.exit;
     originalConsoleError = console.error;
     consoleErrorOutput = [];
 
-    // Mock process.exit and console.error
     process.exit = vi.fn() as any;
     console.error = vi.fn((...args) => {
       consoleErrorOutput.push(args.join(' '));
     }) as any;
 
-    // Create temp directory for XDG config
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'mcp-test-'));
     process.env.XDG_CONFIG_HOME = tempDir;
     process.env.HOME = tempDir;
-    os.homedir = () => {
-      return tempDir;
-    };
+    os.homedir = () => tempDir;
 
-    // Mock validateInstance to succeed
     vi.mocked(validateInstance).mockResolvedValue(true);
   });
 
   afterEach(() => {
-    // Restore original environment
     process.env = originalEnv;
     os.homedir = () => originalHome;
     process.exit = originalExit;
     console.error = originalConsoleError;
 
-    // Clean up temp directory
     fs.rmSync(tempDir, { recursive: true, force: true });
 
-    // Clear all mocks
     vi.clearAllMocks();
     Logger.reset();
-  });
-
-  it('should configure cursor client with token and instance', async () => {
-    const options = {
-      token: 'test-token',
-      instance: 'test-instance',
-    };
-
-    await configure('cursor', options);
-
-    // Verify config file was created
-    const configPath = path.join(tempDir, '.cursor', 'mcp.json');
-    expect(fs.existsSync(configPath)).toBe(true);
-
-    // Verify config contents
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    expect(config).toMatchInlineSnapshot(`
-      {
-        "mcpServers": {
-          "glean_local": {
-            "args": [
-              "-y",
-              "@gleanwork/local-mcp-server",
-            ],
-            "command": "npx",
-            "env": {
-              "GLEAN_API_TOKEN": "test-token",
-              "GLEAN_INSTANCE": "test-instance",
-            },
-            "type": "stdio",
-          },
-        },
-      }
-    `);
-
-    // Verify validateInstance was called
-    expect(validateInstance).toHaveBeenCalledWith('test-instance');
-  });
-
-  it('should configure with URL instead of instance', async () => {
-    const options = {
-      token: 'test-token',
-      url: 'https://example.com/rest/api/v1',
-    };
-
-    await configure('cursor', options);
-
-    const configPath = path.join(tempDir, '.cursor', 'mcp.json');
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    expect(config).toMatchInlineSnapshot(`
-      {
-        "mcpServers": {
-          "glean_local": {
-            "args": [
-              "-y",
-              "@gleanwork/local-mcp-server",
-            ],
-            "command": "npx",
-            "env": {
-              "GLEAN_API_TOKEN": "test-token",
-              "GLEAN_SERVER_URL": "https://example.com/rest/api/v1",
-            },
-            "type": "stdio",
-          },
-        },
-      }
-    `);
-
-    // validateInstance should not be called with URL
-    expect(validateInstance).not.toHaveBeenCalled();
-  });
-
-  it('should configure with environment variables', async () => {
-    process.env.GLEAN_API_TOKEN = 'env-token';
-    process.env.GLEAN_INSTANCE = 'env-instance';
-
-    await configure('cursor', {});
-
-    const configPath = path.join(tempDir, '.cursor', 'mcp.json');
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    expect(config).toMatchInlineSnapshot(`
-      {
-        "mcpServers": {
-          "glean_local": {
-            "args": [
-              "-y",
-              "@gleanwork/local-mcp-server",
-            ],
-            "command": "npx",
-            "env": {
-              "GLEAN_API_TOKEN": "env-token",
-              "GLEAN_INSTANCE": "env-instance",
-            },
-            "type": "stdio",
-          },
-        },
-      }
-    `);
-  });
-
-  it('should configure with .env file', async () => {
-    const envPath = path.join(tempDir, '.env');
-    fs.writeFileSync(
-      envPath,
-      'GLEAN_API_TOKEN=env-file-token\nGLEAN_INSTANCE=env-file-instance',
-    );
-
-    await configure('cursor', { envPath });
-
-    const configPath = path.join(tempDir, '.cursor', 'mcp.json');
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    expect(config).toMatchInlineSnapshot(`
-      {
-        "mcpServers": {
-          "glean_local": {
-            "args": [
-              "-y",
-              "@gleanwork/local-mcp-server",
-            ],
-            "command": "npx",
-            "env": {
-              "GLEAN_API_TOKEN": "env-file-token",
-              "GLEAN_INSTANCE": "env-file-instance",
-            },
-            "type": "stdio",
-          },
-        },
-      }
-    `);
   });
 
   it('should configure remote server using API token', async () => {
@@ -215,80 +76,17 @@ describe('configure', () => {
     `);
   });
 
-  it('should configure with url option (server URL)', async () => {
-    const options = {
-      token: 'test-token',
-      url: 'https://my-company-be.glean.com',
-    };
+  // The local (stdio) path has been removed from Glean's mcp-config registry
+  // (see @gleanwork/mcp-config-glean >= 5.0.0). Attempting to configure without
+  // `remote: true` surfaces the "serverPackage not configured" error from the
+  // builder; the CLI wrapper intercepts this earlier via
+  // ensureLocalServerAvailable() (covered in cli.test.ts).
+  it('throws when configuring stdio/local against a remote-only registry', async () => {
+    await expect(
+      configure('cursor', { token: 'test-token', instance: 'test-instance' }),
+    ).resolves.toBeUndefined();
 
-    await configure('cursor', options);
-
-    const configPath = path.join(tempDir, '.cursor', 'mcp.json');
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    expect(config.mcpServers.glean_local.env).toHaveProperty('GLEAN_SERVER_URL', 'https://my-company-be.glean.com');
-    expect(config.mcpServers.glean_local.env).toHaveProperty('GLEAN_API_TOKEN', 'test-token');
-    expect(config.mcpServers.glean_local.env).not.toHaveProperty('GLEAN_INSTANCE');
-    expect(config.mcpServers.glean_local.env).not.toHaveProperty('GLEAN_URL');
-
-    // validateInstance should not be called with serverUrl
-    expect(validateInstance).not.toHaveBeenCalled();
-  });
-
-  it('should configure with GLEAN_SERVER_URL environment variable', async () => {
-    process.env.GLEAN_SERVER_URL = 'https://env-company-be.glean.com';
-    process.env.GLEAN_API_TOKEN = 'env-token';
-
-    await configure('cursor', {});
-
-    const configPath = path.join(tempDir, '.cursor', 'mcp.json');
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    expect(config.mcpServers.glean_local.env).toHaveProperty('GLEAN_SERVER_URL', 'https://env-company-be.glean.com');
-    expect(config.mcpServers.glean_local.env).toHaveProperty('GLEAN_API_TOKEN', 'env-token');
-  });
-
-  it('should prefer url over instance when both provided', async () => {
-    const options = {
-      token: 'test-token',
-      url: 'https://my-company-be.glean.com',
-      instance: 'my-company',
-    };
-
-    await configure('cursor', options);
-
-    const configPath = path.join(tempDir, '.cursor', 'mcp.json');
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    expect(config.mcpServers.glean_local.env).toHaveProperty('GLEAN_SERVER_URL', 'https://my-company-be.glean.com');
-    expect(config.mcpServers.glean_local.env).not.toHaveProperty('GLEAN_INSTANCE');
-  });
-
-  it('should include GLEAN_INSTANCE for local (non-remote) configurations', async () => {
-    const options = {
-      token: 'test-token',
-      instance: 'test-instance',
-      remote: false, // explicitly set to false to test local behavior
-    };
-
-    await configure('cursor', options);
-
-    const configPath = path.join(tempDir, '.cursor', 'mcp.json');
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    expect(config).toMatchInlineSnapshot(`
-      {
-        "mcpServers": {
-          "glean_local": {
-            "args": [
-              "-y",
-              "@gleanwork/local-mcp-server",
-            ],
-            "command": "npx",
-            "env": {
-              "GLEAN_API_TOKEN": "test-token",
-              "GLEAN_INSTANCE": "test-instance",
-            },
-            "type": "stdio",
-          },
-        },
-      }
-    `);
+    expect(process.exit).toHaveBeenCalledWith(1);
+    expect(consoleErrorOutput.some((line) => /serverPackage/i.test(line))).toBe(true);
   });
 });

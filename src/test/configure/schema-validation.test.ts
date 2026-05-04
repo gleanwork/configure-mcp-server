@@ -32,22 +32,6 @@ describe('Schema Validation', () => {
     { name: 'windsurf', client: windsurfClient, clientId: CLIENT.WINDSURF },
   ];
 
-  describe('stdio transport (local)', () => {
-    it.each(clients)(
-      '$name: generates valid schema-conforming config',
-      ({ client, clientId }) => {
-        const config = client.configTemplate('test-instance', 'test-token');
-        const result = validateGeneratedConfig(config, clientId);
-
-        if (!result.success) {
-          console.error(`${clientId} stdio validation errors:`, JSON.stringify(result.error?.issues, null, 2));
-          console.error(`${clientId} stdio config:`, JSON.stringify(config, null, 2));
-        }
-        expect(result.success).toBe(true);
-      },
-    );
-  });
-
   describe('http transport (remote)', () => {
     it.each(clients)(
       '$name: generates valid schema-conforming config',

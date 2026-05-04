@@ -25,31 +25,6 @@ describe('Windsurf MCP Client', () => {
     expect(windsurfClient.configFilePath(homedir)).toBe(expectedPath);
   });
 
-  it('should generate a valid Windsurf MCP config template with instance', () => {
-    const config = windsurfClient.configTemplate(
-      'example-instance',
-      'test-token',
-    );
-
-    expect(config).toMatchInlineSnapshot(`
-      {
-        "mcpServers": {
-          "glean_local": {
-            "args": [
-              "-y",
-              "@gleanwork/local-mcp-server",
-            ],
-            "command": "npx",
-            "env": {
-              "GLEAN_API_TOKEN": "test-token",
-              "GLEAN_INSTANCE": "example-instance",
-            },
-          },
-        },
-      }
-    `);
-  });
-
   it('should generate a valid Windsurf remote config template with URL (native HTTP)', () => {
     const options: ConfigureOptions = { remote: true };
     const config = windsurfClient.configTemplate(
