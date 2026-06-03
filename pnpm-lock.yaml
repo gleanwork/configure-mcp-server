@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@gleanwork/mcp-config-glean':
-        specifier: ^4.3.0
-        version: 4.3.0(zod@4.3.6)
+        specifier: ^5.0.0
+        version: 5.0.0(zod@4.3.6)
       '@gleanwork/mcp-server-utils':
         specifier: ^0.9.1
         version: 0.9.1
@@ -19,7 +19,7 @@ importers:
         version: 14.0.3
       dotenv:
         specifier: ^17.2.1
-        version: 17.3.1
+        version: 17.4.2
       mcp-remote:
         specifier: ^0.1.29
         version: 0.1.38
@@ -328,12 +328,12 @@ packages:
     resolution: {integrity: sha512-9EswjKncBNcAZtWzBJi3oBHVMR5d/75iOHJNFkjvR0Imqrd2coVp/o5LSckyKHYwm/8TeybDbr2KkLISpfNRag==}
     hasBin: true
 
-  '@gleanwork/mcp-config-glean@4.3.0':
-    resolution: {integrity: sha512-/JGxc0EG1lw47AOfhDYxH7gLA0jvZsdo+C5M/fuxVOdTpjVLC14PyMT7DkNjEob0j6i4uHQm5DUEvnGWHdwSEQ==}
+  '@gleanwork/mcp-config-glean@5.0.0':
+    resolution: {integrity: sha512-njqt7pHKjBU3AE3j/nDa4TLCOzSIIaV6XRl85Y6f5A5hl6RGREwXSY9vRVaYnq96n7t29I4q8Lk09w7sjB2SMw==}
     engines: {node: '>=20'}
 
-  '@gleanwork/mcp-config-schema@4.3.0':
-    resolution: {integrity: sha512-qajPyFZoNYVhFJ0IBgSQDRaLFPL5ysgTjdzCJYx7SG1lygHHz220Fj5lC7wP2/ntJiCmiQv8jl7zAS5kOnDNgg==}
+  '@gleanwork/mcp-config-schema@5.0.0':
+    resolution: {integrity: sha512-b4p5NiZX3g4WS/lJahbPr+lRGb+aBGG6FGJ1CY0TUmiNil3SrHWGVjVm+iIzp1iA3h/8IRLA6O4X423XvyB5yw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
@@ -1219,6 +1219,7 @@ packages:
   basic-ftp@5.2.0:
     resolution: {integrity: sha512-VoMINM2rqJwJgfdHq6RiUudKt2BV+FY5ZFezP/ypmwayk68+NzzAQy4XXLlqsGD4MCzq3DrmNFD/uUmBJuGoXw==}
     engines: {node: '>=10.0.0'}
+    deprecated: Security vulnerability fixed in 5.2.1, please upgrade
 
   before-after-hook@4.0.0:
     resolution: {integrity: sha512-q6tR3RPqIB1pMiTRMFcZwuG5T8vwp+vUvEG0vuI6B+Rikh5BfPp2fQ82c925FOs+b0lcFQ8CFrL+KbilfZFhOQ==}
@@ -1592,8 +1593,8 @@ packages:
     resolution: {integrity: sha512-X07nttJQkwkfKfvTPG/KSnE2OMdcUCao6+eXF3wmnIQRn2aPAHH3VxDbDOdegkd6JbPsXqShpvEOHfAT+nCNwQ==}
     engines: {node: '>=0.3.1'}
 
-  dotenv@17.3.1:
-    resolution: {integrity: sha512-IO8C/dzEb6O3F9/twg6ZLXz164a2fhTnEWb95H23Dm4OuN+92NmEAlTrupP9VW6Jm3sO26tQlqyvyi4CsnY9GA==}
+  dotenv@17.4.2:
+    resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
     engines: {node: '>=12'}
 
   dunder-proto@1.0.1:
@@ -2340,6 +2341,10 @@ packages:
 
   js-yaml@4.1.1:
     resolution: {integrity: sha512-qQKT4zQxXl8lLwBtHMWwaTcGfFOZviOJet3Oy/xmGk2gZH677CJM9EvtfdSkgWcATZhj/55JZ0rmy3myCT5lsA==}
+    hasBin: true
+
+  js-yaml@4.2.0:
+    resolution: {integrity: sha512-ePWsvanv0DWuDRsW8dnt+R4jQ31SCRCQ7hhNcPXZPsoBZiemuZNYGf7adZdqX2D86j6rvKp3RpCxVTSb8WQlOw==}
     hasBin: true
 
   json-buffer@3.0.1:
@@ -4095,16 +4100,16 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@gleanwork/mcp-config-glean@4.3.0(zod@4.3.6)':
+  '@gleanwork/mcp-config-glean@5.0.0(zod@4.3.6)':
     dependencies:
-      '@gleanwork/mcp-config-schema': 4.3.0(zod@4.3.6)
+      '@gleanwork/mcp-config-schema': 5.0.0(zod@4.3.6)
     transitivePeerDependencies:
       - zod
 
-  '@gleanwork/mcp-config-schema@4.3.0(zod@4.3.6)':
+  '@gleanwork/mcp-config-schema@5.0.0(zod@4.3.6)':
     dependencies:
       glob: 13.0.6
-      js-yaml: 4.1.1
+      js-yaml: 4.2.0
       mkdirp: 3.0.1
       smol-toml: 1.6.1
       zod: 4.3.6
@@ -4112,7 +4117,7 @@ snapshots:
   '@gleanwork/mcp-server-utils@0.9.1':
     dependencies:
       '@gleanwork/connect-mcp-server': 0.2.4
-      dotenv: 17.3.1
+      dotenv: 17.4.2
       fs-extra: 11.3.4
       open: 10.2.0
       tldts: 7.0.27
@@ -5160,7 +5165,7 @@ snapshots:
       chokidar: 5.0.0
       confbox: 0.2.4
       defu: 6.1.4
-      dotenv: 17.3.1
+      dotenv: 17.4.2
       exsolve: 1.0.8
       giget: 2.0.0
       jiti: 2.6.1
@@ -5466,7 +5471,7 @@ snapshots:
 
   diff@4.0.4: {}
 
-  dotenv@17.3.1: {}
+  dotenv@17.4.2: {}
 
   dunder-proto@1.0.1:
     dependencies:
@@ -6375,6 +6380,10 @@ snapshots:
     dependencies:
       argparse: 2.0.1
 
+  js-yaml@4.2.0:
+    dependencies:
+      argparse: 2.0.1
+
   json-buffer@3.0.1: {}
 
   json-parse-better-errors@1.0.2: {}
@@ -7231,7 +7240,7 @@ snapshots:
 
   read-yaml-file@2.1.0:
     dependencies:
-      js-yaml: 4.1.1
+      js-yaml: 4.2.0
       strip-bom: 4.0.0
 
   readable-stream@3.6.2:
@@ -8065,7 +8074,7 @@ snapshots:
 
   write-yaml-file@5.0.0:
     dependencies:
-      js-yaml: 4.1.1
+      js-yaml: 4.2.0
       write-file-atomic: 5.0.1
 
   wsl-utils@0.1.0:
