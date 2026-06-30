@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { configure, ConfigureOptions } from '../configure/index.js';
-import { validateInstance } from '@gleanwork/mcp-server-utils/util';
+import { validateInstance } from '../common/preflight.js';
 import os from 'os';
 import path from 'path';
 import fs from 'fs';
-import { Logger } from '@gleanwork/mcp-server-utils/logger';
+import { Logger } from '../common/logger.js';
 
-vi.mock('@gleanwork/mcp-server-utils/util', () => ({
+vi.mock('../common/preflight.js', () => ({
   validateInstance: vi.fn(),
 }));
 

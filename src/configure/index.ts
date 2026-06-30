@@ -18,8 +18,8 @@ import {
   MCPConfig,
   ConfigFileContents,
 } from './client/index.js';
-import { trace, error } from '@gleanwork/mcp-server-utils/logger';
-import { validateInstance } from '@gleanwork/mcp-server-utils/util';
+import { trace, error } from '../common/logger.js';
+import { validateInstance } from '../common/preflight.js';
 import { VERSION } from '../common/version.js';
 
 export type { MCPConfig, ConfigFileContents } from './client/index.js';

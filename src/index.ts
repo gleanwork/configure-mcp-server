@@ -8,9 +8,9 @@ import {
 } from './configure/index.js';
 import { availableClients } from './configure/client/index.js';
 import { initializeProject } from './init/index.js';
-import { Logger, trace, LogLevel } from '@gleanwork/mcp-server-utils/logger';
+import { Logger, trace, LogLevel } from './common/logger.js';
 import { VERSION } from './common/version.js';
-import { checkAndOpenLaunchWarning } from '@gleanwork/mcp-server-utils/util';
+import { checkAndOpenLaunchWarning } from './common/launch-warning-checker.js';
 import { createGleanRegistry } from '@gleanwork/mcp-config-glean';
 
 /**
