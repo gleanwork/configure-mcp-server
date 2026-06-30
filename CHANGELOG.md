@@ -4,6 +4,18 @@
 
 
 
+## v3.2.1 (2026-06-30)
+
+#### :house: Internal
+
+- [#84](https://github.com/gleanwork/configure-mcp-server/pull/84) Inline mcp-server-utils utilities; drop the dependency ([@steve-calvert-glean](https://github.com/steve-calvert-glean))
+
+#### Committers: 1
+
+- Steve Calvert ([@steve-calvert-glean](https://github.com/steve-calvert-glean))
+
+
+
 ## v3.2.0 (2026-05-04)
 
 #### :rocket: Enhancement
