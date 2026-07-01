@@ -74,14 +74,14 @@
     "globals": "^17.0.0",
     "jiti": "^2.5.1",
     "msw": "^2.10.5",
-    "npm-run-all2": "^8.0.4",
+    "npm-run-all2": "^9.0.1",
     "prettier": "^3.6.2",
     "release-it": "^20.2.1",
     "rimraf": "^6.0.1",
     "sort-package-json": "^3.4.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.2",
+    "typescript": "^6.0.3",
     "vitest": "^4.0.6"
   },
   "publishConfig": {
