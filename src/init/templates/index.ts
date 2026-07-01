@@ -51,6 +51,7 @@ async function loadRawTemplate(name: TemplateName): Promise<string> {
   } catch (error) {
     throw new Error(
       `Failed to load template '${name}': ${error instanceof Error ? error.message : 'Unknown error'}`,
+      { cause: error },
     );
   }
 }
