@@ -10,7 +10,6 @@ import { availableClients } from './configure/client/index.js';
 import { initializeProject } from './init/index.js';
 import { Logger, trace, LogLevel } from './common/logger.js';
 import { VERSION } from './common/version.js';
-import { checkAndOpenLaunchWarning } from './common/launch-warning-checker.js';
 import { createGleanRegistry } from '@gleanwork/mcp-config-glean';
 
 /**
@@ -46,8 +45,6 @@ async function getClientList(): Promise<string> {
 }
 
 async function main() {
-  await checkAndOpenLaunchWarning(VERSION);
-
   const clientList = Object.keys(availableClients).join(', ');
   const clientListFormatted = await getClientList();
 
