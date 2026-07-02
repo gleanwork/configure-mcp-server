@@ -8,7 +8,7 @@ describe('VS Code MCP Client', () => {
   const homedir = os.homedir();
 
   it('should have the correct display name', () => {
-    expect(vscodeClient.displayName).toBe('Visual Studio Code');
+    expect(vscodeClient.displayName).toBe('VS Code');
   });
 
   it('should generate the correct config path based on platform', () => {

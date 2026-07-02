@@ -108,7 +108,7 @@ describe('CLI', () => {
           goose            Goose
           jetbrains        JetBrains AI Assistant
           junie            Junie (JetBrains)
-          vscode           Visual Studio Code
+          vscode           VS Code
           windsurf         Windsurf
 
         Available MCP Servers:
@@ -159,7 +159,7 @@ describe('CLI', () => {
           goose            Goose
           jetbrains        JetBrains AI Assistant
           junie            Junie (JetBrains)
-          vscode           Visual Studio Code
+          vscode           VS Code
           windsurf         Windsurf
 
         Available MCP Servers:
