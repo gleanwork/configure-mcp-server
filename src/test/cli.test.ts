@@ -108,6 +108,7 @@ describe('CLI', () => {
           goose            Goose
           jetbrains        JetBrains AI Assistant
           junie            Junie (JetBrains)
+          pi               Pi
           vscode           VS Code
           windsurf         Windsurf
 
@@ -159,6 +160,7 @@ describe('CLI', () => {
           goose            Goose
           jetbrains        JetBrains AI Assistant
           junie            Junie (JetBrains)
+          pi               Pi
           vscode           VS Code
           windsurf         Windsurf
 
@@ -212,7 +214,7 @@ describe('CLI', () => {
     expect(result.exitCode).toEqual(1);
     expect(result.stderr).toMatchInlineSnapshot(`
       "Unsupported MCP client: invalid-client
-      Supported clients: claude-code, claude-desktop, codex, cursor, goose, jetbrains, junie, vscode, windsurf"
+      Supported clients: claude-code, claude-desktop, codex, cursor, goose, jetbrains, junie, pi, vscode, windsurf"
     `);
     expect(result.stdout).toMatchInlineSnapshot(`""`);
   });

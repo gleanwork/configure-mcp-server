@@ -34,6 +34,7 @@ import cursorClient from './cursor.js';
 import gooseClient from './goose.js';
 import jetbrainsClient from './jetbrains.js';
 import junieClient from './junie.js';
+import piClient from './pi.js';
 import vscodeClient from './vscode.js';
 import windsurfClient from './windsurf.js';
 
@@ -308,6 +309,7 @@ export const availableClients: Record<string, MCPClientConfig> = {
   'goose': gooseClient,
   'jetbrains': jetbrainsClient,
   'junie': junieClient,
+  'pi': piClient,
   'vscode': vscodeClient,
   'windsurf': windsurfClient,
 };

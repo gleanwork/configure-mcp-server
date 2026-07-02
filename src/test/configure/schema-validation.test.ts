@@ -16,6 +16,7 @@ import cursorClient from '../../configure/client/cursor.js';
 import gooseClient from '../../configure/client/goose.js';
 import jetbrainsClient from '../../configure/client/jetbrains.js';
 import junieClient from '../../configure/client/junie.js';
+import piClient from '../../configure/client/pi.js';
 import vscodeClient from '../../configure/client/vscode.js';
 import windsurfClient from '../../configure/client/windsurf.js';
 
@@ -28,6 +29,7 @@ describe('Schema Validation', () => {
     { name: 'goose', client: gooseClient, clientId: CLIENT.GOOSE },
     { name: 'jetbrains', client: jetbrainsClient, clientId: CLIENT.JETBRAINS },
     { name: 'junie', client: junieClient, clientId: CLIENT.JUNIE },
+    { name: 'pi', client: piClient, clientId: CLIENT.PI },
     { name: 'vscode', client: vscodeClient, clientId: CLIENT.VSCODE },
     { name: 'windsurf', client: windsurfClient, clientId: CLIENT.WINDSURF },
   ];
