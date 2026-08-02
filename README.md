@@ -127,3 +127,17 @@ MIT License - see the [LICENSE](LICENSE) file for details
 - Documentation: [docs.glean.com](https://docs.glean.com)
 - Issues: [GitHub Issues](https://github.com/gleanwork/configure-mcp-server/issues)
 - Email: [support@glean.com](mailto:support@glean.com)
+
+<!-- configure-agents:skills start -->
+
+## Agent skills
+
+This repository ships agent skill(s) under `skills/`. Install them into your
+AI agent with [`npx skills`](https://github.com/agentskills/agentskills):
+
+```sh
+npx skills add -g gleanwork/configure-mcp-server   # global — available in every repo
+npx skills add gleanwork/configure-mcp-server      # or scoped to the current repo
+```
+
+<!-- configure-agents:skills end -->
