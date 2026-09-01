@@ -53,7 +53,7 @@
     "@gleanwork/mcp-config-glean": "^5.0.0",
     "commander": "^15.0.0",
     "dotenv": "^17.2.1",
-    "mcp-remote": "^0.1.29",
+    "mcp-remote": "^0.2.4",
     "tldts": "^7.0.10",
     "yaml": "^2.8.0"
   },
